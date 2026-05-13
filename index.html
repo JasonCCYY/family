@@ -37,12 +37,12 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:0.2s}
 .card:hover{border-color:#ccc;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
 .card-row{display:flex;align-items:flex-start;gap:14px}
-.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
+.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
 .card-info{flex:1;min-width:0}
-.card-name{font-size:20px;font-weight:bold}
-.card-meta{font-size:15px;color:#666;margin-top:6px;line-height:1.5}
-.badge{display:inline-block;font-size:13px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
-.days-chip{font-size:15px;color:#888;white-space:nowrap;font-weight:bold}
+.card-name{font-size:18px;font-weight:bold}
+.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
+.days-chip{font-size:14px;color:#888;white-space:nowrap;font-weight:bold}
 .days-chip.soon{color:#e07b30}
 .days-chip.today{color:#3a6347;font-weight:900}
 
@@ -54,8 +54,8 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-mon{font-size:12px;color:#888;font-weight:bold;margin-bottom:2px}
 .up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
-.up-name{font-size:20px;font-weight:bold}
-.up-type{font-size:15px;color:#666;margin-top:5px;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.up-name{font-size:18px;font-weight:bold}
+.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
 /* Modal 背景 */
@@ -70,24 +70,25 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .fg input,.fg select{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:16px;background:#fff;color:#1a1a1a;font-weight:bold;}
 .fg input:disabled,.fg select:disabled{background:#f5f5f5;color:#888}
 
-/* 【檢視模式】表單樣式 (超乾淨列表 + 藍色大字) */
-.modal.view-mode .fg { margin-bottom: 14px; }
-.modal.view-mode .fg label { font-size: 13px; color: #888; font-weight: normal; margin-bottom: 4px; }
+/* 【檢視模式】強制破解 iOS 反灰，深藍色大字 */
+.modal.view-mode .fg { margin-bottom: 18px; }
+.modal.view-mode .fg label { font-size: 14px; color: #888; font-weight: normal; margin-bottom: 6px; }
 .modal.view-mode .fg input, 
 .modal.view-mode .fg select {
-    border: none;
-    border-bottom: 1px solid #eee;
-    border-radius: 0;
-    padding: 4px 0 12px 0;
-    background: transparent;
-    font-size: 20px !important;
-    color: #1e66d4 !important;
-    font-weight: bold !important;
-    -webkit-appearance: none;
-    appearance: none;
-    opacity: 1 !important;
-    -webkit-text-fill-color: #1e66d4 !important;
+    border: none !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 0 !important;
+    padding: 0 0 10px 0 !important;
+    background: transparent !important;
+    font-size: 22px !important;        /* 加大字體 */
+    color: #1a73e8 !important;         /* 鮮明藍色 */
+    font-weight: 900 !important;       /* 超粗體 */
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    opacity: 1 !important;             /* 破解 iOS 透明度 */
+    -webkit-text-fill-color: #1a73e8 !important; /* 破解 iOS 強制灰字 */
 }
+/* 檢視模式下隱藏沒有資料的欄位 */
 .modal.view-mode .fg.empty-field { display: none !important; }
 
 /* 按鈕區塊設定 */
@@ -98,8 +99,8 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .btn-edit-new { background:#4a7c59; color:#fff; border:none; }
 
 /* Utility */
-.empty{text-align:center;color:#bbb;font-size:15px;padding:2rem}
-.loading{text-align:center;color:#aaa;font-size:15px;padding:2rem}
+.empty{text-align:center;color:#bbb;font-size:14px;padding:2rem}
+.loading{text-align:center;color:#aaa;font-size:14px;padding:2rem}
 </style>
 </head>
 <body>
@@ -222,7 +223,7 @@ function toRocDate(dateStr) {
 function toRocInputFormat(dateStr) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-');
-  return `${parseInt(y) - 1911}/${m}/${d}`;
+  return `${parseInt(y) - 1911}/${m}/${String(d).padStart(2, '0')}`;
 }
 
 function getLunarString(solar) {
@@ -294,7 +295,6 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
-// 根據需求：各自獨立新的一列
 function buildCardExtraInfo(e, isUpcoming = false) {
   let extraHtml = '';
   
@@ -307,21 +307,17 @@ function buildCardExtraInfo(e, isUpcoming = false) {
       const zodiacEn = getWesternZodiac(m, d);
       
       if (!isUpcoming) {
-        // 一般列表：農曆自己一列，生肖星座自己一列
         extraHtml += `<div class="card-meta">${getLunarString(solar)}</div>`;
         extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
       } else {
-        // 即將到來：顯示國曆日期，生肖星座自己一列，【不顯示農曆】
         extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
         extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
       }
     } catch(err) { console.error(err); }
   } else if (isUpcoming && e.date) {
-    // 如果是紀念日且在「即將到來」，補上國曆日期
     extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
   }
   
-  // 生辰、備註各自獨立一列
   if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
   if (e.remark) extraHtml += `<div class="card-meta">備註：${e.remark}</div>`;
   
@@ -528,7 +524,10 @@ function openModal(tab = 'birthday_solar') {
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
   
-  [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
+  // 恢復可編輯
+  document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
+  document.getElementById('f-type').disabled = false;
+  
   document.getElementById('f-lunar').readOnly = true; 
   document.getElementById('f-zodiac-cn').readOnly = true; 
   document.getElementById('f-zodiac-en').readOnly = true; 
@@ -543,14 +542,20 @@ function viewEntry(id) {
   currentEntryId = id;
   const modal = document.getElementById('modal');
   
+  // 啟動檢視模式
   modal.classList.add('view-mode');
   
   document.getElementById('modal-title').textContent = '記錄詳情';
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
   document.getElementById('f-label').value = e.label || '';
-  document.getElementById('f-date').value = e.date;
-  document.getElementById('f-roc-input').value = toRocInputFormat(e.date);
+  
+  // 【貼心優化】查看模式直接顯示「80年1月24日」代替斜線
+  if (e.date) {
+    document.getElementById('f-date').value = e.date;
+    document.getElementById('f-roc-input').value = toRocDate(e.date); 
+  }
+  
   document.getElementById('f-lunar').value = e.lunar || '';
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
@@ -569,7 +574,12 @@ function viewEntry(id) {
   document.getElementById('btns-edit').style.display = 'none';
   document.getElementById('btns-view').style.display = 'flex';
   
-  [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = true);
+  // 【破解反灰關鍵】使用 readOnly 代替 disabled
+  document.querySelectorAll('.modal input').forEach(i => {
+      i.readOnly = true;
+      i.disabled = false;
+  });
+  document.getElementById('f-type').disabled = true; // select 依然要 disabled 避免跳出選單
   
   updateFields();
   modal.classList.add('open');
@@ -583,7 +593,16 @@ function enableEdit() {
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
   
-  [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
+  // 恢復所有輸入框為可編輯
+  document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
+  document.getElementById('f-type').disabled = false;
+  
+  // 【貼心優化】編輯時自動切回數字格式「80/01/24」方便修改
+  const dateVal = document.getElementById('f-date').value;
+  if(dateVal) {
+      document.getElementById('f-roc-input').value = toRocInputFormat(dateVal);
+  }
+  
   document.getElementById('f-lunar').readOnly = true;
   document.getElementById('f-zodiac-cn').readOnly = true;
   document.getElementById('f-zodiac-en').readOnly = true;
