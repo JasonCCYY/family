@@ -41,7 +41,6 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .card-info{flex:1;min-width:0}
 .card-name{font-size:18px;font-weight:bold}
 .card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;margin-left:8px;background:#eef3ee;color:#3a6347;vertical-align:middle;font-weight:bold}
 .days-chip{font-size:14px;color:#888;white-space:nowrap;text-align:right;margin-top:4px;font-weight:bold}
 .days-chip.soon{color:#e07b30}
 .days-chip.today{color:#3a6347;font-weight:900}
@@ -55,7 +54,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
 .up-name{font-size:18px;font-weight:bold}
-.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
+.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
 /* Modal */
@@ -180,7 +179,6 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 // --- 核心變數與對照表 ---
 const MONTHS_TW=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const TYPE_LABEL={birthday_solar:'生日', anniversary:'結婚紀念日', custom:'自訂'};
-// 將簡體生肖強制對應為繁體
 const ZODIAC_MAP = {'鼠':'鼠', '牛':'牛', '虎':'虎', '兔':'兔', '龙':'龍', '蛇':'蛇', '马':'馬', '羊':'羊', '猴':'猴', '鸡':'雞', '狗':'狗', '猪':'豬'};
 
 let data = [];
@@ -201,7 +199,6 @@ function toRocInputFormat(dateStr) {
   return `${parseInt(y) - 1911}/${m}/${d}`;
 }
 
-// 自動將「腊月」改為十二月，並輸出正確農曆
 function getLunarString(solar) {
   const lunar = solar.getLunar();
   const m = lunar.getMonth(); 
@@ -209,7 +206,6 @@ function getLunarString(solar) {
   return `農曆 ${MONTHS_TW[m-1]}${d}`;
 }
 
-// 取得西方星座
 function getWesternZodiac(m, d) {
   const cutoffs = [20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 23, 22];
   const signs = ['水瓶座', '雙魚座', '牡羊座', '金牛座', '雙子座', '巨蟹座', '獅子座', '處女座', '天秤座', '天蠍座', '射手座', '摩羯座'];
@@ -218,7 +214,6 @@ function getWesternZodiac(m, d) {
   return signs[idx];
 }
 
-// 判斷年齡與週年
 function getAgeText(dateStr, type, isUpcoming) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -235,19 +230,15 @@ function getAgeText(dateStr, type, isUpcoming) {
     return `滿 ${Math.max(0, actualY)} 週年`;
   }
 
-  // 生日計算
   if (isUpcoming) {
-    // 即將到來：顯示虛歲 (今年 - 出生年 + 1)
     return `虛 ${today.getFullYear() - y + 1} 歲`;
   } else {
-    // 卡片列表：顯示足歲 (實際年齡)
     let actualAge = today.getFullYear() - y;
     if (thisYDate > t) actualAge--;
     return `足 ${Math.max(0, actualAge)} 歲`;
   }
 }
 
-// 計算剩餘時間標籤
 function chipHtml(md, totalDays) {
   if(totalDays === 0) return `<span class="days-chip today">🎉 今天！</span>`;
   const [m, d] = md.split('-').map(Number);
@@ -274,7 +265,6 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
-// 取得卡片的附加資訊 (生肖、星座、農曆、生辰、備註)
 function buildCardExtraInfo(e) {
   let extraHtml = '';
   if (e.type === 'birthday_solar' && e.date) {
@@ -291,6 +281,16 @@ function buildCardExtraInfo(e) {
   if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
   if (e.remark) extraHtml += `<div class="card-meta">備註：${e.remark}</div>`;
   return extraHtml;
+}
+
+// 產生帶顏色與圖示的活動標籤
+function getTypeBadge(e) {
+  let color = '#4a7c59', bg = '#eef3ee', icon = '🎂 ';
+  if (e.type === 'anniversary') { color = '#d81b60'; bg = '#fce4ec'; icon = '💍 '; }
+  else if (e.type === 'custom') { color = '#e67e22'; bg = '#fdf2e9'; icon = '⭐ '; }
+  
+  let tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
+  return `<span style="display:inline-block;font-size:13px;padding:3px 8px;border-radius:6px;color:${color};background:${bg};font-weight:bold;">${icon}${tl}</span>`;
 }
 
 // --- 表單與解析 ---
@@ -373,15 +373,15 @@ function renderUpcoming() {
 
 function upItem(e){
   const [dm, dd] = e.md.split('-');
-  const tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-  const ageText = getAgeText(e.date, e.type, true); // 即將到來顯示虛歲
+  const ageText = getAgeText(e.date, e.type, true); 
   const extraInfo = buildCardExtraInfo(e);
+  const badgeHtml = getTypeBadge(e);
   
   return `<div class="up-item" onclick="viewEntry('${e.id}')">
     <div class="up-date"><div class="up-mon">${MONTHS_TW[+dm-1]}</div><div class="up-day">${+dd}</div></div>
     <div class="up-info">
       <div class="up-name">${e.name}</div>
-      <div class="up-type"><span style="color:#4a7c59">[${tl}]</span>　<strong style="color:#1a1a1a">${ageText}</strong></div>
+      <div class="up-type">${badgeHtml}<strong style="color:#1a1a1a">${ageText}</strong></div>
       ${extraInfo}
     </div>
     ${chipHtml(e.md, e.days)}
@@ -396,15 +396,15 @@ function renderList(tab) {
   entries.forEach(e => {
     const md = getMonthDay(e);
     const days = daysUntil(md);
-    const tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-    const ageText = getAgeText(e.date, e.type, false); // 卡片顯示足歲
+    const ageText = getAgeText(e.date, e.type, false); 
     const extraInfo = buildCardExtraInfo(e);
+    const badgeHtml = getTypeBadge(e);
     
     h += `<div class="card" onclick="viewEntry('${e.id}')">
       <div class="card-row">
         <div class="avatar">${e.name.slice(0, 1)}</div>
         <div class="card-info">
-          <div class="card-name">${e.name} <span class="badge">${tl}</span></div>
+          <div class="card-name" style="display:flex;align-items:center;gap:8px">${e.name} ${badgeHtml}</div>
           <div class="card-meta">${toRocDate(e.date)}　<strong style="color:#1a1a1a">${ageText}</strong></div>
           ${extraInfo}
         </div>
