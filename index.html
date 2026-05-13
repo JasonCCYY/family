@@ -6,17 +6,19 @@
 <title>家族紀念日</title>
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
 <style>
-/* CSS 部分維持不變 */
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif}
 body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
 .lock-card{background:#fff;border-radius:16px;border:1px solid #e8e4dc;padding:2.5rem 2rem;width:320px;text-align:center}
 .lock-card h1{font-size:20px;font-weight:500;margin-bottom:6px}
+.lock-card p{font-size:13px;color:#888;margin-bottom:1.5rem}
+.lock-card input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:15px;text-align:center;letter-spacing:4px;margin-bottom:10px}
 .lock-card button{width:100%;padding:10px;background:#4a7c59;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer}
 #app{display:none;max-width:720px;margin:0 auto;padding:1.5rem 1rem}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.add-btn-header{background:#4a7c59;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+.header h1{font-size:20px;font-weight:500}
 .logout-btn{font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;padding:4px 8px;margin-left:10px}
+.add-btn-header{background:#4a7c59;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px}
 .tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
 .tab{padding:6px 16px;border-radius:8px;border:1px solid #ddd;background:transparent;cursor:pointer;font-size:13px;color:#666}
 .tab.active{background:#eee;color:#1a1a1a;font-weight:500}
@@ -40,19 +42,17 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 </head>
 <body>
 
-<div id="lock-screen"><div class="lock-card"><h1>家族紀念日</h1><input type="password" id="pw-input" placeholder="••••••••"><button onclick="checkPw()">進入</button></div></div>
+<div id="lock-screen"><div class="lock-card"><h1>家族紀念日</h1><input type="password" id="pw-input" placeholder="••••••••"><button onclick="checkPw()">進入</button><div id="pw-err" style="color:red;font-size:12px;margin-top:10px"></div></div></div>
 
 <div id="app">
   <div class="header">
-    <div><h1>家族紀念日 🌸</h1></div>
-    <div style="display:flex; align-items:center;">
-        <button class="add-btn-header" onclick="openModal()">＋ 新增</button>
-        <button class="logout-btn" onclick="logout()">登出</button>
-    </div>
+    <div><h1>家族紀念日 🌸</h1><div id="today-str"></div></div>
+    <div style="display:flex; align-items:center;"><button class="add-btn-header" onclick="openModal()">＋ 新增</button><button class="logout-btn" onclick="logout()">登出</button></div>
   </div>
   <div class="tabs">
     <button class="tab active" onclick="setTab('upcoming')">即將到來</button>
     <button class="tab" onclick="setTab('birthday')">生日</button>
+    <button class="tab" onclick="setTab('anniversary')">紀念日</button>
   </div>
   <div id="view-list"></div>
 </div>
@@ -63,8 +63,9 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
     <div class="fg"><label>姓名</label><input id="f-name" type="text"></div>
     <div class="fg"><label>類型</label><select id="f-type"><option value="birthday_solar">生日（國曆）</option><option value="anniversary">紀念日</option></select></div>
     <div class="fg"><label>日期（國曆）</label><input id="f-date" type="date"></div>
-    <div class="fg"><label>顯示日期（民國格式）</label><input id="f-roc-display" type="text" readonly placeholder="自動轉換"></div>
-    <div class="fg"><label>農曆</label><input id="f-lunar" type="text" readonly placeholder="自動轉換"></div>
+    <div class="fg"><label>顯示日期（民國）</label><input id="f-roc-display" type="text" readonly></div>
+    <div class="fg"><label>農曆</label><input id="f-lunar" type="text" readonly></div>
+    <div class="fg"><label>備註</label><input id="f-remark" type="text"></div>
     <div class="modal-btns">
       <button onclick="closeModal()">關閉</button>
       <button class="btn-save" id="btn-save" onclick="saveEntry()">儲存</button>
@@ -75,21 +76,23 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 <script>
 let data=[];
 
-// --- 修正：不使用 require，直接使用全域物件 ---
-function updateLunarAndRoc(dateVal) {
-  if (!dateVal) return;
-  const [y, m, d] = dateVal.split('-').map(Number);
-  document.getElementById('f-roc-display').value = `民國${y-1911}年${m}月${d}日`;
-  
-  try {
-    // 透過 CDN 引入後，Solar 類別會直接掛載在 window 下
-    const solar = window.Lunar.Solar.fromYmd(y, m, d);
-    const lunar = solar.getLunar();
-    document.getElementById('f-lunar').value = `農曆 ${lunar.getMonth()}月${lunar.getDay()}日`;
-  } catch(e) { console.error(e); }
+// 轉換日期為民國格式
+function toRocDate(dateStr) {
+  if(!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return `民國${y-1911}年${m}月${d}日`;
 }
 
-document.getElementById('f-date').addEventListener('change', function() { updateLunarAndRoc(this.value); });
+// 自動計算民國與農曆
+document.getElementById('f-date').addEventListener('change', function() {
+  const val = this.value;
+  if (!val) return;
+  document.getElementById('f-roc-display').value = toRocDate(val);
+  try {
+    const solar = window.Lunar.Solar.fromYmd(...val.split('-').map(Number));
+    document.getElementById('f-lunar').value = `農曆 ${solar.getLunar().getMonth()}月${solar.getLunar().getDay()}日`;
+  } catch(e) {}
+});
 
 async function checkPw(){
   const pw=document.getElementById('pw-input').value;
@@ -100,15 +103,18 @@ async function checkPw(){
     document.getElementById('lock-screen').style.display='none';
     document.getElementById('app').style.display='block';
     init();
-  }
+  } else { document.getElementById('pw-err').textContent='密碼錯誤'; }
 }
 function logout(){sessionStorage.removeItem('auth');location.reload();}
 if(sessionStorage.getItem('auth')==='1'){
   document.getElementById('lock-screen').style.display='none';
   document.getElementById('app').style.display='block';
+  init();
 }
 
 async function init(){
+  const d=new Date();
+  document.getElementById('today-str').textContent = toRocDate(d.toISOString().split('T')[0]);
   const res=await fetch('/api/read');
   data=await res.json();
   render();
@@ -119,15 +125,39 @@ function render(){
   data.forEach(e => {
     h += `<div class="card" onclick="viewEntry('${e.id}')">
       <div class="card-name">${e.name}</div>
-      <div class="card-meta">民國${new Date(e.date).getFullYear()-1911}年...</div>
+      <div class="card-meta">${toRocDate(e.date)}</div>
     </div>`;
   });
   document.getElementById('view-list').innerHTML = h;
 }
 
-function openModal(){
+function viewEntry(id){
+  const e=data.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('modal-title').textContent='記錄詳情';
+  document.getElementById('f-name').value=e.name;
+  document.getElementById('f-type').value=e.type;
+  document.getElementById('f-date').value=e.date;
+  document.getElementById('f-roc-display').value = toRocDate(e.date);
+  document.getElementById('f-lunar').value = e.lunar;
+  document.getElementById('f-remark').value = e.remark||'';
+  [...document.querySelectorAll('.modal input, .modal select')].forEach(i=>i.disabled=true);
+  document.getElementById('btn-save').style.display='none';
   document.getElementById('modal').classList.add('open');
 }
+
+function openModal(){
+  document.getElementById('modal-title').textContent='新增記錄';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-date').value='';
+  document.getElementById('f-roc-display').value='';
+  document.getElementById('f-lunar').value='';
+  document.getElementById('f-remark').value='';
+  [...document.querySelectorAll('.modal input, .modal select')].forEach(i=>i.disabled=false);
+  document.getElementById('btn-save').style.display='block';
+  document.getElementById('modal').classList.add('open');
+}
+
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 
 async function saveEntry(){
@@ -135,7 +165,8 @@ async function saveEntry(){
     name:document.getElementById('f-name').value,
     type:document.getElementById('f-type').value,
     date:document.getElementById('f-date').value,
-    lunar:document.getElementById('f-lunar').value
+    lunar:document.getElementById('f-lunar').value,
+    remark:document.getElementById('f-remark').value
   };
   await fetch('/api/write',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
   data=await (await fetch('/api/read')).json();
