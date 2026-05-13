@@ -65,7 +65,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;font-weigh
 .up-item:hover{background:#faf9f7}
 .up-item:last-child{border:none}
 .up-date{width:50px;text-align:center;flex-shrink:0}
-.up-mon{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.04em;font-weight:bold}
+.up-mon{font-size:14px;color:#888;font-weight:bold}
 .up-day{font-size:28px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
 .up-name{font-size:18px;font-weight:bold}
@@ -157,7 +157,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;font-weigh
 
 <script>
 // --- 核心變數 ---
-const MONTHS_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_TW=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const TYPE_LABEL={birthday_solar:'生日', anniversary:'結婚紀念日', custom:'自訂'};
 let data = [];
 let currentTab = 'upcoming';
@@ -177,7 +177,7 @@ function toRocInputFormat(dateStr) {
   return `${parseInt(y) - 1911}/${m}/${d}`;
 }
 
-// 農曆轉化 (臘月改為十二月)
+// 農曆轉化
 function getLunarString(solar) {
   const lunar = solar.getLunar();
   const m = lunar.getMonth(); 
@@ -278,7 +278,7 @@ document.getElementById('f-roc-input').addEventListener('change', function() {
       document.getElementById('f-date').value = parsed.dateStr;
       try {
         const [y, m, d] = parsed.dateStr.split('-').map(Number);
-        const solar = window.Lunar.Solar.fromYmd(y, m, d);
+        const solar = Solar.fromYmd(y, m, d);
         document.getElementById('f-lunar').value = getLunarString(solar);
         document.getElementById('f-zodiac-cn').value = solar.getLunar().getYearShengXiao() + '年';
         document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
@@ -374,7 +374,7 @@ function upItem(e){
   const ann = getAnniversaryText(e.date, e.type);
   
   return `<div class="up-item" onclick="viewEntry('${e.id}')">
-    <div class="up-date"><div class="up-mon">${MONTHS_EN[+dm-1]}</div><div class="up-day">${+dd}</div></div>
+    <div class="up-date"><div class="up-mon">${MONTHS_TW[+dm-1]}</div><div class="up-day">${+dd}</div></div>
     <div class="up-info"><div class="up-name">${e.name}</div><div class="up-type">${tl}　${ann}</div></div>
     ${chipHtml(e.md, e.days)}
   </div>`;
@@ -472,10 +472,12 @@ function viewEntry(id) {
   if (e.date) {
      const [y, m, d] = e.date.split('-').map(Number);
      try {
-       const solar = window.Lunar.Solar.fromYmd(y, m, d);
+       const solar = Solar.fromYmd(y, m, d);
+       // 即使資料庫沒有農曆，查看時也會安全地自動算出來顯示
+       document.getElementById('f-lunar').value = getLunarString(solar);
        document.getElementById('f-zodiac-cn').value = solar.getLunar().getYearShengXiao() + '年';
        document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
-     } catch(err) {}
+     } catch(err) { console.error(err); }
   }
   
   document.getElementById('btns-edit').style.display = 'none';
