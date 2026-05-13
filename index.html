@@ -34,8 +34,8 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 .tab.active{background:#eee;color:#1a1a1a;font-weight:500}
 
 /* Cards */
-.card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:14px 18px;margin-bottom:8px;cursor:pointer}
-.card:hover{border-color:#ccc}
+.card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:14px 18px;margin-bottom:8px;cursor:pointer;transition:0.2s}
+.card:hover{border-color:#ccc;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
 .card-row{display:flex;align-items:flex-start;gap:12px}
 .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
 .card-info{flex:1;min-width:0}
@@ -49,10 +49,12 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 .modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
 .fg{margin-bottom:12px}
 .fg label{display:block;font-size:12px;color:#888;margin-bottom:4px}
-.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:14px}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff}
+.fg input:disabled,.fg select:disabled{background:#f5f5f5;color:#888}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
 .modal-btns button{padding:7px 18px;border-radius:8px;font-size:14px;cursor:pointer}
 .btn-cancel{background:#f5f5f5;border:1px solid #ddd;color:#666}
+.btn-delete{background:#fdf0f0;border:1px solid #fadcdc;color:#c0392b}
 .btn-save{background:#4a7c59;border:none;color:#fff;font-weight:500}
 
 /* Utility */
@@ -110,13 +112,19 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
       </select>
     </div>
     <div class="fg" id="fg-label" style="display:none"><label>紀念日名稱</label><input id="f-label" type="text" placeholder="例：相識紀念日"></div>
-    <div class="fg"><label>日期（選定後自動轉換）</label><input id="f-date" type="date"></div>
-    <div class="fg"><label>顯示日期（民國格式）</label><input id="f-roc-display" type="text" readonly placeholder="自動轉換"></div>
-    <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text" readonly placeholder="自動轉換"></div>
+    
+    <div class="fg"><label>日期（直接輸入民國，例如 1150513）</label><input id="f-roc-input" type="text" placeholder="例：1150513 或 115/05/13"></div>
+    <input id="f-date" type="hidden"> <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text" readonly placeholder="自動轉換"></div>
     <div class="fg"><label>生辰 <span style="font-size:11px;color:#bbb">（選填）</span></label><input id="f-birth-time" type="text" placeholder="例：午時、上午6點"></div>
     <div class="fg"><label>備註 <span style="font-size:11px;color:#bbb">（選填）</span></label><input id="f-remark" type="text" placeholder="任何備註"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">取消/關閉</button>
+    
+    <div class="modal-btns" id="btns-view" style="display:none">
+      <button class="btn-cancel" onclick="closeModal()">關閉</button>
+      <button class="btn-delete" onclick="confirmDelete()">刪除</button>
+      <button class="btn-save" onclick="enableEdit()">修改</button>
+    </div>
+    <div class="modal-btns" id="btns-edit" style="display:none">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
       <button class="btn-save" id="btn-save" onclick="saveEntry()">儲存</button>
     </div>
   </div>
@@ -126,46 +134,75 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 // --- 核心變數 ---
 let data = [];
 let currentTab = 'upcoming';
+let currentEntryId = null; // 記錄目前正在查看/編輯的 ID
 
 // --- 工具函數 ---
-// 轉換西元為民國格式
+// 轉換西元為民國文字
 function toRocDate(dateStr) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
   return `民國${y - 1911}年${m}月${d}日`;
 }
 
-// 監聽日期變更，自動更新民國與農曆
-document.getElementById('f-date').addEventListener('change', function() {
-  const val = this.value;
-  if (!val) return;
-  
-  // 1. 更新民國
-  document.getElementById('f-roc-display').value = toRocDate(val);
-  
-  // 2. 更新農曆 (直接安全呼叫 Solar)
-  try {
-    if (typeof Solar !== 'undefined') {
-      const [y, m, d] = val.split('-').map(Number);
-      const solar = Solar.fromYmd(y, m, d);
-      const lunar = solar.getLunar();
-      document.getElementById('f-lunar').value = `農曆 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-    } else {
-      document.getElementById('f-lunar').value = '農曆轉換庫未載入';
-    }
-  } catch(e) {
-    console.error("農曆轉換錯誤:", e);
+// 轉換西元為民國輸入框格式 (115/05/13)
+function toRocInputFormat(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  return `${parseInt(y) - 1911}/${m}/${d}`;
+}
+
+// 自訂農曆字串，將「腊月」改為「十二月」
+function getLunarString(solar) {
+  const lunar = solar.getLunar();
+  const m = lunar.getMonth(); // 回傳 1-12
+  const d = lunar.getDayInChinese(); // 回傳 初一, 十五 等
+  const monthNames = ['一','二','三','四','五','六','七','八','九','十','十一','十二'];
+  return `農曆 ${monthNames[m-1]}月${d}`;
+}
+
+// 解析民國輸入格式 (支援 1150513, 115/5/13, 115-05-13)
+function parseRocInput(val) {
+  val = val.replace(/[^\d]/g, ''); // 拔除所有非數字符號
+  if(val.length >= 6 && val.length <= 7) {
+      let y = val.slice(0, val.length - 4);
+      let m = val.slice(-4, -2);
+      let d = val.slice(-2);
+      if (parseInt(m) >= 1 && parseInt(m) <= 12 && parseInt(d) >= 1 && parseInt(d) <= 31) {
+          // 回傳 { 顯示格式, 系統儲存的西元格式 }
+          return { rocStr: `${y}/${m}/${d}`, dateStr: `${parseInt(y)+1911}-${m}-${d}` };
+      }
+  }
+  return null;
+}
+
+// 監聽日期輸入框
+document.getElementById('f-roc-input').addEventListener('change', function() {
+  if (!this.value.trim()) {
+      document.getElementById('f-date').value = '';
+      document.getElementById('f-lunar').value = '';
+      return;
+  }
+  let parsed = parseRocInput(this.value);
+  if (parsed) {
+      this.value = parsed.rocStr;
+      document.getElementById('f-date').value = parsed.dateStr;
+      try {
+        const [y, m, d] = parsed.dateStr.split('-').map(Number);
+        const solar = window.Lunar.Solar.fromYmd(y, m, d);
+        document.getElementById('f-lunar').value = getLunarString(solar);
+      } catch(e) {}
+  } else {
+      alert('日期格式錯誤！\n請輸入有效的民國年格式，例如：1150513 或 115/05/13');
+      this.value = '';
+      document.getElementById('f-date').value = '';
+      document.getElementById('f-lunar').value = '';
   }
 });
 
 // --- 登入與驗證 ---
 async function checkPw() {
   const pw = document.getElementById('pw-input').value;
-  if (!pw) {
-    document.getElementById('pw-err').textContent = '請輸入密碼';
-    return;
-  }
-  
+  if (!pw) return;
   try {
     const res = await fetch('/api/auth', {
       method: 'POST',
@@ -182,8 +219,7 @@ async function checkPw() {
       document.getElementById('pw-err').textContent = '密碼錯誤，請再試一次';
     }
   } catch (e) {
-    console.error(e);
-    document.getElementById('pw-err').textContent = '連線錯誤，請確認後端API是否正常';
+    document.getElementById('pw-err').textContent = '連線錯誤';
   }
 }
 
@@ -195,24 +231,18 @@ function logout() {
 // --- 初始化 ---
 async function init() {
   const d = new Date();
-  // 標題顯示今天日期 (民國)
   const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   document.getElementById('today-str').textContent = toRocDate(todayStr);
-  
-  // 顯示載入中
   document.getElementById('view-upcoming').innerHTML = '<div class="loading">讀取資料中…</div>';
-  
   try {
     const res = await fetch('/api/read');
     data = await res.json();
     render();
   } catch (e) {
-    console.error(e);
-    document.getElementById('view-upcoming').innerHTML = '<div class="empty" style="color:red">讀取失敗，請稍後再試</div>';
+    document.getElementById('view-upcoming').innerHTML = '<div class="empty" style="color:red">讀取失敗</div>';
   }
 }
 
-// 檢查登入狀態 (確保DOM載入後執行)
 window.onload = function() {
   if (sessionStorage.getItem('auth') === '1') {
     document.getElementById('lock-screen').style.display = 'none';
@@ -286,21 +316,23 @@ function updateFields() {
 }
 
 function openModal(tab = 'birthday_solar') {
+  currentEntryId = null;
   document.getElementById('modal-title').textContent = '新增記錄';
   document.getElementById('f-name').value = '';
   document.getElementById('f-type').value = (tab === 'custom') ? 'custom' : (tab === 'anniversary' ? 'anniversary' : 'birthday_solar');
   document.getElementById('f-label').value = '';
   document.getElementById('f-date').value = '';
-  document.getElementById('f-roc-display').value = '';
+  document.getElementById('f-roc-input').value = '';
   document.getElementById('f-lunar').value = '';
   document.getElementById('f-birth-time').value = '';
   document.getElementById('f-remark').value = '';
   
+  // 切換按鈕與解鎖欄位
+  document.getElementById('btns-view').style.display = 'none';
+  document.getElementById('btns-edit').style.display = 'flex';
   [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
-  document.getElementById('f-roc-display').readOnly = true;
-  document.getElementById('f-lunar').readOnly = true;
+  document.getElementById('f-lunar').readOnly = true; // 農曆永遠唯讀
   
-  document.getElementById('btn-save').style.display = 'block';
   updateFields();
   document.getElementById('modal').classList.add('open');
 }
@@ -308,20 +340,32 @@ function openModal(tab = 'birthday_solar') {
 function viewEntry(id) {
   const e = data.find(x => x.id === id);
   if (!e) return;
+  currentEntryId = id;
+  
   document.getElementById('modal-title').textContent = '記錄詳情';
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
   document.getElementById('f-label').value = e.label || '';
   document.getElementById('f-date').value = e.date;
-  document.getElementById('f-roc-display').value = toRocDate(e.date);
+  document.getElementById('f-roc-input').value = toRocInputFormat(e.date);
   document.getElementById('f-lunar').value = e.lunar || '';
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
   
+  // 切換按鈕為查看模式，鎖定所有欄位
+  document.getElementById('btns-edit').style.display = 'none';
+  document.getElementById('btns-view').style.display = 'flex';
   [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = true);
-  document.getElementById('btn-save').style.display = 'none';
+  
   updateFields();
   document.getElementById('modal').classList.add('open');
+}
+
+function enableEdit() {
+  document.getElementById('btns-view').style.display = 'none';
+  document.getElementById('btns-edit').style.display = 'flex';
+  [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
+  document.getElementById('f-lunar').readOnly = true;
 }
 
 function closeModal() {
@@ -332,9 +376,10 @@ document.getElementById('modal').addEventListener('click', e => {
   if (e.target === document.getElementById('modal')) closeModal();
 });
 
-// --- 儲存資料 ---
+// --- 儲存與刪除資料 ---
 async function saveEntry() {
   const entry = {
+    id: currentEntryId, // 如果是修改，會帶有原有的 ID
     name: document.getElementById('f-name').value.trim(),
     type: document.getElementById('f-type').value,
     date: document.getElementById('f-date').value,
@@ -364,11 +409,28 @@ async function saveEntry() {
     render();
     closeModal();
   } catch (e) {
-    console.error("儲存失敗:", e);
     alert("儲存失敗，請確認網路連線");
   } finally {
     btn.textContent = '儲存';
     btn.disabled = false;
+  }
+}
+
+async function confirmDelete() {
+  if(!confirm('確定要刪除這筆記錄嗎？\n刪除後無法還原。')) return;
+  
+  try {
+    await fetch('/api/write', {
+        method: 'DELETE', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({id: currentEntryId})
+    });
+    const res = await fetch('/api/read');
+    data = await res.json();
+    render();
+    closeModal();
+  } catch(e) {
+    alert('刪除失敗');
   }
 }
 </script>
