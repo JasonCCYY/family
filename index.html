@@ -4,27 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>家族紀念日</title>
-<script src="https://unpkg.com/lunar-javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
 <style>
-/* ... 您的原本 CSS 保持不變 ... */
+/* CSS 保持原本設定 */
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif}
+body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
+#lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.lock-card{background:#fff;border-radius:16px;border:1px solid #e8e4dc;padding:2.5rem 2rem;width:320px;text-align:center}
+.lock-card input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px}
+.lock-card button{width:100%;padding:10px;background:#4a7c59;color:#fff;border:none;border-radius:8px;cursor:pointer}
+#app{display:none;max-width:720px;margin:0 auto;padding:1.5rem 1rem}
 </style>
 </head>
 <body>
-<script>
-// 修正：移除 require，改用全域的 window.Lunar 物件
-// 若要使用農曆轉換，請直接透過 window.Lunar.Solar 或 Lunar.Solar 使用
 
-// 範例：修正後的農曆轉換邏輯
-function convertToLunar(y, m, d) {
+<div id="lock-screen">
+  <div class="lock-card">
+    <h1>家族紀念日</h1>
+    <input type="password" id="pw-input" placeholder="請輸入密碼">
+    <button onclick="checkPw()">進入</button>
+    <div id="pw-err" style="color:red; margin-top:10px; font-size:12px;"></div>
+  </div>
+</div>
+
+<div id="app">
+    <h1>家族紀念日</h1>
+    <button onclick="logout()">登出</button>
+    <div id="data-view">資料載入中...</div>
+</div>
+
+<script>
+// --- 關鍵修正：不使用 require，直接使用全域的 Lunar ---
+// 使用 window.Lunar 物件來呼叫，這在瀏覽器是安全的
+
+async function checkPw(){
+  const pw = document.getElementById('pw-input').value;
   try {
-    const solar = window.Lunar.Solar.fromYmd(y, m, d);
-    const lunar = solar.getLunar();
-    return `${lunar.getMonth()}月${lunar.getDay()}日`;
-  } catch(e) { return ''; }
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({password: pw})
+    });
+    const json = await res.json();
+    if(json.ok){
+      sessionStorage.setItem('auth','1');
+      document.getElementById('lock-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      loadData();
+    } else {
+      document.getElementById('pw-err').textContent = '密碼錯誤';
+    }
+  } catch(e) {
+    document.getElementById('pw-err').textContent = '連線失敗';
+  }
 }
 
-// ... 您的 checkPw, init, render 等其他邏輯保持不變 ...
-// (確保程式碼中沒有任何 require('...') 的寫法)
+function logout(){
+  sessionStorage.removeItem('auth');
+  location.reload();
+}
+
+async function loadData(){
+    // 簡單測試資料顯示
+    document.getElementById('data-view').innerHTML = "登入成功，準備讀取資料...";
+}
+
+// 檢查登入狀態
+if(sessionStorage.getItem('auth')==='1'){
+  document.getElementById('lock-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  loadData();
+}
 </script>
 </body>
 </html>
