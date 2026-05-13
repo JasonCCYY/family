@@ -58,7 +58,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
-/* Modal (恢復正常寬鬆排版) */
+/* Modal */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:16px;padding:2rem;width:400px;max-width:92vw;max-height:90vh;overflow-y:auto}
@@ -218,7 +218,7 @@ function getWesternZodiac(m, d) {
   return signs[idx];
 }
 
-// 判斷年齡與週年 (支援足歲與虛歲)
+// 判斷年齡與週年
 function getAgeText(dateStr, type, isUpcoming) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -237,10 +237,8 @@ function getAgeText(dateStr, type, isUpcoming) {
 
   // 生日計算
   if (isUpcoming) {
-    // 即將到來：顯示虛歲 (今年/明年過生日時的年份 - 出生年 + 1)
-    let eventY = today.getFullYear();
-    if (thisYDate < t) eventY++;
-    return `虛 ${eventY - y + 1} 歲`;
+    // 即將到來：顯示虛歲 (今年 - 出生年 + 1)
+    return `虛 ${today.getFullYear() - y + 1} 歲`;
   } else {
     // 卡片列表：顯示足歲 (實際年齡)
     let actualAge = today.getFullYear() - y;
@@ -276,19 +274,19 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
-// 取得卡片的附加資訊 (生肖、星座、生辰、備註)
+// 取得卡片的附加資訊 (生肖、星座、農曆、生辰、備註)
 function buildCardExtraInfo(e) {
   let extraHtml = '';
   if (e.type === 'birthday_solar' && e.date) {
     try {
       const [y, m, d] = e.date.split('-').map(Number);
-      const solar = window.Lunar.Solar.fromYmd(y, m, d);
+      const solar = Solar.fromYmd(y, m, d);
       const lunarStr = getLunarString(solar);
       const rawZodiac = solar.getLunar().getYearShengXiao();
       const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
       const zodiacEn = getWesternZodiac(m, d);
       extraHtml += `<div class="card-meta">${lunarStr} | ${zodiacCn} | ${zodiacEn}</div>`;
-    } catch(err) {}
+    } catch(err) { console.error(err); }
   }
   if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
   if (e.remark) extraHtml += `<div class="card-meta">備註：${e.remark}</div>`;
@@ -323,7 +321,7 @@ document.getElementById('f-roc-input').addEventListener('change', function() {
       document.getElementById('f-date').value = parsed.dateStr;
       try {
         const [y, m, d] = parsed.dateStr.split('-').map(Number);
-        const solar = window.Lunar.Solar.fromYmd(y, m, d);
+        const solar = Solar.fromYmd(y, m, d);
         document.getElementById('f-lunar').value = getLunarString(solar);
         
         const rawZodiac = solar.getLunar().getYearShengXiao();
@@ -376,14 +374,14 @@ function renderUpcoming() {
 function upItem(e){
   const [dm, dd] = e.md.split('-');
   const tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-  const ageText = getAgeText(e.date, e.type, true); // 即將到來顯示「虛歲」
+  const ageText = getAgeText(e.date, e.type, true); // 即將到來顯示虛歲
   const extraInfo = buildCardExtraInfo(e);
   
   return `<div class="up-item" onclick="viewEntry('${e.id}')">
     <div class="up-date"><div class="up-mon">${MONTHS_TW[+dm-1]}</div><div class="up-day">${+dd}</div></div>
     <div class="up-info">
       <div class="up-name">${e.name}</div>
-      <div class="up-type"><span style="color:#4a7c59">[${tl}]</span>　${ageText}</div>
+      <div class="up-type"><span style="color:#4a7c59">[${tl}]</span>　<strong style="color:#1a1a1a">${ageText}</strong></div>
       ${extraInfo}
     </div>
     ${chipHtml(e.md, e.days)}
@@ -399,7 +397,7 @@ function renderList(tab) {
     const md = getMonthDay(e);
     const days = daysUntil(md);
     const tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-    const ageText = getAgeText(e.date, e.type, false); // 卡片顯示「足歲」
+    const ageText = getAgeText(e.date, e.type, false); // 卡片顯示足歲
     const extraInfo = buildCardExtraInfo(e);
     
     h += `<div class="card" onclick="viewEntry('${e.id}')">
@@ -483,7 +481,7 @@ function viewEntry(id) {
   if (e.date) {
      const [y, m, d] = e.date.split('-').map(Number);
      try {
-       const solar = window.Lunar.Solar.fromYmd(y, m, d);
+       const solar = Solar.fromYmd(y, m, d);
        document.getElementById('f-lunar').value = getLunarString(solar);
        const rawZodiac = solar.getLunar().getYearShengXiao();
        document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
