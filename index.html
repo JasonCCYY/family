@@ -23,7 +23,6 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
 .header h1{font-size:20px;font-weight:500}
 .header .date-str{font-size:13px;color:#888}
 .logout-btn{font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;padding:4px 8px;margin-left:10px}
-/* 新增按鈕樣式 */
 .add-btn-header{background:#4a7c59;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px}
 .add-btn-header:hover{background:#3a6347}
 
@@ -123,7 +122,6 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
     <div class="fg"><label>類型</label>
       <select id="f-type" onchange="updateFields()">
         <option value="birthday_solar">生日（國曆）</option>
-        <option value="birthday_lunar">生日（農曆）</option>
         <option value="anniversary">結婚紀念日</option>
         <option value="custom">自訂紀念日</option>
       </select>
@@ -317,9 +315,8 @@ function openModal(tab){
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 function updateFields(){
   const t=document.getElementById('f-type').value;
-  // 現在國曆生日也會顯示農曆欄位
-  const isBirthday = (t === 'birthday_solar' || t === 'birthday_lunar');
-  document.getElementById('fg-lunar').style.display = isBirthday ? '' : 'none';
+  // 移除農曆選項後，僅在國曆生日時顯示農曆計算結果
+  document.getElementById('fg-lunar').style.display = (t === 'birthday_solar') ? '' : 'none';
   document.getElementById('fg-label').style.display=t==='custom'?'':'none';
 }
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
