@@ -572,6 +572,12 @@ async function saveEntry() {
   btn.textContent = '儲存中…'; btn.disabled = true;
   
   try {
+    // 【關鍵修正】如果是「修改」模式，先刪除舊資料
+    if (currentEntryId) {
+      await fetch('/api/write', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: currentEntryId }) });
+    }
+    
+    // 將修改後的資料寫入 (視為新增)
     await fetch('/api/write', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry) });
     data = await (await fetch('/api/read')).json();
     render(); closeModal();
