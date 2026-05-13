@@ -37,12 +37,12 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:0.2s}
 .card:hover{border-color:#ccc;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
 .card-row{display:flex;align-items:flex-start;gap:14px}
-.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
+.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
 .card-info{flex:1;min-width:0}
-.card-name{font-size:18px;font-weight:bold}
-.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.5}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
-.days-chip{font-size:14px;color:#888;white-space:nowrap;font-weight:bold}
+.card-name{font-size:20px;font-weight:bold}
+.card-meta{font-size:15px;color:#666;margin-top:6px;line-height:1.5}
+.badge{display:inline-block;font-size:13px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
+.days-chip{font-size:15px;color:#888;white-space:nowrap;font-weight:bold}
 .days-chip.soon{color:#e07b30}
 .days-chip.today{color:#3a6347;font-weight:900}
 
@@ -54,8 +54,8 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-mon{font-size:12px;color:#888;font-weight:bold;margin-bottom:2px}
 .up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
-.up-name{font-size:18px;font-weight:bold}
-.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.up-name{font-size:20px;font-weight:bold}
+.up-type{font-size:15px;color:#666;margin-top:5px;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
 /* Modal 背景 */
@@ -80,15 +80,14 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
     border-radius: 0;
     padding: 4px 0 12px 0;
     background: transparent;
-    font-size: 20px !important; /* 放大字體 */
-    color: #1e66d4 !important; /* 藍色字體 */
+    font-size: 20px !important;
+    color: #1e66d4 !important;
     font-weight: bold !important;
     -webkit-appearance: none;
     appearance: none;
-    opacity: 1 !important; /* 強制覆蓋反灰 */
-    -webkit-text-fill-color: #1e66d4 !important; /* 確保 iOS 也是顯示藍色 */
+    opacity: 1 !important;
+    -webkit-text-fill-color: #1e66d4 !important;
 }
-/* 檢視模式下隱藏沒有資料的欄位 */
 .modal.view-mode .fg.empty-field { display: none !important; }
 
 /* 按鈕區塊設定 */
@@ -99,8 +98,8 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .btn-edit-new { background:#4a7c59; color:#fff; border:none; }
 
 /* Utility */
-.empty{text-align:center;color:#bbb;font-size:14px;padding:2rem}
-.loading{text-align:center;color:#aaa;font-size:14px;padding:2rem}
+.empty{text-align:center;color:#bbb;font-size:15px;padding:2rem}
+.loading{text-align:center;color:#aaa;font-size:15px;padding:2rem}
 </style>
 </head>
 <body>
@@ -295,9 +294,10 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
-// isUpcoming=true 時，顯示國曆取代農曆
+// 根據需求：各自獨立新的一列
 function buildCardExtraInfo(e, isUpcoming = false) {
   let extraHtml = '';
+  
   if (e.type === 'birthday_solar' && e.date) {
     try {
       const [y, m, d] = e.date.split('-').map(Number);
@@ -306,26 +306,25 @@ function buildCardExtraInfo(e, isUpcoming = false) {
       const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac);
       const zodiacEn = getWesternZodiac(m, d);
       
-      let dateStr = '';
-      if (isUpcoming) {
-        // 即將到來：顯示國曆
-        dateStr = toRocDate(e.date);
+      if (!isUpcoming) {
+        // 一般列表：農曆自己一列，生肖星座自己一列
+        extraHtml += `<div class="card-meta">${getLunarString(solar)}</div>`;
+        extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
       } else {
-        // 一般列表：顯示農曆
-        dateStr = getLunarString(solar);
+        // 即將到來：顯示國曆日期，生肖星座自己一列，【不顯示農曆】
+        extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
+        extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
       }
-
-      extraHtml += `<div class="card-meta" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-        <span style="white-space:nowrap">${dateStr}</span>
-        <span style="color:#ccc; font-size:12px;">|</span>
-        <span style="white-space:nowrap">${zodiacCn}</span>
-        <span style="color:#ccc; font-size:12px;">|</span>
-        <span style="white-space:nowrap">${zodiacEn}</span>
-      </div>`;
     } catch(err) { console.error(err); }
+  } else if (isUpcoming && e.date) {
+    // 如果是紀念日且在「即將到來」，補上國曆日期
+    extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
   }
+  
+  // 生辰、備註各自獨立一列
   if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
   if (e.remark) extraHtml += `<div class="card-meta">備註：${e.remark}</div>`;
+  
   return extraHtml;
 }
 
@@ -419,7 +418,7 @@ function renderUpcoming() {
 function upItem(e){
   const [dm, dd] = e.md.split('-');
   const ageText = getAgeText(e.date, e.type, true); 
-  const extraInfo = buildCardExtraInfo(e, true); // true = 即將到來模式 (顯示國曆)
+  const extraInfo = buildCardExtraInfo(e, true); 
   const badgeHtml = getTypeBadge(e);
   
   return `<div class="up-item" onclick="viewEntry('${e.id}')">
@@ -447,25 +446,27 @@ function renderList(tab) {
     const md = getMonthDay(e);
     const days = daysUntil(md);
     const ageText = getAgeText(e.date, e.type, false); 
-    const extraInfo = buildCardExtraInfo(e, false); // false = 一般模式 (顯示農曆)
+    const extraInfo = buildCardExtraInfo(e, false); 
     const badgeHtml = getTypeBadge(e);
     
     h += `<div class="card" onclick="viewEntry('${e.id}')">
       <div class="card-row">
         <div class="avatar">${e.name.slice(0, 1)}</div>
-        <div class="card-info">
-          <div class="card-name" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span style="white-space:nowrap">${e.name}</span>
-            ${badgeHtml}
+        <div class="card-info" style="min-width:0; flex:1;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="card-name">${e.name}</span>
+              ${badgeHtml}
+            </div>
+            <div style="flex-shrink:0; text-align:right; margin-left:8px;">
+              ${chipHtml(md, days)}
+            </div>
           </div>
-          <div class="card-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span style="white-space:nowrap">${toRocDate(e.date)}</span>
-            <strong style="color:#1a1a1a; white-space:nowrap">${ageText}</strong>
+          <div class="card-meta" style="margin-top:0; margin-bottom:6px;">
+            <span style="margin-right:8px; font-size:16px;">${toRocDate(e.date)}</span>
+            <strong style="color:#1a1a1a; font-size:18px;">${ageText}</strong>
           </div>
           ${extraInfo}
-        </div>
-        <div style="flex-shrink:0; text-align:right; margin-left:8px;">
-          ${chipHtml(md, days)}
         </div>
       </div>
     </div>`;
