@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家族紀念日</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif}
+body{background:#f7f5f0;color:#1a1a1a;min-height:100vh}
+
+#lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.lock-card{background:#fff;border-radius:16px;border:1px solid #e8e4dc;padding:2.5rem 2rem;width:320px;text-align:center}
+.lock-card h1{font-size:20px;font-weight:500;margin-bottom:6px}
+.lock-card p{font-size:13px;color:#888;margin-bottom:1.5rem}
+.lock-card input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:15px;text-align:center;letter-spacing:4px;margin-bottom:10px}
+.lock-card button{width:100%;padding:10px;background:#4a7c59;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer}
+.lock-card button:hover{background:#3a6347}
+.lock-card .err{font-size:12px;color:#c0392b;margin-top:6px;min-height:18px}
+
+#app{display:none;max-width:720px;margin:0 auto;padding:1.5rem 1rem}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.header h1{font-size:20px;font-weight:500}
+.header .date-str{font-size:13px;color:#888}
+.logout-btn{font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;padding:4px 8px}
+
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:6px 16px;border-radius:8px;border:1px solid #ddd;background:transparent;cursor:pointer;font-size:13px;color:#666}
+.tab.active{background:#eee;color:#1a1a1a;font-weight:500}
+
+.card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:14px 18px;margin-bottom:8px}
+.card-row{display:flex;align-items:flex-start;gap:12px}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:15px;font-weight:500}
+.card-meta{font-size:12px;color:#888;margin-top:2px}
+.card-extra{font-size:11px;color:#aaa;margin-top:3px;font-style:italic}
+.badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:6px;margin-left:6px;background:#eef3ee;color:#3a6347;vertical-align:middle}
+.days-chip{font-size:12px;color:#999;white-space:nowrap;text-align:right;margin-top:2px}
+.days-chip.soon{color:#e07b30;font-weight:500}
+.days-chip.today{color:#3a6347;font-weight:700}
+.del-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:16px;padding:4px 6px;border-radius:6px;flex-shrink:0}
+.del-btn:hover{color:#c0392b;background:#fdf0f0}
+
+.add-btn{display:flex;align-items:center;gap:6px;width:100%;padding:10px 18px;border:1px dashed #ccc;border-radius:12px;background:transparent;cursor:pointer;font-size:14px;color:#999;margin-top:4px}
+.add-btn:hover{background:#f5f5f5}
+
+.section-label{font-size:11px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;margin-top:1rem}
+
+.up-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0ede8}
+.up-item:last-child{border:none}
+.up-date{width:44px;text-align:center;flex-shrink:0}
+.up-mon{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.04em}
+.up-day{font-size:22px;font-weight:500;line-height:1}
+.up-info{flex:1}
+.up-name{font-size:14px}
+.up-type{font-size:12px;color:#aaa}
+.up-extra{font-size:11px;color:#bbb;margin-top:2px;font-style:italic}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:1.5rem;width:360px;max-width:92vw;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;color:#888;margin-bottom:4px}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a}
+.fg .hint{font-size:11px;color:#bbb;margin-left:4px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+.modal-btns button{padding:7px 18px;border-radius:8px;font-size:14px;cursor:pointer}
+.btn-cancel{background:#f5f5f5;border:1px solid #ddd;color:#666}
+.btn-save{background:#4a7c59;border:none;color:#fff;font-weight:500}
+
+.loading{text-align:center;color:#aaa;font-size:13px;padding:2rem}
+.empty{text-align:center;color:#bbb;font-size:13px;padding:1.5rem}
+.lunar-note{font-size:11px;color:#aaa;font-style:italic;margin-top:1px}
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <div class="lock-card">
+    <div style="font-size:32px;margin-bottom:12px">🏡</div>
+    <h1>家族紀念日</h1>
+    <p>請輸入家族密碼進入</p>
+    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <button onclick="checkPw()">進入</button>
+    <div class="err" id="pw-err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="header">
+    <div>
+      <h1>家族紀念日 🌸</h1>
+      <div class="date-str" id="today-str"></div>
+    </div>
+    <button class="logout-btn" onclick="logout()">登出</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('upcoming')">即將到來</button>
+    <button class="tab" onclick="setTab('birthday')">生日</button>
+    <button class="tab" onclick="setTab('anniversary')">紀念日</button>
+    <button class="tab" onclick="setTab('custom')">自訂</button>
+  </div>
+
+  <div id="view-upcoming"></div>
+  <div id="view-birthday" style="display:none"></div>
+  <div id="view-anniversary" style="display:none"></div>
+  <div id="view-custom" style="display:none"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>新增記錄</h3>
+    <div class="fg"><label>姓名 / 稱謂</label><input id="f-name" type="text" placeholder="例：媽媽、阿嬤"></div>
+    <div class="fg"><label>類型</label>
+      <select id="f-type" onchange="updateFields()">
+        <option value="birthday_solar">生日（國曆）</option>
+        <option value="birthday_lunar">生日（農曆）</option>
+        <option value="anniversary">結婚紀念日</option>
+        <option value="custom">自訂紀念日</option>
+      </select>
+    </div>
+    <div class="fg" id="fg-label" style="display:none"><label>紀念日名稱</label><input id="f-label" type="text" placeholder="例：相識紀念日"></div>
+    <div class="fg"><label>日期（國曆）</label><input id="f-date" type="date"></div>
+    <div class="fg" id="fg-lunar" style="display:none"><label>農曆日期（月/日）</label><input id="f-lunar" type="text" placeholder="例：5/15"></div>
+    <div class="fg"><label>生辰 <span class="hint">（選填）</span></label><input id="f-birth-time" type="text" placeholder="例：午時、上午6點"></div>
+    <div class="fg"><label>備註 <span class="hint">（選填）</span></label><input id="f-remark" type="text" placeholder="任何備註"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveEntry()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MONTHS_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TYPE_LABEL={birthday_solar:'國曆生日',birthday_lunar:'農曆生日',anniversary:'結婚紀念日',custom:'自訂'};
+
+let data=[];
+let currentTab='upcoming';
+const today=new Date();
+
+async function checkPw(){
+  const pw=document.getElementById('pw-input').value;
+  const res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+  const json=await res.json();
+  if(json.ok){
+    sessionStorage.setItem('auth','1');
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    init();
+  } else {
+    document.getElementById('pw-err').textContent='密碼錯誤，請再試一次';
+  }
+}
+function logout(){sessionStorage.removeItem('auth');location.reload();}
+if(sessionStorage.getItem('auth')==='1'){
+  document.getElementById('lock-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+
+async function init(){
+  const d=today;
+  document.getElementById('today-str').textContent=`${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日`;
+  document.getElementById('view-upcoming').innerHTML='<div class="loading">讀取資料中…</div>';
+  const res=await fetch('/api/read');
+  data=await res.json();
+  render();
+}
+
+function getMonthDay(e){
+  if(e.type==='birthday_lunar'&&e.lunar){
+    const [m,d]=e.lunar.split('/').map(Number);
+    return `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  return e.date.slice(5);
+}
+function daysUntil(md){
+  const [m,d]=md.split('-').map(Number);
+  const thisY=new Date(today.getFullYear(),m-1,d);
+  const nextY=new Date(today.getFullYear()+1,m-1,d);
+  let diff=Math.round((thisY-today)/(864e5));
+  if(diff<0) diff=Math.round((nextY-today)/(864e5));
+  return diff;
+}
+function yearsSince(date){
+  const d=new Date(date);
+  let y=today.getFullYear()-d.getFullYear();
+  const mo=today.getMonth()-d.getMonth();
+  if(mo<0||(mo===0&&today.getDate()<d.getDate())) y--;
+  return y;
+}
+function chipHtml(days){
+  if(days===0) return `<span class="days-chip today">🎉 今天！</span>`;
+  if(days<=7) return `<span class="days-chip soon">還有 ${days} 天</span>`;
+  return `<span class="days-chip">還有 ${days} 天</span>`;
+}
+function extraLine(e){
+  const parts=[];
+  if(e.birthTime) parts.push(`生辰：${e.birthTime}`);
+  if(e.remark) parts.push(e.remark);
+  return parts.length?`<div class="card-extra">${parts.join('　')}</div>`:'';
+}
+
+function render(){
+  renderUpcoming();
+  renderList('birthday');
+  renderList('anniversary');
+  renderList('custom');
+}
+
+function renderUpcoming(){
+  const sorted=[...data].map(e=>({...e,days:daysUntil(getMonthDay(e)),md:getMonthDay(e)})).sort((a,b)=>a.days-b.days);
+  const near=sorted.filter(e=>e.days<=60);
+  const far=sorted.filter(e=>e.days>60);
+  let h='';
+  if(!data.length){h='<div class="empty">尚未新增任何記錄</div>';}
+  if(near.length){
+    h+=`<div class="section-label">近 60 天</div>`;
+    near.forEach(e=>{h+=upItem(e);});
+  }
+  if(far.length){
+    h+=`<div class="section-label" style="margin-top:1rem">之後</div>`;
+    far.forEach(e=>{h+=upItem(e);});
+  }
+  document.getElementById('view-upcoming').innerHTML=h;
+}
+
+function upItem(e){
+  const [dm,dd]=e.md.split('-');
+  const tl=e.type==='custom'&&e.label?e.label:TYPE_LABEL[e.type];
+  const ann=(e.type==='anniversary'||e.type==='custom')?`　今年第 ${yearsSince(e.date)+1} 週年`:'';
+  const extras=[];
+  if(e.birthTime) extras.push(`生辰：${e.birthTime}`);
+  if(e.remark) extras.push(e.remark);
+  const extraHtml=extras.length?`<div class="up-extra">${extras.join('　')}</div>`:'';
+  return `<div class="up-item">
+    <div class="up-date"><div class="up-mon">${MONTHS_EN[+dm-1]}</div><div class="up-day">${+dd}</div></div>
+    <div class="up-info"><div class="up-name">${e.name}</div><div class="up-type">${tl}${ann}</div>${extraHtml}</div>
+    ${chipHtml(e.days)}
+  </div>`;
+}
+
+function renderList(tab){
+  const typeMap={birthday:['birthday_solar','birthday_lunar'],anniversary:['anniversary'],custom:['custom']};
+  const entries=data.filter(e=>typeMap[tab].includes(e.type));
+  let h='';
+  if(!entries.length) h='<div class="empty">尚未新增</div>';
+  entries.forEach(e=>{
+    const md=getMonthDay(e);
+    const days=daysUntil(md);
+    const [dm,dd]=md.split('-');
+    const tl=e.type==='custom'&&e.label?e.label:TYPE_LABEL[e.type];
+    const ann=(e.type==='anniversary'||e.type==='custom')?`　今年滿 ${yearsSince(e.date)+1} 週年`:'';
+    const lunar=e.type==='birthday_lunar'&&e.lunar?`<div class="lunar-note">農曆 ${e.lunar}</div>`:'';
+    h+=`<div class="card"><div class="card-row">
+      <div class="avatar">${e.name.slice(0,2)}</div>
+      <div class="card-info">
+        <div class="card-name">${e.name}<span class="badge">${tl}</span></div>
+        <div class="card-meta">${+dm} 月 ${+dd} 日${ann}</div>
+        ${lunar}
+        ${extraLine(e)}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${chipHtml(days)}
+        <button class="del-btn" onclick="deleteEntry('${e.id}')">🗑</button>
+      </div>
+    </div></div>`;
+  });
+  h+=`<button class="add-btn" onclick="openModal('${tab}')">＋ 新增</button>`;
+  document.getElementById(`view-${tab}`).innerHTML=h;
+}
+
+function setTab(tab){
+  currentTab=tab;
+  const names={upcoming:'即將到來',birthday:'生日',anniversary:'紀念日',custom:'自訂'};
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active',t.textContent.trim()===names[tab]);
+  });
+  ['upcoming','birthday','anniversary','custom'].forEach(t=>{
+    document.getElementById(`view-${t}`).style.display=t===tab?'':'none';
+  });
+}
+
+function openModal(tab){
+  const t={birthday:'birthday_solar',anniversary:'anniversary',custom:'custom'}[tab]||'birthday_solar';
+  document.getElementById('f-type').value=t;
+  document.getElementById('f-name').value='';
+  document.getElementById('f-date').value='';
+  document.getElementById('f-lunar').value='';
+  document.getElementById('f-label').value='';
+  document.getElementById('f-birth-time').value='';
+  document.getElementById('f-remark').value='';
+  updateFields();
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function updateFields(){
+  const t=document.getElementById('f-type').value;
+  document.getElementById('fg-lunar').style.display=t==='birthday_lunar'?'':'none';
+  document.getElementById('fg-label').style.display=t==='custom'?'':'none';
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+async function saveEntry(){
+  const entry={
+    name:document.getElementById('f-name').value.trim(),
+    type:document.getElementById('f-type').value,
+    date:document.getElementById('f-date').value,
+    lunar:document.getElementById('f-lunar').value.trim(),
+    label:document.getElementById('f-label').value.trim(),
+    birthTime:document.getElementById('f-birth-time').value.trim(),
+    remark:document.getElementById('f-remark').value.trim(),
+  };
+  if(!entry.name||!entry.date){alert('請填寫姓名與日期');return;}
+  const btn=document.querySelector('.btn-save');
+  btn.textContent='儲存中…';btn.disabled=true;
+  await fetch('/api/write',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+  const res=await fetch('/api/read');
+  data=await res.json();
+  render();
+  closeModal();
+  btn.textContent='儲存';btn.disabled=false;
+}
+
+async function deleteEntry(id){
+  if(!confirm('確定要刪除這筆記錄？')) return;
+  await fetch('/api/write',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+  const res=await fetch('/api/read');
+  data=await res.json();
+  render();
+}
+
+if(sessionStorage.getItem('auth')==='1') init();
+</script>
+</body>
+</html>
