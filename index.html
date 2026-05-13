@@ -84,7 +84,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
     color: #1a1a1a;
     -webkit-appearance: none;
     appearance: none;
-    opacity: 1; /* 修正 iOS disabled 會反白的問題 */
+    opacity: 1;
     -webkit-text-fill-color: #1a1a1a;
 }
 /* 檢視模式下隱藏沒有資料的欄位 */
@@ -213,10 +213,11 @@ let currentEntryId = null;
 const today = new Date();
 
 // --- 日期與年齡計算工具 ---
+// 拿掉「民國」前綴，直接顯示「80年1月24日」
 function toRocDate(dateStr) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
-  return `民國${y - 1911}年${m}月${d}日`;
+  return `${y - 1911}年${m}月${d}日`;
 }
 
 function toRocInputFormat(dateStr) {
@@ -233,9 +234,10 @@ function getLunarString(solar) {
   return `農曆 ${rocY}年${MONTHS_TW[m-1]}${d}`;
 }
 
+// 拿掉「座」字，直接顯示「水瓶」
 function getWesternZodiac(m, d) {
   const cutoffs = [20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 23, 22];
-  const signs = ['水瓶座', '雙魚座', '牡羊座', '金牛座', '雙子座', '巨蟹座', '獅子座', '處女座', '天秤座', '天蠍座', '射手座', '摩羯座'];
+  const signs = ['水瓶', '雙魚', '牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '摩羯'];
   let idx = m - 1;
   if (d < cutoffs[idx]) { idx = (idx - 1 + 12) % 12; }
   return signs[idx];
@@ -302,7 +304,8 @@ function buildCardExtraInfo(e) {
       const solar = Solar.fromYmd(y, m, d);
       const lunarStr = getLunarString(solar);
       const rawZodiac = solar.getLunar().getYearShengXiao();
-      const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
+      // 拿掉生肖後面的「年」字
+      const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac);
       const zodiacEn = getWesternZodiac(m, d);
       extraHtml += `<div class="card-meta" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
         <span style="white-space:nowrap">${lunarStr}</span>
@@ -359,7 +362,8 @@ document.getElementById('f-roc-input').addEventListener('change', function() {
         document.getElementById('f-lunar').value = getLunarString(solar);
         
         const rawZodiac = solar.getLunar().getYearShengXiao();
-        document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
+        // 拿掉輸入框中自動算出的「年」
+        document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac);
         document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
       } catch(e) {}
   } else {
@@ -480,12 +484,10 @@ function updateFields() {
   const modal = document.getElementById('modal');
   const isViewMode = modal.classList.contains('view-mode');
 
-  // 控制欄位本身是否需要存在 (例如: 不是生日就不需要顯示星座農曆)
   document.getElementById('fg-label').style.display = (t === 'custom') ? '' : 'none';
   document.getElementById('fg-lunar').style.display = isBirthday ? '' : 'none';
   document.getElementById('fg-zodiac').style.display = isBirthday ? '' : 'none';
   
-  // 在檢視模式下，如果選填欄位是空的，就直接隱藏，讓畫面更乾淨
   const birthTimeVal = document.getElementById('f-birth-time').value.trim();
   const remarkVal = document.getElementById('f-remark').value.trim();
   
@@ -501,7 +503,7 @@ function updateFields() {
 function openModal(tab = 'birthday_solar') {
   currentEntryId = null;
   const modal = document.getElementById('modal');
-  modal.classList.remove('view-mode'); // 確保移除檢視模式
+  modal.classList.remove('view-mode');
   
   document.getElementById('modal-title').textContent = '新增記錄';
   document.getElementById('f-name').value = '';
@@ -533,7 +535,6 @@ function viewEntry(id) {
   currentEntryId = id;
   const modal = document.getElementById('modal');
   
-  // 啟動檢視模式排版
   modal.classList.add('view-mode');
   
   document.getElementById('modal-title').textContent = '記錄詳情';
@@ -552,7 +553,7 @@ function viewEntry(id) {
        const solar = Solar.fromYmd(y, m, d);
        document.getElementById('f-lunar').value = getLunarString(solar);
        const rawZodiac = solar.getLunar().getYearShengXiao();
-       document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
+       document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac);
        document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
      } catch(err) {}
   }
@@ -568,7 +569,7 @@ function viewEntry(id) {
 
 function enableEdit() {
   const modal = document.getElementById('modal');
-  modal.classList.remove('view-mode'); // 關閉檢視模式，恢復成表單樣式
+  modal.classList.remove('view-mode'); 
   document.getElementById('modal-title').textContent = '編輯記錄';
   
   document.getElementById('btns-view').style.display = 'none';
@@ -612,6 +613,7 @@ function logout() { sessionStorage.removeItem('auth'); location.reload(); }
 async function init() {
   const d = new Date();
   const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  // 拿掉首頁日期的「民國」
   document.getElementById('today-str').textContent = toRocDate(todayStr);
   document.getElementById('view-upcoming').innerHTML = '<div class="loading">讀取資料中…</div>';
   try {
