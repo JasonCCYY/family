@@ -40,7 +40,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
 .card-info{flex:1;min-width:0}
 .card-name{font-size:18px;font-weight:bold}
-.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.5}
+.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
 .badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
 .days-chip{font-size:14px;color:#888;white-space:nowrap;font-weight:bold}
 .days-chip.soon{color:#e07b30}
@@ -55,23 +55,47 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
 .up-name{font-size:18px;font-weight:bold}
-.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
-/* Modal */
+/* Modal 背景 */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:16px;padding:2rem;width:400px;max-width:92vw;max-height:90vh;overflow-y:auto}
-.modal h3{font-size:18px;font-weight:bold;margin-bottom:1.2rem}
+.modal h3{font-size:20px;font-weight:bold;margin-bottom:1.5rem;color:#1a1a1a}
+
+/* 【編輯模式】表單樣式 (預設) */
 .fg{margin-bottom:16px}
 .fg label{display:block;font-size:14px;color:#666;margin-bottom:6px;font-weight:bold}
-.fg input,.fg select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fff}
+.fg input,.fg select{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:16px;background:#fff;color:#1a1a1a;font-weight:bold;}
 .fg input:disabled,.fg select:disabled{background:#f5f5f5;color:#888}
-.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem}
-.modal-btns button{padding:10px 20px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer}
-.btn-cancel{background:#f5f5f5;border:1px solid #ddd;color:#666}
-.btn-delete{background:#fdf0f0;border:1px solid #fadcdc;color:#c0392b}
-.btn-save{background:#4a7c59;border:none;color:#fff}
+
+/* 【檢視模式】表單樣式 (超乾淨列表) */
+.modal.view-mode .fg { margin-bottom: 12px; }
+.modal.view-mode .fg label { font-size: 13px; color: #888; font-weight: normal; margin-bottom: 4px; }
+.modal.view-mode .fg input, 
+.modal.view-mode .fg select {
+    border: none;
+    border-bottom: 1px solid #eee;
+    border-radius: 0;
+    padding: 4px 0 12px 0;
+    background: transparent;
+    font-size: 18px;
+    color: #1a1a1a;
+    -webkit-appearance: none;
+    appearance: none;
+    opacity: 1; /* 修正 iOS disabled 會反白的問題 */
+    -webkit-text-fill-color: #1a1a1a;
+}
+/* 檢視模式下隱藏沒有資料的欄位 */
+.modal.view-mode .fg.empty-field { display: none !important; }
+
+/* 按鈕區塊設定 */
+.modal-btns{display:flex;gap:10px;margin-top:2rem;}
+.modal-btns button{flex:1;padding:12px 0;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;text-align:center;}
+.btn-del-new { background:#ffebee; color:#d32f2f; border:none; }
+.btn-close-new { background:#fff; color:#555; border:1px solid #e0e0e0; }
+.btn-edit-new { background:#4a7c59; color:#fff; border:none; }
 
 /* Utility */
 .empty{text-align:center;color:#bbb;font-size:14px;padding:2rem}
@@ -119,11 +143,12 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 <div class="modal-bg" id="modal">
   <div class="modal">
     <h3 id="modal-title">新增記錄</h3>
-    <div class="fg">
+    
+    <div class="fg" id="fg-name">
       <label>姓名 / 稱謂</label>
       <input id="f-name" type="text" placeholder="例：媽媽、阿嬤">
     </div>
-    <div class="fg">
+    <div class="fg" id="fg-type">
       <label>類型</label>
       <select id="f-type" onchange="updateFields()">
         <option value="birthday_solar">生日</option>
@@ -136,15 +161,15 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
       <input id="f-label" type="text" placeholder="例：相識紀念日">
     </div>
     
-    <div class="fg">
-      <label>日期（直接輸入民國，例：1150513）</label>
-      <input id="f-roc-input" type="text" placeholder="例：1150513 或 115/05/13">
+    <div class="fg" id="fg-date">
+      <label>日期</label>
+      <input id="f-roc-input" type="text" placeholder="輸入民國，例：1150513">
     </div>
     <input id="f-date" type="hidden"> 
     
     <div class="fg" id="fg-lunar">
-      <label>農曆日期</label>
-      <input id="f-lunar" type="text" readonly placeholder="輸入日期後自動轉換">
+      <label>農曆</label>
+      <input id="f-lunar" type="text" readonly placeholder="自動轉換">
     </div>
     
     <div class="fg" id="fg-zodiac">
@@ -156,22 +181,22 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
     </div>
     
     <div class="fg" id="fg-birth-time">
-      <label>生辰 <span style="font-size:12px;color:#bbb;font-weight:normal">（選填）</span></label>
+      <label>生辰</label>
       <input id="f-birth-time" type="text" placeholder="例：午時、上午6點">
     </div>
-    <div class="fg">
-      <label>備註 <span style="font-size:12px;color:#bbb;font-weight:normal">（選填）</span></label>
+    <div class="fg" id="fg-remark">
+      <label>備註</label>
       <input id="f-remark" type="text" placeholder="任何備註">
     </div>
     
     <div class="modal-btns" id="btns-view" style="display:none">
-      <button class="btn-cancel" onclick="closeModal()">關閉</button>
-      <button class="btn-delete" onclick="confirmDelete()">刪除</button>
-      <button class="btn-save" onclick="enableEdit()">修改</button>
+      <button class="btn-del-new" onclick="confirmDelete()">刪除</button>
+      <button class="btn-close-new" onclick="closeModal()">關閉</button>
+      <button class="btn-edit-new" onclick="enableEdit()">編輯</button>
     </div>
     <div class="modal-btns" id="btns-edit" style="display:none">
-      <button class="btn-cancel" onclick="closeModal()">取消</button>
-      <button class="btn-save" id="btn-save" onclick="saveEntry()">儲存</button>
+      <button class="btn-close-new" onclick="closeModal()">取消</button>
+      <button class="btn-edit-new" id="btn-save" onclick="saveEntry()">儲存</button>
     </div>
   </div>
 </div>
@@ -200,7 +225,6 @@ function toRocInputFormat(dateStr) {
   return `${parseInt(y) - 1911}/${m}/${d}`;
 }
 
-// 加入民國年的農曆字串
 function getLunarString(solar) {
   const lunar = solar.getLunar();
   const rocY = lunar.getYear() - 1911; 
@@ -217,7 +241,6 @@ function getWesternZodiac(m, d) {
   return signs[idx];
 }
 
-// 【修正重點】精準的純歲數計算
 function getAgeText(dateStr, type, isUpcoming) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -234,14 +257,13 @@ function getAgeText(dateStr, type, isUpcoming) {
     return `滿 ${Math.max(0, actualY)} 週年`;
   }
 
-  // 生日計算：移除 足、虛，直接顯示數字
   if (isUpcoming) {
     let eventY = today.getFullYear();
-    if (thisYDate < t) eventY++; // 如果今年生日已經過了，就是算明年的歲數
+    if (thisYDate < t) eventY++;
     return `${eventY - y} 歲`;
   } else {
     let actualAge = today.getFullYear() - y;
-    if (thisYDate > t) actualAge--; // 如果今年生日還沒過，歲數減一
+    if (thisYDate > t) actualAge--;
     return `${Math.max(0, actualAge)} 歲`;
   }
 }
@@ -272,7 +294,6 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
-// 產生防止拆字的額外資訊區塊 (white-space: nowrap + flex wrap)
 function buildCardExtraInfo(e) {
   let extraHtml = '';
   if (e.type === 'birthday_solar' && e.date) {
@@ -297,7 +318,6 @@ function buildCardExtraInfo(e) {
   return extraHtml;
 }
 
-// 產生帶顏色與圖示的活動標籤
 function getTypeBadge(e) {
   let color = '#4a7c59', bg = '#eef3ee', icon = '🎂 ';
   if (e.type === 'anniversary') { color = '#d81b60'; bg = '#fce4ec'; icon = '💍 '; }
@@ -453,18 +473,36 @@ function setTab(tab) {
   });
 }
 
-// --- Modal 互動 ---
+// --- Modal 互動與排版切換 ---
 function updateFields() {
   const t = document.getElementById('f-type').value;
   const isBirthday = (t === 'birthday_solar');
+  const modal = document.getElementById('modal');
+  const isViewMode = modal.classList.contains('view-mode');
+
+  // 控制欄位本身是否需要存在 (例如: 不是生日就不需要顯示星座農曆)
   document.getElementById('fg-label').style.display = (t === 'custom') ? '' : 'none';
   document.getElementById('fg-lunar').style.display = isBirthday ? '' : 'none';
-  document.getElementById('fg-birth-time').style.display = isBirthday ? '' : 'none';
   document.getElementById('fg-zodiac').style.display = isBirthday ? '' : 'none';
+  
+  // 在檢視模式下，如果選填欄位是空的，就直接隱藏，讓畫面更乾淨
+  const birthTimeVal = document.getElementById('f-birth-time').value.trim();
+  const remarkVal = document.getElementById('f-remark').value.trim();
+  
+  if (isBirthday) {
+    document.getElementById('fg-birth-time').style.display = (isViewMode && !birthTimeVal) ? 'none' : '';
+  } else {
+    document.getElementById('fg-birth-time').style.display = 'none';
+  }
+  
+  document.getElementById('fg-remark').style.display = (isViewMode && !remarkVal) ? 'none' : '';
 }
 
 function openModal(tab = 'birthday_solar') {
   currentEntryId = null;
+  const modal = document.getElementById('modal');
+  modal.classList.remove('view-mode'); // 確保移除檢視模式
+  
   document.getElementById('modal-title').textContent = '新增記錄';
   document.getElementById('f-name').value = '';
   document.getElementById('f-type').value = (tab === 'custom') ? 'custom' : (tab === 'anniversary' ? 'anniversary' : 'birthday_solar');
@@ -479,19 +517,24 @@ function openModal(tab = 'birthday_solar') {
   
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
+  
   [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
   document.getElementById('f-lunar').readOnly = true; 
   document.getElementById('f-zodiac-cn').readOnly = true; 
   document.getElementById('f-zodiac-en').readOnly = true; 
   
   updateFields();
-  document.getElementById('modal').classList.add('open');
+  modal.classList.add('open');
 }
 
 function viewEntry(id) {
   const e = data.find(x => x.id === id);
   if (!e) return;
   currentEntryId = id;
+  const modal = document.getElementById('modal');
+  
+  // 啟動檢視模式排版
+  modal.classList.add('view-mode');
   
   document.getElementById('modal-title').textContent = '記錄詳情';
   document.getElementById('f-name').value = e.name;
@@ -516,19 +559,27 @@ function viewEntry(id) {
   
   document.getElementById('btns-edit').style.display = 'none';
   document.getElementById('btns-view').style.display = 'flex';
+  
   [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = true);
   
   updateFields();
-  document.getElementById('modal').classList.add('open');
+  modal.classList.add('open');
 }
 
 function enableEdit() {
+  const modal = document.getElementById('modal');
+  modal.classList.remove('view-mode'); // 關閉檢視模式，恢復成表單樣式
+  document.getElementById('modal-title').textContent = '編輯記錄';
+  
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
+  
   [...document.querySelectorAll('.modal input, .modal select')].forEach(i => i.disabled = false);
   document.getElementById('f-lunar').readOnly = true;
   document.getElementById('f-zodiac-cn').readOnly = true;
   document.getElementById('f-zodiac-en').readOnly = true;
+  
+  updateFields();
 }
 
 function closeModal() {
