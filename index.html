@@ -40,8 +40,9 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
 .card-info{flex:1;min-width:0}
 .card-name{font-size:18px;font-weight:bold}
-.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
-.days-chip{font-size:14px;color:#888;white-space:nowrap;text-align:right;margin-top:4px;font-weight:bold}
+.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.5}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
+.days-chip{font-size:14px;color:#888;white-space:nowrap;font-weight:bold}
 .days-chip.soon{color:#e07b30}
 .days-chip.today{color:#3a6347;font-weight:900}
 
@@ -54,7 +55,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 .up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
 .up-info{flex:1;margin-top:2px}
 .up-name{font-size:18px;font-weight:bold}
-.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px}
+.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
 
 /* Modal */
@@ -199,6 +200,7 @@ function toRocInputFormat(dateStr) {
   return `${parseInt(y) - 1911}/${m}/${d}`;
 }
 
+// 加入民國年的農曆字串
 function getLunarString(solar) {
   const lunar = solar.getLunar();
   const rocY = lunar.getYear() - 1911; 
@@ -215,6 +217,7 @@ function getWesternZodiac(m, d) {
   return signs[idx];
 }
 
+// 【修正重點】精準的純歲數計算
 function getAgeText(dateStr, type, isUpcoming) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -231,14 +234,15 @@ function getAgeText(dateStr, type, isUpcoming) {
     return `滿 ${Math.max(0, actualY)} 週年`;
   }
 
+  // 生日計算：移除 足、虛，直接顯示數字
   if (isUpcoming) {
     let eventY = today.getFullYear();
-    if (thisYDate < t) eventY++;
-    return `虛 ${eventY - y + 1} 歲`;
+    if (thisYDate < t) eventY++; // 如果今年生日已經過了，就是算明年的歲數
+    return `${eventY - y} 歲`;
   } else {
     let actualAge = today.getFullYear() - y;
-    if (thisYDate > t) actualAge--;
-    return `足 ${Math.max(0, actualAge)} 歲`;
+    if (thisYDate > t) actualAge--; // 如果今年生日還沒過，歲數減一
+    return `${Math.max(0, actualAge)} 歲`;
   }
 }
 
@@ -268,6 +272,7 @@ function chipHtml(md, totalDays) {
   return `<span class="days-chip">剩 ${txt}</span>`;
 }
 
+// 產生防止拆字的額外資訊區塊 (white-space: nowrap + flex wrap)
 function buildCardExtraInfo(e) {
   let extraHtml = '';
   if (e.type === 'birthday_solar' && e.date) {
@@ -278,7 +283,13 @@ function buildCardExtraInfo(e) {
       const rawZodiac = solar.getLunar().getYearShengXiao();
       const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac) + '年';
       const zodiacEn = getWesternZodiac(m, d);
-      extraHtml += `<div class="card-meta">${lunarStr} | ${zodiacCn} | ${zodiacEn}</div>`;
+      extraHtml += `<div class="card-meta" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+        <span style="white-space:nowrap">${lunarStr}</span>
+        <span style="color:#ccc; font-size:12px;">|</span>
+        <span style="white-space:nowrap">${zodiacCn}</span>
+        <span style="color:#ccc; font-size:12px;">|</span>
+        <span style="white-space:nowrap">${zodiacEn}</span>
+      </div>`;
     } catch(err) { console.error(err); }
   }
   if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
@@ -293,7 +304,7 @@ function getTypeBadge(e) {
   else if (e.type === 'custom') { color = '#e67e22'; bg = '#fdf2e9'; icon = '⭐ '; }
   
   let tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-  return `<span style="display:inline-block;font-size:13px;padding:3px 8px;border-radius:6px;color:${color};background:${bg};font-weight:bold;">${icon}${tl}</span>`;
+  return `<span class="badge" style="color:${color};background:${bg};"><span style="margin-right:2px">${icon}</span>${tl}</span>`;
 }
 
 // --- 表單與解析 ---
@@ -384,10 +395,15 @@ function upItem(e){
     <div class="up-date"><div class="up-mon">${MONTHS_TW[+dm-1]}</div><div class="up-day">${+dd}</div></div>
     <div class="up-info">
       <div class="up-name">${e.name}</div>
-      <div class="up-type">${badgeHtml}<strong style="color:#1a1a1a">${ageText}</strong></div>
+      <div class="up-type">
+        ${badgeHtml}
+        <strong style="color:#1a1a1a; white-space:nowrap">${ageText}</strong>
+      </div>
       ${extraInfo}
     </div>
-    ${chipHtml(e.md, e.days)}
+    <div style="flex-shrink:0; margin-left:8px;">
+      ${chipHtml(e.md, e.days)}
+    </div>
   </div>`;
 }
 
@@ -407,11 +423,17 @@ function renderList(tab) {
       <div class="card-row">
         <div class="avatar">${e.name.slice(0, 1)}</div>
         <div class="card-info">
-          <div class="card-name" style="display:flex;align-items:center;gap:8px">${e.name} ${badgeHtml}</div>
-          <div class="card-meta">${toRocDate(e.date)}　<strong style="color:#1a1a1a">${ageText}</strong></div>
+          <div class="card-name" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="white-space:nowrap">${e.name}</span>
+            ${badgeHtml}
+          </div>
+          <div class="card-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="white-space:nowrap">${toRocDate(e.date)}</span>
+            <strong style="color:#1a1a1a; white-space:nowrap">${ageText}</strong>
+          </div>
           ${extraInfo}
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;">
+        <div style="flex-shrink:0; text-align:right; margin-left:8px;">
           ${chipHtml(md, days)}
         </div>
       </div>
@@ -557,7 +579,6 @@ window.onload = function() {
   }
 };
 
-// 【關鍵修改】：只發送 POST 請求，不呼叫 DELETE
 async function saveEntry() {
   const entry = {
     id: currentEntryId, 
@@ -576,21 +597,11 @@ async function saveEntry() {
   btn.textContent = '儲存中…'; btn.disabled = true;
   
   try {
-    await fetch('/api/write', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(entry) 
-    });
-    
+    await fetch('/api/write', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry) });
     data = await (await fetch('/api/read')).json();
-    render(); 
-    closeModal();
-  } catch (e) { 
-    alert("儲存失敗，請確認網路連線"); 
-  } finally { 
-    btn.textContent = '儲存'; 
-    btn.disabled = false; 
-  }
+    render(); closeModal();
+  } catch (e) { alert("儲存失敗"); } 
+  finally { btn.textContent = '儲存'; btn.disabled = false; }
 }
 
 async function confirmDelete() {
