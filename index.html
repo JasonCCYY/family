@@ -4,109 +4,92 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>我們這一家</title>
-<!-- PWA 標籤 -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#fdfaf5">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/609/609803.png">
-
 <script src="https://cdn.jsdelivr.net/gh/6tail/lunar-javascript@master/lunar.js"></script>
 <style>
-/* 溫馨暖色調變數 */
 :root {
-  --bg-color: #fdfaf5;      /* 暖米色背景 */
+  --bg-color: #fdfaf5;
   --card-bg: #ffffff;
-  --primary-color: #e67e22;  /* 暖橘色 */
-  --secondary-color: #8d6e63; /* 木質感棕色 */
-  --text-main: #5d4037;      /* 深咖啡文字 */
-  --text-light: #a1887f;     /* 淺咖啡文字 */
-  --accent-green: #6d8c54;   /* 柔和葉綠色 */
+  --primary-color: #e67e22;
+  --secondary-color: #8d6e63;
+  --text-main: #2c3e50;
+  --text-light: #94a3b8;
+  --accent-green: #6d8c54;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif}
-body{background: var(--bg-color); color: var(--text-main); min-height:100vh; font-size:16px; -webkit-tap-highlight-color: transparent;}
+body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -webkit-tap-highlight-color: transparent;}
 
-/* Login Screen */
+/* Login */
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.lock-card{background:#fff;border-radius:24px;box-shadow: 0 10px 30px rgba(0,0,0,0.05);padding:3rem 2rem;width:340px;text-align:center;border: 1px solid #f0e6d6;}
-.lock-card h1{font-size:24px;font-weight:bold;margin-bottom:8px; color: var(--text-main)}
-.lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:15px; outline:none; transition: 0.3s;}
-.lock-card input:focus{border-color: var(--primary-color);}
-.lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow: 0 4px 10px rgba(230,126,34,0.3)}
+.lock-card{background:#fff;border-radius:24px;padding:3rem 2rem;width:340px;text-align:center;box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+.lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;margin-bottom:15px; outline:none;}
+.lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;}
 
-/* App Main */
+/* Main App */
 #app{display:none;max-width:640px;margin:0 auto;padding:1.5rem 1.2rem}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.header h1{font-size:26px;font-weight:900; color: var(--text-main); letter-spacing: 1px;}
-.header .date-str{font-size:14px;color: var(--text-light);margin-top:4px}
-.logout-btn{font-size:13px;color: var(--text-light);background:none;border:none;cursor:pointer;padding:4px 8px;font-weight:bold}
-.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:bold; box-shadow: 0 4px 8px rgba(109,140,84,0.2)}
+.header h1{font-size:26px;font-weight:900;}
+.date-str{font-size:14px;color: var(--text-light);}
+.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-weight:bold;}
 
-.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch;}
-.tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;cursor:pointer;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap; transition: 0.3s;}
-.tab.active{background: var(--primary-color);color:#fff; box-shadow: 0 4px 10px rgba(230,126,34,0.2)}
+.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto;}
+.tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap;}
+.tab.active{background: var(--primary-color);color:#fff;}
 
 /* Cards */
-.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(93,64,55,0.04); border: 1px solid rgba(240,230,214,0.5); cursor:pointer;}
+.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); cursor:pointer;}
 .card-row{display:flex;align-items:flex-start;gap:16px}
-.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;flex-shrink:0;background:#fff5e9;color: var(--primary-color)}
-.card-info{flex:1;min-width:0}
-.card-name{font-size:19px;font-weight:bold; color: var(--text-main)}
-.card-meta{font-size:14px;color: var(--text-light);margin-top:5px;line-height:1.4}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;font-weight:bold}
-.days-chip{font-size:13px; padding: 4px 10px; border-radius: 8px; background: #f8f8f8; color: var(--text-light); font-weight: bold; white-space: nowrap;}
+.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color)}
+.card-name{font-size:19px;font-weight:bold;}
+.card-meta{font-size:13px;color: var(--text-light);margin-top:4px;}
+.days-chip{font-size:13px; padding: 4px 10px; border-radius: 8px; background: #f8f8f8; color: var(--text-light); font-weight: bold;}
 .days-chip.soon{background: #fff4ed; color: var(--primary-color);}
-.days-chip.today{background: var(--primary-color); color: #fff;}
 
-/* Upcoming Items */
-.up-item{display:flex;align-items:center;gap:16px;padding:16px;background:#fff; border-radius:18px; margin-bottom:12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor:pointer}
-.up-date{width:50px;text-align:center;flex-shrink:0}
-.up-mon{font-size:12px;color: var(--text-light);font-weight:bold;margin-bottom:2px}
-.up-day{font-size:28px;font-weight:900;color: var(--primary-color); line-height: 1;}
-.up-info{flex:1;min-width:0}
-.up-name{font-size:18px;font-weight:bold; color: var(--text-main)}
-.section-label{font-size:14px;font-weight:bold;color: var(--secondary-color);margin: 20px 0 12px 5px; display: flex; align-items: center; gap: 8px;}
-.section-label::after{content:''; flex:1; height:1px; background: #eee;}
-
-/* Modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(93,64,55,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
+/* Modal - 仿附圖格式 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:28px;padding:2rem;width:400px;max-width:92vw;max-height:90vh;overflow-y:auto; position: relative;}
-.modal h3{font-size:22px;font-weight:bold;margin-bottom:1.5rem;color: var(--text-main)}
+.modal{background:#fff;border-radius:24px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto; position: relative;}
 
-/* 表單 */
-.fg{margin-bottom:16px}
-.fg label{display:block;font-size:13px;color: var(--text-light);margin-bottom:6px;font-weight:bold}
-.fg input,.fg select{width:100%;padding:12px 14px;border:1.5px solid #eee;border-radius:12px;font-size:16px;background:#fdfdfd;color: var(--text-main); outline: none; transition: 0.3s;}
-.fg input:focus{border-color: var(--primary-color)}
+/* 詳情模式下的欄位樣式 */
+.modal-header{padding: 20px 24px; border-bottom: 1px solid #f0f0f0;}
+.modal-header h3{font-size: 20px; font-weight: 900;}
+.modal-content{padding: 10px 24px;}
 
-/* 檢視模式大字 */
-.modal.view-mode .fg input {
+.fg{margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f8f8f8;}
+.fg:last-child{border-bottom: none;}
+.fg label{display:block;font-size:13px;color: #a0aec0; margin-bottom:4px;}
+.fg input, .fg select{
+    width:100%; padding: 4px 0; border: 1px solid #eee; border-radius: 8px; 
+    font-size:16px; background:#fff; outline: none;
+}
+
+/* 【查看模式】強制修改 */
+.view-mode .fg input, .view-mode .fg select {
     border: none !important;
-    border-bottom: 1px solid #f0f0f0 !important;
-    border-radius: 0 !important;
-    padding: 0 0 8px 0 !important;
+    padding: 4px 0 !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: #2d3748 !important;
     background: transparent !important;
-    font-size: 22px !important;
-    color: var(--secondary-color) !important;
-    font-weight: 900 !important;
-    -webkit-text-fill-color: var(--secondary-color) !important;
+    -webkit-text-fill-color: #2d3748 !important;
     opacity: 1 !important;
 }
+.view-mode .fg.empty { display: none; }
 
-.modal-btns{display:flex;gap:10px;margin-top:2rem;}
-.modal-btns button{flex:1;padding:14px 0;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;border:none}
-.btn-del-new { background:#fee; color:#c0392b; }
-.btn-close-new { background:#f5f5f5; color: var(--text-light); }
-.btn-edit-new { background: var(--primary-color); color:#fff; }
+/* 按鈕排版 */
+.modal-footer{padding: 20px 24px; display: flex; gap: 10px;}
+.btn{flex:1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;}
 
-.sync-toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: rgba(93,64,55,0.9); color: white; padding: 10px 20px;
-    border-radius: 50px; font-size: 13px; z-index: 1000;
-    opacity: 0; transition: 0.5s; pointer-events: none;
-}
+.btn-delete{ background: #fff; color: #e53e3e; border: 1px solid #fed7d7 !important; }
+.btn-close{ background: #edf2f7; color: #4a5568; }
+.btn-edit{ background: #3182ce; color: #fff; }
+.btn-save{ background: var(--accent-green); color: #fff; width: 100%; }
+
+.sync-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 50px; font-size: 13px; opacity: 0; transition: 0.5s; pointer-events: none;}
 .sync-toast.show { opacity: 1; }
 </style>
 </head>
@@ -116,10 +99,9 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
   <div class="lock-card">
     <div style="font-size:56px;margin-bottom:12px">🏡</div>
     <h1>我們這一家</h1>
-    <p style="color: var(--text-light); margin-bottom: 1.5rem">請輸入密碼進入</p>
+    <p style="color:#94a3b8; margin-bottom: 2rem">請輸入家族密碼</p>
     <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
-    <button onclick="checkPw()">進入溫馨家園</button>
-    <div class="err" id="pw-err" style="color:#c0392b; font-size:13px; margin-top:8px"></div>
+    <button onclick="checkPw()">進入家園</button>
   </div>
 </div>
 
@@ -129,10 +111,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
       <h1>我們這一家</h1>
       <div class="date-str" id="today-str"></div>
     </div>
-    <div style="display:flex; align-items:center;">
-        <button class="add-btn-header" onclick="openModal('birthday_solar')">＋ 新增</button>
-        <button class="logout-btn" onclick="logout()">登出</button>
-    </div>
+    <button class="add-btn-header" onclick="openModal()">＋ 新增</button>
   </div>
 
   <div class="tabs">
@@ -148,398 +127,237 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
   <div id="view-custom" style="display:none"></div>
 </div>
 
-<div id="sync-toast" class="sync-toast">已同步最新資料 ✨</div>
+<div id="sync-toast" class="sync-toast">資料已同步 ✨</div>
 
 <div class="modal-bg" id="modal">
-  <div class="modal">
-    <h3 id="modal-title">新增記錄</h3>
-    <div class="fg"><label>姓名 / 稱謂</label><input id="f-name" type="text" placeholder="例：媽媽、阿嬤"></div>
-    <div class="fg"><label>類型</label>
-      <select id="f-type" onchange="updateFields()">
-        <option value="birthday_solar">生日</option>
-        <option value="anniversary">結婚紀念日</option>
-        <option value="custom">自訂紀念日</option>
-      </select>
+  <div class="modal" id="modal-container">
+    <div class="modal-header">
+      <h3 id="modal-title">紀錄內容</h3>
     </div>
-    <div class="fg" id="fg-label" style="display:none"><label>紀念日名稱</label><input id="f-label" type="text" placeholder="例：相識紀念日"></div>
-    <div class="fg"><label>日期 (民國年，例：800124)</label><input id="f-roc-input" type="text" placeholder="輸入 6-7 位數字"></div>
-    <input id="f-date" type="hidden"> 
-    <div class="fg" id="fg-lunar"><label>農曆</label><input id="f-lunar" type="text" readonly></div>
-    <div class="fg" id="fg-birth-time"><label>生辰</label><input id="f-birth-time" type="text" placeholder="例：午時"></div>
-    <div class="fg" id="fg-remark"><label>備註</label><input id="f-remark" type="text" placeholder="任何想紀錄的..."></div>
+    <div class="modal-content">
+      <div class="fg" id="fg-name"><label>姓名 / 稱謂</label><input id="f-name" type="text"></div>
+      <div class="fg" id="fg-type"><label>類型</label>
+        <select id="f-type" onchange="updateFields()">
+          <option value="birthday_solar">生日</option>
+          <option value="anniversary">結婚紀念日</option>
+          <option value="custom">自訂紀念日</option>
+        </select>
+      </div>
+      <div class="fg" id="fg-label"><label>名稱</label><input id="f-label" type="text"></div>
+      <div class="fg" id="fg-roc"><label>日期 (民國)</label><input id="f-roc-input" type="text" placeholder="例：800124"></div>
+      <input id="f-date" type="hidden">
+      <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text"></div>
+      <div class="fg" id="fg-zodiac"><label>生肖 / 星座</label><input id="f-zodiac" type="text"></div>
+      <div class="fg" id="fg-birth-time"><label>生辰</label><input id="f-birth-time" type="text"></div>
+      <div class="fg" id="fg-remark"><label>備註</label><input id="f-remark" type="text"></div>
+    </div>
     
-    <div class="modal-btns" id="btns-view" style="display:none">
-      <button class="btn-del-new" onclick="confirmDelete()">刪除</button>
-      <button class="btn-close-new" onclick="closeModal()">關閉</button>
-      <button class="btn-edit-new" onclick="enableEdit()">編輯</button>
+    <div class="modal-footer" id="btns-view" style="display:none">
+      <button class="btn btn-delete" onclick="confirmDelete()">🗑 刪除</button>
+      <button class="btn btn-close" onclick="closeModal()">關閉</button>
+      <button class="btn btn-edit" onclick="enableEdit()">✏️ 修改</button>
     </div>
-    <div class="modal-btns" id="btns-edit" style="display:none">
-      <button class="btn-close-new" onclick="closeModal()">取消</button>
-      <button class="btn-edit-new" id="btn-save" onclick="saveEntry()">儲存</button>
+    <div class="modal-footer" id="btns-edit" style="display:none">
+      <button class="btn btn-close" onclick="closeModal()" style="flex:0.4">取消</button>
+      <button class="btn btn-save" id="btn-save" onclick="saveEntry()">儲存紀錄</button>
     </div>
   </div>
 </div>
 
 <script>
-// --- 全域變數 ---
 let data = [];
 let currentEntryId = null;
-const STORAGE_KEY = 'family_cache_v1';
-const MONTHS_TW=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-const TYPE_LABEL={birthday_solar:'生日', anniversary:'結婚紀念日', custom:'自訂'};
+const STORAGE_KEY = 'family_v1';
 const today = new Date();
 
-// --- PWA 註冊 ---
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>null));
-}
-
-// --- 初始化邏輯：先讀快取，再讀 API ---
-async function init() {
-  const d = new Date();
-  const todayStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-  document.getElementById('today-str').textContent = toRocDate(todayStr);
-
-  // 1. 優先讀取本地快取
-  const cached = localStorage.getItem(STORAGE_KEY);
-  if (cached) {
-    try {
-        data = JSON.parse(cached);
-        render();
-    } catch(e) {}
-  }
-
-  // 2. 3秒後後台靜默同步
-  setTimeout(async () => {
-    await refreshData(true);
-  }, 3000);
-}
-
-async function refreshData(showToast = false) {
-  try {
-    const res = await fetch('/api/read');
-    if (!res.ok) return;
-    const freshData = await res.json();
-    data = freshData;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    render();
-    if (showToast) {
-        const toast = document.getElementById('sync-toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-  } catch (e) { console.warn("Offline or sync failed"); }
-}
-
-// --- 密碼校驗 ---
-async function checkPw() {
-  const pwInput = document.getElementById('pw-input');
-  const pw = pwInput.value;
-  if (!pw) return;
-
-  try {
-    const res = await fetch('/api/auth', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ password: pw }) 
-    });
-    const result = await res.json();
-    if (result.ok) {
-      sessionStorage.setItem('auth', '1');
-      document.getElementById('lock-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      init();
-    } else {
-      document.getElementById('pw-err').textContent = '密碼不太對喔 🏡';
-      pwInput.value = '';
-    }
-  } catch (e) { 
-    document.getElementById('pw-err').textContent = '連線出問題了'; 
-  }
-}
-
-// --- 工具函數 ---
 function toRocDate(dateStr) {
   if (!dateStr) return '';
-  const parts = dateStr.split('-');
-  const y = parseInt(parts[0]);
-  const m = parseInt(parts[1]);
-  const d = parseInt(parts[2]);
+  const [y, m, d] = dateStr.split('-').map(Number);
   return `${y - 1911}年${m}月${d}日`;
 }
 
-function toRocInputFormat(dateStr) {
-  if (!dateStr) return '';
-  const parts = dateStr.split('-');
-  return `${parseInt(parts[0]) - 1911}${String(parts[1]).padStart(2,'0')}${String(parts[2]).padStart(2,'0')}`;
+function getZodiacInfo(y, m, d) {
+  try {
+    const solar = Solar.fromYmd(y, m, d);
+    const rawZ = solar.getLunar().getYearShengXiao();
+    const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
+    const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
+    const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
+    let idx = m-1; if(d<cutoffs[idx]) idx=(idx+11)%12;
+    return `${cnZ} / ${signs[idx]}座`;
+  } catch(e) { return ''; }
 }
 
-function getLunarString(solar) {
-  const lunar = solar.getLunar();
-  return `農曆 ${lunar.getYear()-1911}年${MONTHS_TW[lunar.getMonth()-1]}${lunar.getDayInChinese()}`;
+async function init() {
+  const d = new Date();
+  document.getElementById('today-str').textContent = toRocDate(`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`);
+  const cached = localStorage.getItem(STORAGE_KEY);
+  if (cached) { data = JSON.parse(cached); render(); }
+  setTimeout(refreshData, 1500);
 }
 
-function getAgeText(dateStr, type, isUpcoming) {
-  if(!dateStr) return '';
-  const parts = dateStr.split('-').map(Number);
-  const y = parts[0], m = parts[1], d = parts[2];
-  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const eventDate = new Date(today.getFullYear(), m-1, d);
-  
-  let targetYear = today.getFullYear();
-  if (eventDate < t) targetYear++;
-  
-  const age = targetYear - y;
-  return (type === 'birthday_solar') ? `${age} 歲` : `滿 ${age} 週年`;
+async function refreshData() {
+  try {
+    const res = await fetch('/api/read');
+    data = await res.json();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    render();
+  } catch (e) {}
 }
 
-function chipHtml(md, days) {
-  if(days === 0) return `<span class="days-chip today">🎉 今天！</span>`;
-  if(days <= 7) return `<span class="days-chip soon">剩 ${days} 天</span>`;
-  return `<span class="days-chip">剩 ${days} 天</span>`;
-}
-
-// --- 渲染功能 ---
 function render() {
-  renderUpcoming();
-  ['birthday','anniversary','custom'].forEach(renderList);
-}
-
-function renderUpcoming() {
-  const sorted = [...data].map(e => {
-    const parts = e.date.split('-').map(Number);
-    const m = parts[1], d = parts[2];
-    let target = new Date(today.getFullYear(), m-1, d);
-    const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    if(target < now) target.setFullYear(today.getFullYear()+1);
-    const diff = Math.round((target - now) / 864e5);
-    return {...e, days: diff, md: `${m}-${d}`};
-  }).sort((a,b) => a.days - b.days);
-
-  let h = '';
-  if (!data.length) {
-    h = '<div style="text-align:center;padding:3rem;color:#ccc">點擊「新增」開始記錄</div>';
-  } else {
-    const near = sorted.filter(e => e.days <= 60);
-    if (near.length) {
-      h += `<div class="section-label">近 60 天紀念</div>`;
-      near.forEach(e => {
-        const [m, d] = e.md.split('-');
-        h += `
-          <div class="up-item" onclick="viewEntry('${e.id}')">
-            <div class="up-date"><div class="up-mon">${MONTHS_TW[+m-1]}</div><div class="up-day">${+d}</div></div>
-            <div class="up-info">
-              <div class="up-name">${e.name}</div>
-              <div class="card-meta">${TYPE_LABEL[e.type] || '紀念日'} · ${getAgeText(e.date, e.type, true)}</div>
-            </div>
-            ${chipHtml(e.md, e.days)}
-          </div>`;
-      });
+  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(tab => {
+    let list = data;
+    if(tab !== 'upcoming') {
+        const map = {birthday:['birthday_solar'], anniversary:['anniversary'], custom:['custom']};
+        list = data.filter(e => map[tab].includes(e.type));
+    } else {
+        list = [...data].map(e => {
+            const [y,m,d] = e.date.split('-').map(Number);
+            let t = new Date(today.getFullYear(), m-1, d);
+            if(t < new Date(today.getFullYear(), today.getMonth(), today.getDate())) t.setFullYear(today.getFullYear()+1);
+            return {...e, diff: Math.round((t-new Date(today.getFullYear(), today.getMonth(), today.getDate()))/864e5)};
+        }).sort((a,b) => a.diff - b.diff);
     }
-  }
-  document.getElementById('view-upcoming').innerHTML = h;
-}
+    
+    let h = list.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無紀錄</div>';
+    list.forEach(e => {
+        const [y,m,d] = e.date.split('-').map(Number);
+        const diff = tab==='upcoming' ? e.diff : Math.round((new Date(today.getFullYear(),m-1,d)-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/864e5);
+        const finalDiff = diff < 0 ? diff + 365 : diff;
 
-function renderList(tab) {
-  const typeMap = { birthday: ['birthday_solar'], anniversary: ['anniversary'], custom: ['custom'] };
-  const entries = data.filter(e => typeMap[tab].includes(e.type));
-  let h = entries.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無記錄</div>';
-  entries.forEach(e => {
-    const parts = e.date.split('-').map(Number);
-    const m = parts[1], d = parts[2];
-    let target = new Date(today.getFullYear(), m-1, d);
-    const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    if(target < now) target.setFullYear(today.getFullYear()+1);
-    const diff = Math.round((target - now) / 864e5);
-
-    h += `<div class="card" onclick="viewEntry('${e.id}')">
-      <div class="card-row">
-        <div class="avatar">${e.name[0]}</div>
-        <div class="card-info">
-          <div style="display:flex; justify-content:space-between; align-items:center">
-            <span class="card-name">${e.name}</span>
-            <span class="badge" style="background:#fff5e9; color:var(--primary-color)">${e.label || TYPE_LABEL[e.type]}</span>
+        h += `<div class="card" onclick="viewEntry('${e.id}')">
+          <div class="card-row">
+            <div class="avatar">${e.name[0]}</div>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between">
+                <span class="card-name">${e.name}</span>
+                <span class="days-chip ${finalDiff<=7?'soon':''}">剩 ${finalDiff} 天</span>
+              </div>
+              <div class="card-meta">${toRocDate(e.date)} · ${e.type==='birthday_solar'? (today.getFullYear()+(finalDiff<0?1:0)-y)+' 歲' : '週年'}</div>
+            </div>
           </div>
-          <div class="card-meta" style="font-size:16px; color:var(--text-main); font-weight:bold; margin-top:8px">
-            ${toRocDate(e.date)} <span style="margin-left:10px">${getAgeText(e.date, e.type, false)}</span>
-          </div>
-          <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center">
-            <div class="card-meta">${e.remark ? '📝 ' + e.remark : ''}</div>
-            ${chipHtml(`${m}-${d}`, diff)}
-          </div>
-        </div>
-      </div>
-    </div>`;
+        </div>`;
+    });
+    document.getElementById(`view-${tab}`).innerHTML = h;
   });
-  document.getElementById(`view-${tab}`).innerHTML = h;
-}
-
-function setTab(tab) {
-  const tabs = ['upcoming', 'birthday', 'anniversary', 'custom'];
-  const tabNames = { upcoming: '即將到來', birthday: '生日', anniversary: '紀念日', custom: '其他' };
-  
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.textContent.trim() === tabNames[tab]);
-  });
-  
-  tabs.forEach(t => {
-    document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none';
-  });
-}
-
-// --- 表單邏輯 ---
-document.getElementById('f-roc-input').addEventListener('input', function() {
-  let val = this.value.replace(/[^\d]/g, '');
-  if (val.length >= 6) {
-    const y = parseInt(val.slice(0, val.length - 4));
-    const m = val.slice(-4, -2);
-    const d = val.slice(-2);
-    const solarY = y + 1911;
-    const dateStr = `${solarY}-${m}-${d}`;
-    document.getElementById('f-date').value = dateStr;
-    try {
-      const solar = Solar.fromYmd(solarY, parseInt(m), parseInt(d));
-      document.getElementById('f-lunar').value = getLunarString(solar);
-    } catch(e) {}
-  }
-});
-
-function openModal(tab = 'birthday_solar') {
-  currentEntryId = null;
-  const m = document.getElementById('modal');
-  m.classList.remove('view-mode');
-  
-  document.getElementById('modal-title').textContent = '新增記錄';
-  document.querySelectorAll('.modal input').forEach(i => { i.value = ''; i.readOnly = false; });
-  document.getElementById('f-type').value = tab;
-  document.getElementById('f-type').disabled = false;
-  document.getElementById('btns-view').style.display = 'none';
-  document.getElementById('btns-edit').style.display = 'flex';
-  
-  updateFields();
-  m.classList.add('open');
 }
 
 function viewEntry(id) {
   const e = data.find(x => x.id === id);
-  if(!e) return;
   currentEntryId = id;
-  const m = document.getElementById('modal');
-  m.classList.add('view-mode');
+  const modal = document.getElementById('modal-container');
+  const bg = document.getElementById('modal');
   
-  document.getElementById('modal-title').textContent = '查看紀錄';
+  bg.classList.add('open');
+  modal.classList.add('view-mode');
+  document.getElementById('modal-title').textContent = e.name;
+  
+  // 填入資料
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
+  document.getElementById('f-label').value = e.label || '';
   document.getElementById('f-roc-input').value = toRocDate(e.date);
   document.getElementById('f-date').value = e.date;
-  document.getElementById('f-lunar').value = e.lunar || '';
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
-  document.getElementById('f-label').value = e.label || '';
   
-  document.querySelectorAll('.modal input').forEach(i => i.readOnly = true);
-  document.getElementById('f-type').disabled = true;
+  const [y,m,d] = e.date.split('-').map(Number);
+  const solar = Solar.fromYmd(y,m,d);
+  document.getElementById('f-lunar').value = `農曆 ${solar.getLunar().getMonthInChinese()}月${solar.getLunar().getDayInChinese()}`;
+  document.getElementById('f-zodiac').value = getZodiacInfo(y,m,d);
+
+  // 隱藏空白欄位
+  ['label','birth-time','remark'].forEach(f => {
+      document.getElementById('fg-'+f).classList.toggle('empty', !e[f.replace('-','')] && !e[f]);
+  });
+  document.getElementById('fg-lunar').classList.toggle('empty', e.type !== 'birthday_solar');
+  document.getElementById('fg-zodiac').classList.toggle('empty', e.type !== 'birthday_solar');
+
+  document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = true);
   document.getElementById('btns-view').style.display = 'flex';
   document.getElementById('btns-edit').style.display = 'none';
-  
-  updateFields();
-  m.classList.add('open');
 }
 
 function enableEdit() {
-  const m = document.getElementById('modal');
-  m.classList.remove('view-mode');
+  const modal = document.getElementById('modal-container');
+  modal.classList.remove('view-mode');
   document.getElementById('modal-title').textContent = '編輯紀錄';
-  document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
-  document.getElementById('f-type').disabled = false;
-  document.getElementById('f-roc-input').value = toRocInputFormat(document.getElementById('f-date').value);
+  document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = false);
+  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
+  
+  const d = document.getElementById('f-date').value.split('-');
+  document.getElementById('f-roc-input').value = (d[0]-1911)+d[1]+d[2];
+  
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
+  updateFields();
+}
+
+function openModal() {
+  currentEntryId = null;
+  const modal = document.getElementById('modal-container');
+  modal.classList.remove('view-mode');
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-title').textContent = '新增紀錄';
+  document.querySelectorAll('.fg input').forEach(i => i.value = '');
+  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
+  document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = false);
+  document.getElementById('btns-view').style.display = 'none';
+  document.getElementById('btns-edit').style.display = 'flex';
+  updateFields();
 }
 
 function updateFields() {
   const t = document.getElementById('f-type').value;
-  document.getElementById('fg-label').style.display = (t === 'custom') ? '' : 'none';
-  document.getElementById('fg-lunar').style.display = (t === 'birthday_solar') ? '' : 'none';
-  document.getElementById('f-lunar').readOnly = true;
+  document.getElementById('fg-label').style.display = t === 'custom' ? '' : 'none';
+  document.getElementById('fg-lunar').style.display = t === 'birthday_solar' ? '' : 'none';
+  document.getElementById('fg-zodiac').style.display = t === 'birthday_solar' ? '' : 'none';
 }
 
-function closeModal() { 
-    document.getElementById('modal').classList.remove('open'); 
-}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
-// 點擊背景關閉
-document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+document.getElementById('f-roc-input').addEventListener('input', function() {
+  let v = this.value.replace(/[^\d]/g, '');
+  if (v.length >= 6) {
+    const y = parseInt(v.slice(0, v.length-4))+1911, m = v.slice(-4,-2), d = v.slice(-2);
+    document.getElementById('f-date').value = `${y}-${m}-${d}`;
+  }
 });
 
+async function checkPw() {
+  const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: document.getElementById('pw-input').value }) });
+  if ((await res.json()).ok) {
+    sessionStorage.setItem('auth', '1');
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  }
+}
+
 async function saveEntry() {
-  const name = document.getElementById('f-name').value;
-  const date = document.getElementById('f-date').value;
-  if(!name || !date) {
-      alert('請填寫姓名與日期');
-      return;
-  }
-
   const entry = {
-    id: currentEntryId, 
-    name: name,
-    type: document.getElementById('f-type').value,
-    date: date,
-    lunar: document.getElementById('f-lunar').value,
-    label: document.getElementById('f-label').value,
-    birthTime: document.getElementById('f-birth-time').value,
-    remark: document.getElementById('f-remark').value
+    id: currentEntryId, name: document.getElementById('f-name').value,
+    type: document.getElementById('f-type').value, date: document.getElementById('f-date').value,
+    birthTime: document.getElementById('f-birth-time').value, remark: document.getElementById('f-remark').value,
+    label: document.getElementById('f-label').value
   };
-
-  const btn = document.getElementById('btn-save');
-  btn.disabled = true;
-  btn.textContent = '儲存中...';
-
-  try {
-    await fetch('/api/write', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(entry) 
-    });
-    await refreshData();
-    closeModal();
-  } catch(e) {
-    alert('儲存失敗');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '儲存';
-  }
+  await fetch('/api/write', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry) });
+  await refreshData(); closeModal();
 }
 
 async function confirmDelete() {
-  if(!confirm('要刪除這筆溫馨紀錄嗎？')) return;
-  try {
-    await fetch('/api/write', { 
-        method: 'DELETE', 
-        headers: {'Content-Type': 'application/json'}, 
-        body: JSON.stringify({id: currentEntryId}) 
-    });
-    await refreshData();
-    closeModal();
-  } catch(e) {
-    alert('刪除失敗');
-  }
+  if(!confirm('確定刪除？')) return;
+  await fetch('/api/write', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: currentEntryId}) });
+  await refreshData(); closeModal();
 }
 
-function logout() { 
-    sessionStorage.clear(); 
-    location.reload(); 
+function setTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.getAttribute('onclick').includes(tab)));
+  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(t => document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none');
 }
 
-// 頁面加載檢查
-window.onload = () => { 
-    if(sessionStorage.getItem('auth') === '1') { 
-        document.getElementById('lock-screen').style.display='none'; 
-        document.getElementById('app').style.display='block'; 
-        init(); 
-    } 
-};
+window.onload = () => { if(sessionStorage.getItem('auth')) { document.getElementById('lock-screen').style.display='none'; document.getElementById('app').style.display='block'; init(); } };
 </script>
 </body>
 </html>
