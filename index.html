@@ -15,62 +15,62 @@
   --card-bg: #ffffff;
   --primary-color: #e67e22;  /* 暖橘色 */
   --text-main: #5d4037;      /* 深咖啡文字 */
-  --text-light: #a1887f;     /* 淺咖啡文字 */
+  --text-light: #8d6e63;     /* 淺咖啡文字（調深一點以配合粗體） */
   --accent-green: #6d8c54;   /* 柔和葉綠色 */
   --anniversary-pink: #fce4ec; /* 結婚紀念日背景粉紅 */
   --anniversary-text: #d81b60; /* 結婚紀念日文字顏色 */
 }
 
-*{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif}
-body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -webkit-tap-highlight-color: transparent;}
+/* 全域放大與粗體 */
+*{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif; font-weight: bold !important;}
+body{background: var(--bg-color); color: var(--text-main); min-height:100vh; font-size: 18px; -webkit-tap-highlight-color: transparent;}
 
 /* Login */
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.lock-card{background:#fff;border-radius:24px;padding:3rem 2rem;width:340px;text-align:center;box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
-.lock-card h1{font-size:24px;font-weight:bold;margin-bottom:8px;}
-.lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;margin-bottom:15px; outline:none;}
-.lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;}
+.lock-card{background:#fff;border-radius:24px;padding:3rem 2rem;width:360px;text-align:center;box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+.lock-card h1{font-size:26px; margin-bottom:8px;}
+.lock-card input{width:100%;padding:14px;border:2.5px solid #eee;border-radius:12px;font-size:20px;text-align:center;margin-bottom:15px; outline:none;}
+.lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:18px;}
 
 /* Main App Header */
 #app{display:none;max-width:640px;margin:0 auto;padding:1.5rem 1.2rem}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.header h1{font-size:26px;font-weight:900; letter-spacing: 1px;}
-.date-str{font-size:14px;color: var(--text-light);}
-.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-weight:bold; box-shadow: 0 4px 8px rgba(109,140,84,0.2)}
+.header h1{font-size:30px; letter-spacing: 1px;}
+.date-str{font-size:16px;color: var(--text-light);}
+.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:12px 20px;border-radius:12px;font-size:16px; box-shadow: 0 4px 8px rgba(109,140,84,0.2)}
 
 .tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px;}
-.tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap;}
+.tab{padding:12px 22px;border-radius:50px;border:none;background:#eee;font-size:16px;color: var(--text-light); white-space: nowrap;}
 .tab.active{background: var(--primary-color);color:#fff;}
 
 /* List Cards */
-.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(93,64,55,0.04); border: 1px solid rgba(240,230,214,0.5); cursor:pointer;}
-.card-row{display:flex;align-items:center;gap:16px}
-.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color); flex-shrink: 0;}
+.card{background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(93,64,55,0.06); border: 1px solid rgba(240,230,214,0.7); cursor:pointer;}
+.card-row{display:flex;align-items:center;gap:18px}
+.avatar{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fff5e9;color: var(--primary-color); flex-shrink: 0;}
 .avatar.pink-bg { background-color: var(--anniversary-pink); color: var(--anniversary-text); }
 
-.card-name{font-size:19px;font-weight:bold; color: var(--text-main);}
-.card-meta{font-size:14px;color: var(--text-light); margin-top:4px; line-height: 1.5;}
-.days-chip{font-size:13px; padding: 4px 12px; border-radius: 10px; background: #f1f5f9; color: #64748b; font-weight: bold; white-space: nowrap;}
+.card-name{font-size:22px; color: var(--text-main);}
+.card-meta{font-size:16px;color: var(--text-light); margin-top:6px; line-height: 1.6;}
+.days-chip{font-size:15px; padding: 6px 14px; border-radius: 10px; background: #f1f5f9; color: #64748b; white-space: nowrap;}
 .days-chip.soon{background: #fff4ed; color: var(--primary-color);}
 
-/* Modal - 完全同步 App 溫馨配色 */
+/* Modal - 詳情配色 */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(93,64,55,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:28px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto; box-shadow: 0 20px 40px rgba(93,64,55,0.2);}
-.modal-header{padding: 24px 24px 12px 24px; border-bottom: 1px solid #fdfaf5;}
-.modal-header h3{font-size: 22px; font-weight: 900; color: var(--text-main);}
+.modal-header{padding: 24px 24px 12px 24px; border-bottom: 1.5px solid #fdfaf5;}
+.modal-header h3{font-size: 24px; color: var(--text-main);}
 .modal-content{padding: 10px 24px;}
 
-.fg{margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #fdf3e7;} /* 暖色分隔線 */
-.fg label{display:block;font-size:13px;color: var(--text-light); margin-bottom:6px; font-weight: bold;}
-.fg input, .fg select{width:100%; padding: 8px 12px; border: 1.5px solid #eee; border-radius: 12px; font-size:16px; background:#fdfdfd; color: var(--text-main); outline: none;}
+.fg{margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1.5px solid #fdf3e7;}
+.fg label{display:block;font-size:15px;color: var(--text-light); margin-bottom:8px;}
+.fg input, .fg select{width:100%; padding: 10px 14px; border: 2px solid #eee; border-radius: 12px; font-size:18px; background:#fdfdfd; color: var(--text-main); outline: none;}
 
-/* 【查看模式】詳情排版 */
+/* 【查看模式】詳情大字 */
 .view-mode .fg input, .view-mode .fg select { 
     border: none !important; 
-    padding: 4px 0 !important; 
-    font-size: 22px !important; 
-    font-weight: 900 !important; 
+    padding: 6px 0 !important; 
+    font-size: 24px !important; 
     color: var(--text-main) !important; 
     background: transparent !important; 
     -webkit-text-fill-color: var(--text-main) !important; 
@@ -79,20 +79,19 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 }
 .view-mode .fg.empty { display: none; }
 
-/* 詳情模式按鈕樣式 */
 .modal-footer{padding: 20px 24px 30px 24px; display: flex; gap: 10px;}
-.btn{flex:1; padding: 14px; border-radius: 16px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-.btn-delete{ background: #fff; color: #e53e3e; border: 1.5px solid #fed7d7 !important; }
+.btn{flex:1; padding: 16px; border-radius: 16px; font-size: 18px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+.btn-delete{ background: #fff; color: #e53e3e; border: 2px solid #fed7d7 !important; }
 .btn-close{ background: #edf2f7; color: #4a5568; }
-.btn-edit{ background: #3182ce; color: #fff; box-shadow: 0 4px 10px rgba(49,130,206,0.2); }
-.btn-save{ background: var(--accent-green); color: #fff; width: 100%; box-shadow: 0 4px 10px rgba(109,140,84,0.2); }
+.btn-edit{ background: #3182ce; color: #fff; box-shadow: 0 4px 10px rgba(49,130,206,0.3); }
+.btn-save{ background: var(--accent-green); color: #fff; width: 100%; box-shadow: 0 4px 10px rgba(109,140,84,0.3); }
 </style>
 </head>
 <body>
 
 <div id="lock-screen">
   <div class="lock-card">
-    <div style="font-size:64px;margin-bottom:12px">🏡</div>
+    <div style="font-size:72px;margin-bottom:12px">🏡</div>
     <h1>我們這一家</h1>
     <p style="color:var(--text-light); margin-bottom: 2rem">請輸入家族密碼</p>
     <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
@@ -180,7 +179,7 @@ function getInfo(dateStr, type) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const solar = Solar.fromYmd(y, m, d);
   const lunar = solar.getLunar();
-  const lunarYear = lunar.getYear() - 1911; // 農曆民國年
+  const lunarYear = lunar.getYear() - 1911; 
   
   const rawZ = lunar.getYearShengXiao();
   const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
@@ -277,16 +276,15 @@ function render() {
       let subText = "";
       if (isUpcomingTab) {
         const eventName = e.type === 'birthday_solar' ? `${e.nextAge} 歲生日` : `${e.nextAge} 週年紀念`;
-        // 結婚紀念日不顯示農曆
         const detailStr = isAnniversary ? toRocDisplay(e.date) : `${toRocDisplay(e.date)} · ${info.lunar}`;
         subText = `<div class="card-meta" style="color:var(--primary-color); font-weight:bold">${eventName}</div>
                    <div class="card-meta">${detailStr}</div>`;
       } else {
         if (isAnniversary) {
-          subText = `<div class="card-meta" style="font-size:15px; color:var(--text-main); font-weight:bold; margin-top:8px">
+          subText = `<div class="card-meta" style="font-size:17px; color:var(--text-main); font-weight:bold; margin-top:8px">
                      ${toRocDisplay(e.date)} · ${info.age} 週年</div>`;
         } else {
-          subText = `<div class="card-meta" style="font-size:15px; color:var(--text-main); font-weight:bold; margin-top:8px">
+          subText = `<div class="card-meta" style="font-size:17px; color:var(--text-main); font-weight:bold; margin-top:8px">
                      ${toRocDisplay(e.date)} · ${info.age} 歲</div>
                      <div class="card-meta">${info.lunar} · ${info.zodiac}</div>`;
         }
@@ -294,7 +292,7 @@ function render() {
 
       h += `<div class="card" onclick="viewEntry('${e.id}')">
         <div class="card-row">
-          <div class="avatar ${isAnniversary?'pink-bg':''}" style="${isAnniversary||(isUpcomingTab && e.type==='birthday_solar')?'font-size:28px':''}">${avatar}</div>
+          <div class="avatar ${isAnniversary?'pink-bg':''}" style="${isAnniversary||(isUpcomingTab && e.type==='birthday_solar')?'font-size:32px':''}">${avatar}</div>
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span class="card-name">${e.name}</span>
