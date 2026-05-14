@@ -42,7 +42,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 /* Cards */
 .card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); cursor:pointer;}
 .card-row{display:flex;align-items:center;gap:16px}
-.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color)}
+.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color); flex-shrink: 0;}
 .card-name{font-size:19px;font-weight:bold; color: #2c3e50;}
 .card-meta{font-size:14px;color: #7f8c8d; margin-top:4px; line-height: 1.5;}
 .days-chip{font-size:13px; padding: 4px 12px; border-radius: 10px; background: #f1f5f9; color: #64748b; font-weight: bold; white-space: nowrap;}
@@ -69,9 +69,6 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 .btn-close{ background: #edf2f7; color: #4a5568; }
 .btn-edit{ background: #3182ce; color: #fff; }
 .btn-save{ background: var(--accent-green); color: #fff; width: 100%; }
-
-.sync-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 50px; font-size: 13px; opacity: 0; transition: 0.5s; pointer-events: none;}
-.sync-toast.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -108,7 +105,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
   <div id="view-custom" style="display:none"></div>
 </div>
 
-<div id="sync-toast" class="sync-toast">資料已同步 ✨</div>
+<div id="sync-toast" style="display:none" class="sync-toast"></div>
 
 <div class="modal-bg" id="modal">
   <div class="modal" id="modal-container">
@@ -149,7 +146,6 @@ const STORAGE_KEY = 'family_v1';
 const MONTHS_TW = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const today = new Date();
 
-// 工具：民國轉西元 dateStr
 function rocToSolar(rocStr) {
   let v = rocStr.replace(/[^\d]/g, '');
   if (v.length < 6) return null;
@@ -163,25 +159,17 @@ function toRocDisplay(dateStr) {
   return `${y - 1911}年${m}月${d}日`;
 }
 
-// 核心計算：農曆、生肖、星座、年齡
 function getInfo(dateStr, type) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const solar = Solar.fromYmd(y, m, d);
   const lunar = solar.getLunar();
-  
-  // 生肖
   const rawZ = lunar.getYearShengXiao();
   const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
-  
-  // 星座
   const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
   const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
   let sIdx = m-1; if(d < cutoffs[sIdx]) sIdx = (sIdx + 11) % 12;
   const starSign = signs[sIdx];
-
-  // 年齡（目前歲數）
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const birth = new Date(y, m-1, d);
   let age = today.getFullYear() - y;
   const thisYearBirthday = new Date(today.getFullYear(), m-1, d);
   if (t < thisYearBirthday) age--;
@@ -193,21 +181,15 @@ function getInfo(dateStr, type) {
   };
 }
 
-// 倒數計算：X 個月 Y 天
 function getCountdown(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   let target = new Date(today.getFullYear(), m-1, d);
-  if (target < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-    target.setFullYear(today.getFullYear() + 1);
-  }
-  
-  const diffTime = target - new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (target < now) target.setFullYear(today.getFullYear() + 1);
+  const diffTime = target - now;
   const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
   if (totalDays === 0) return "今天 🎉";
-
-  // 精確計算月與天
-  let tempDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  let tempDate = new Date(now.getTime());
   let months = 0;
   while (true) {
     let nextMonth = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, tempDate.getDate());
@@ -216,11 +198,17 @@ function getCountdown(dateStr) {
     months++;
   }
   const days = Math.round((target - tempDate) / (1000 * 60 * 60 * 24));
-  
   let res = "";
   if (months > 0) res += `${months} 個月 `;
   if (days > 0) res += `${days} 天`;
   return res || `${totalDays} 天`;
+}
+
+// 根據類型與頁面取得圖示
+function getAvatarContent(e, isUpcoming) {
+  if (e.type === 'anniversary') return '💍';
+  if (isUpcoming && e.type === 'birthday_solar') return '🎂';
+  return e.name[0];
 }
 
 async function init() {
@@ -242,13 +230,16 @@ async function refreshData() {
 function render() {
   ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(tab => {
     let list = [];
-    if(tab === 'upcoming') {
+    const isUpcomingTab = tab === 'upcoming';
+    
+    if(isUpcomingTab) {
       list = [...data].map(e => {
         const [y,m,d] = e.date.split('-').map(Number);
         let t = new Date(today.getFullYear(), m-1, d);
-        if(t < new Date(today.getFullYear(), today.getMonth(), today.getDate())) t.setFullYear(today.getFullYear()+1);
+        const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        if(t < now) t.setFullYear(today.getFullYear()+1);
         const nextAge = t.getFullYear() - y;
-        const diffDays = Math.ceil((t - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/(1000*60*60*24));
+        const diffDays = Math.ceil((t - now)/(1000*60*60*24));
         return {...e, diffDays, nextAge};
       }).sort((a,b) => a.diffDays - b.diffDays);
     } else {
@@ -260,25 +251,32 @@ function render() {
     list.forEach(e => {
       const info = getInfo(e.date, e.type);
       const countdown = getCountdown(e.date);
-      const isSoon = countdown.includes('天') && !countdown.includes('個月') && parseInt(countdown) <= 7;
+      const avatar = getAvatarContent(e, isUpcomingTab);
       
       let subText = "";
-      if (tab === 'upcoming') {
+      if (isUpcomingTab) {
         const eventName = e.type === 'birthday_solar' ? `${e.nextAge} 歲生日` : `${e.nextAge} 週年紀念`;
         subText = `<div class="card-meta" style="color:var(--primary-color); font-weight:bold">${eventName}</div>
                    <div class="card-meta">${toRocDisplay(e.date)} · ${info.lunar}</div>`;
       } else {
-        subText = `<div class="card-meta">${toRocDisplay(e.date)} · ${info.age} 歲</div>
-                   <div class="card-meta">${info.lunar} · ${info.zodiac}</div>`;
+        if (e.type === 'anniversary') {
+          // 結婚紀念日不顯示農曆星座，改顯示週年
+          subText = `<div class="card-meta" style="font-size:15px; color:var(--text-main); font-weight:bold; margin-top:8px">
+                     ${toRocDisplay(e.date)} · ${info.age} 週年</div>`;
+        } else {
+          subText = `<div class="card-meta" style="font-size:15px; color:var(--text-main); font-weight:bold; margin-top:8px">
+                     ${toRocDisplay(e.date)} · ${info.age} 歲</div>
+                     <div class="card-meta">${info.lunar} · ${info.zodiac}</div>`;
+        }
       }
 
       h += `<div class="card" onclick="viewEntry('${e.id}')">
         <div class="card-row">
-          <div class="avatar">${e.name[0]}</div>
+          <div class="avatar" style="${e.type==='anniversary'||(isUpcomingTab && e.type==='birthday_solar')?'font-size:28px':''}">${avatar}</div>
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span class="card-name">${e.name}</span>
-              <span class="days-chip ${isSoon || countdown === '今天 🎉' ? 'soon' : ''}">${countdown === '今天 🎉' ? countdown : '剩 ' + countdown}</span>
+              ${isUpcomingTab ? `<span class="days-chip ${countdown==='今天 🎉'?'soon':''}">${countdown==='今天 🎉'?countdown:'剩 '+countdown}</span>` : ''}
             </div>
             ${subText}
           </div>
@@ -315,6 +313,7 @@ function viewEntry(id) {
   if (e.type !== 'birthday_solar') {
     document.getElementById('fg-lunar').classList.add('empty');
     document.getElementById('fg-zodiac').classList.add('empty');
+    document.getElementById('fg-birth-time').classList.add('empty');
   }
 
   document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = true);
@@ -325,11 +324,10 @@ function viewEntry(id) {
 function enableEdit() {
   const modal = document.getElementById('modal-container');
   modal.classList.remove('view-mode');
-  document.getElementById('modal-title').textContent = '編輯紀錄';
   document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = false);
   document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
   const d = document.getElementById('f-date').value.split('-');
-  document.getElementById('f-roc-input').value = (d[0]-1911)+d[1]+d[2];
+  document.getElementById('f-roc-input').value = (d[0]-1911)+"/"+d[1]+"/"+d[2];
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
   updateFields();
@@ -340,7 +338,6 @@ function openModal() {
   const modal = document.getElementById('modal-container');
   modal.classList.remove('view-mode');
   document.getElementById('modal').classList.add('open');
-  document.getElementById('modal-title').textContent = '新增紀錄';
   document.querySelectorAll('.fg input').forEach(i => i.value = '');
   document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
   document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = false);
@@ -354,6 +351,8 @@ function updateFields() {
   document.getElementById('fg-label').style.display = t === 'custom' ? '' : 'none';
   document.getElementById('fg-lunar').style.display = t === 'birthday_solar' ? '' : 'none';
   document.getElementById('fg-zodiac').style.display = t === 'birthday_solar' ? '' : 'none';
+  // 結婚紀念日與其他，不顯示生辰
+  document.getElementById('fg-birth-time').style.display = t === 'birthday_solar' ? '' : 'none';
 }
 
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
