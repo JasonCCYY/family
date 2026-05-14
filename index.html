@@ -11,12 +11,12 @@
 <script src="https://cdn.jsdelivr.net/gh/6tail/lunar-javascript@master/lunar.js"></script>
 <style>
 :root {
-  --bg-color: #fdfaf5;
+  --bg-color: #fdfaf5;      /* 暖米色背景 */
   --card-bg: #ffffff;
-  --primary-color: #e67e22;
-  --text-main: #2c3e50;
-  --text-light: #94a3b8;
-  --accent-green: #6d8c54;
+  --primary-color: #e67e22;  /* 暖橘色 */
+  --text-main: #5d4037;      /* 深咖啡文字 */
+  --text-light: #a1887f;     /* 淺咖啡文字 */
+  --accent-green: #6d8c54;   /* 柔和葉綠色 */
   --anniversary-pink: #fce4ec; /* 結婚紀念日背景粉紅 */
   --anniversary-text: #d81b60; /* 結婚紀念日文字顏色 */
 }
@@ -27,61 +27,74 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 /* Login */
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
 .lock-card{background:#fff;border-radius:24px;padding:3rem 2rem;width:340px;text-align:center;box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+.lock-card h1{font-size:24px;font-weight:bold;margin-bottom:8px;}
 .lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;margin-bottom:15px; outline:none;}
 .lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;}
 
-/* Main App */
+/* Main App Header */
 #app{display:none;max-width:640px;margin:0 auto;padding:1.5rem 1.2rem}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.header h1{font-size:26px;font-weight:900;}
+.header h1{font-size:26px;font-weight:900; letter-spacing: 1px;}
 .date-str{font-size:14px;color: var(--text-light);}
-.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-weight:bold;}
+.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-weight:bold; box-shadow: 0 4px 8px rgba(109,140,84,0.2)}
 
 .tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px;}
 .tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap;}
 .tab.active{background: var(--primary-color);color:#fff;}
 
-/* Cards */
-.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); cursor:pointer;}
+/* List Cards */
+.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(93,64,55,0.04); border: 1px solid rgba(240,230,214,0.5); cursor:pointer;}
 .card-row{display:flex;align-items:center;gap:16px}
 .avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color); flex-shrink: 0;}
-.avatar.pink-bg { background-color: var(--anniversary-pink); color: var(--anniversary-text); } /* 粉紅背景 */
+.avatar.pink-bg { background-color: var(--anniversary-pink); color: var(--anniversary-text); }
 
-.card-name{font-size:19px;font-weight:bold; color: #2c3e50;}
-.card-meta{font-size:14px;color: #7f8c8d; margin-top:4px; line-height: 1.5;}
+.card-name{font-size:19px;font-weight:bold; color: var(--text-main);}
+.card-meta{font-size:14px;color: var(--text-light); margin-top:4px; line-height: 1.5;}
 .days-chip{font-size:13px; padding: 4px 12px; border-radius: 10px; background: #f1f5f9; color: #64748b; font-weight: bold; white-space: nowrap;}
 .days-chip.soon{background: #fff4ed; color: var(--primary-color);}
 
-/* Modal Style */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
+/* Modal - 完全同步 App 溫馨配色 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(93,64,55,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:24px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto;}
-.modal-header{padding: 20px 24px; border-bottom: 1px solid #f0f0f0;}
-.modal-header h3{font-size: 20px; font-weight: 900;}
+.modal{background:#fff;border-radius:28px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto; box-shadow: 0 20px 40px rgba(93,64,55,0.2);}
+.modal-header{padding: 24px 24px 12px 24px; border-bottom: 1px solid #fdfaf5;}
+.modal-header h3{font-size: 22px; font-weight: 900; color: var(--text-main);}
 .modal-content{padding: 10px 24px;}
-.fg{margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f8f8f8;}
-.fg label{display:block;font-size:13px;color: #a0aec0; margin-bottom:4px;}
-.fg input, .fg select{width:100%; padding: 4px 0; border: 1px solid #eee; border-radius: 8px; font-size:16px; background:#fff; outline: none;}
 
-/* View Mode override */
-.view-mode .fg input, .view-mode .fg select { border: none !important; padding: 4px 0 !important; font-size: 20px !important; font-weight: 600 !important; color: #2d3748 !important; background: transparent !important; -webkit-text-fill-color: #2d3748 !important; opacity: 1 !important;}
+.fg{margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #fdf3e7;} /* 暖色分隔線 */
+.fg label{display:block;font-size:13px;color: var(--text-light); margin-bottom:6px; font-weight: bold;}
+.fg input, .fg select{width:100%; padding: 8px 12px; border: 1.5px solid #eee; border-radius: 12px; font-size:16px; background:#fdfdfd; color: var(--text-main); outline: none;}
+
+/* 【查看模式】詳情排版 */
+.view-mode .fg input, .view-mode .fg select { 
+    border: none !important; 
+    padding: 4px 0 !important; 
+    font-size: 22px !important; 
+    font-weight: 900 !important; 
+    color: var(--text-main) !important; 
+    background: transparent !important; 
+    -webkit-text-fill-color: var(--text-main) !important; 
+    opacity: 1 !important;
+    appearance: none; -webkit-appearance: none;
+}
 .view-mode .fg.empty { display: none; }
 
-.modal-footer{padding: 20px 24px; display: flex; gap: 10px;}
-.btn{flex:1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-.btn-delete{ background: #fff; color: #e53e3e; border: 1px solid #fed7d7 !important; }
+/* 詳情模式按鈕樣式 */
+.modal-footer{padding: 20px 24px 30px 24px; display: flex; gap: 10px;}
+.btn{flex:1; padding: 14px; border-radius: 16px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+.btn-delete{ background: #fff; color: #e53e3e; border: 1.5px solid #fed7d7 !important; }
 .btn-close{ background: #edf2f7; color: #4a5568; }
-.btn-edit{ background: #3182ce; color: #fff; }
-.btn-save{ background: var(--accent-green); color: #fff; width: 100%; }
+.btn-edit{ background: #3182ce; color: #fff; box-shadow: 0 4px 10px rgba(49,130,206,0.2); }
+.btn-save{ background: var(--accent-green); color: #fff; width: 100%; box-shadow: 0 4px 10px rgba(109,140,84,0.2); }
 </style>
 </head>
 <body>
 
 <div id="lock-screen">
   <div class="lock-card">
-    <div style="font-size:56px;margin-bottom:12px">🏡</div>
+    <div style="font-size:64px;margin-bottom:12px">🏡</div>
     <h1>我們這一家</h1>
-    <p style="color:#94a3b8; margin-bottom: 2rem">請輸入家族密碼</p>
+    <p style="color:var(--text-light); margin-bottom: 2rem">請輸入家族密碼</p>
     <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
     <button onclick="checkPw()">進入家園</button>
   </div>
@@ -167,19 +180,23 @@ function getInfo(dateStr, type) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const solar = Solar.fromYmd(y, m, d);
   const lunar = solar.getLunar();
+  const lunarYear = lunar.getYear() - 1911; // 農曆民國年
+  
   const rawZ = lunar.getYearShengXiao();
   const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
+  
   const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
   const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
   let sIdx = m-1; if(d < cutoffs[sIdx]) sIdx = (sIdx + 11) % 12;
   const starSign = signs[sIdx];
+  
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   let age = today.getFullYear() - y;
   const thisYearBirthday = new Date(today.getFullYear(), m-1, d);
   if (t < thisYearBirthday) age--;
 
   return {
-    lunar: `農曆 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
+    lunar: `農曆 ${lunarYear}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
     zodiac: `${cnZ} / ${starSign}座`,
     age: Math.max(0, age)
   };
@@ -316,19 +333,14 @@ function viewEntry(id) {
     if (!e[f.replace('-','')] && !e[f]) document.getElementById('fg-'+f).classList.add('empty');
   });
 
-  // 根據類型隱藏特定欄位
-  if (e.type === 'anniversary') {
-    document.getElementById('fg-lunar').classList.add('empty');
-    document.getElementById('fg-zodiac').classList.add('empty');
-    document.getElementById('fg-birth-time').classList.add('empty');
-  } else if (e.type === 'custom') {
+  if (e.type === 'anniversary' || e.type === 'custom') {
     document.getElementById('fg-lunar').classList.add('empty');
     document.getElementById('fg-zodiac').classList.add('empty');
     document.getElementById('fg-birth-time').classList.add('empty');
   }
 
   document.querySelectorAll('.fg input').forEach(i => i.readOnly = true);
-  document.getElementById('f-type').disabled = true; // 查看模式禁用選單
+  document.getElementById('f-type').disabled = true; 
   document.getElementById('btns-view').style.display = 'flex';
   document.getElementById('btns-edit').style.display = 'none';
 }
@@ -338,7 +350,7 @@ function enableEdit() {
   modal.classList.remove('view-mode');
   document.getElementById('modal-title').textContent = '編輯紀錄';
   document.querySelectorAll('.fg input').forEach(i => i.readOnly = false);
-  document.getElementById('f-type').disabled = false; // 編輯模式啟用選單
+  document.getElementById('f-type').disabled = false; 
   document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
   const d = document.getElementById('f-date').value.split('-');
   document.getElementById('f-roc-input').value = (d[0]-1911)+"/"+d[1]+"/"+d[2];
