@@ -2,124 +2,131 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家族紀念日</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我們這一家</title>
+<!-- PWA 標籤 -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#fdfaf5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/609/609803.png">
+
 <script src="https://cdn.jsdelivr.net/gh/6tail/lunar-javascript@master/lunar.js"></script>
 <style>
-/* Reset & 基本字體放大 */
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif}
-body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
+/* 溫馨暖色調變數 */
+:root {
+  --bg-color: #fdfaf5;      /* 暖米色背景 */
+  --card-bg: #ffffff;
+  --primary-color: #e67e22;  /* 暖橘色 */
+  --secondary-color: #8d6e63; /* 木質感棕色 */
+  --text-main: #5d4037;      /* 深咖啡文字 */
+  --text-light: #a1887f;     /* 淺咖啡文字 */
+  --accent-green: #6d8c54;   /* 柔和葉綠色 */
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif}
+body{background: var(--bg-color); color: var(--text-main); min-height:100vh; font-size:16px; -webkit-tap-highlight-color: transparent;}
 
 /* Login Screen */
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.lock-card{background:#fff;border-radius:16px;border:1px solid #e8e4dc;padding:2.5rem 2rem;width:320px;text-align:center}
-.lock-card h1{font-size:22px;font-weight:bold;margin-bottom:6px}
-.lock-card p{font-size:14px;color:#888;margin-bottom:1.5rem}
-.lock-card input{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:16px;text-align:center;letter-spacing:4px;margin-bottom:10px}
-.lock-card button{width:100%;padding:12px;background:#4a7c59;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
-.lock-card button:hover{background:#3a6347}
-.lock-card .err{font-size:13px;color:#c0392b;margin-top:6px;min-height:18px}
+.lock-card{background:#fff;border-radius:24px;box-shadow: 0 10px 30px rgba(0,0,0,0.05);padding:3rem 2rem;width:320px;text-align:center;border: 1px solid #f0e6d6;}
+.lock-card h1{font-size:24px;font-weight:bold;margin-bottom:8px; color: var(--text-main)}
+.lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:15px; outline:none; transition: 0.3s;}
+.lock-card input:focus{border-color: var(--primary-color);}
+.lock-card button{width:100%;padding:14px;background: var(--primary-color);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow: 0 4px 10px rgba(230,126,34,0.3)}
 
 /* App Main */
-#app{display:none;max-width:720px;margin:0 auto;padding:1.5rem 1rem}
+#app{display:none;max-width:640px;margin:0 auto;padding:1.5rem 1.2rem}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.header h1{font-size:22px;font-weight:bold}
-.header .date-str{font-size:14px;color:#888;margin-top:4px}
-.logout-btn{font-size:14px;color:#aaa;background:none;border:none;cursor:pointer;padding:4px 8px;margin-left:10px;font-weight:bold}
-.add-btn-header{background:#4a7c59;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold}
-.add-btn-header:hover{background:#3a6347}
+.header h1{font-size:26px;font-weight:900; color: var(--text-main); letter-spacing: 1px;}
+.header .date-str{font-size:14px;color: var(--text-light);margin-top:4px}
+.logout-btn{font-size:13px;color: var(--text-light);background:none;border:none;cursor:pointer;padding:4px 8px;font-weight:bold}
+.add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:bold; box-shadow: 0 4px 8px rgba(109,140,84,0.2)}
 
-.tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
-.tab{padding:8px 18px;border-radius:8px;border:1px solid #ddd;background:transparent;cursor:pointer;font-size:14px;font-weight:bold;color:#666}
-.tab.active{background:#eee;color:#1a1a1a;font-weight:bold}
+.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch;}
+.tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;cursor:pointer;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap; transition: 0.3s;}
+.tab.active{background: var(--primary-color);color:#fff; box-shadow: 0 4px 10px rgba(230,126,34,0.2)}
 
 /* Cards */
-.card{background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:0.2s}
-.card:hover{border-color:#ccc;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.card-row{display:flex;align-items:flex-start;gap:14px}
-.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex-shrink:0;background:#e8f0e8;color:#3a6347;margin-top:2px}
+.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(93,64,55,0.04); border: 1px solid rgba(240,230,214,0.5); cursor:pointer;}
+.card-row{display:flex;align-items:flex-start;gap:16px}
+.avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;flex-shrink:0;background:#fff5e9;color: var(--primary-color)}
 .card-info{flex:1;min-width:0}
-.card-name{font-size:18px;font-weight:bold}
-.card-meta{font-size:14px;color:#666;margin-top:5px;line-height:1.4}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#eef3ee;color:#3a6347;font-weight:bold}
-.days-chip{font-size:14px;color:#888;white-space:nowrap;font-weight:bold}
-.days-chip.soon{color:#e07b30}
-.days-chip.today{color:#3a6347;font-weight:900}
+.card-name{font-size:19px;font-weight:bold; color: var(--text-main)}
+.card-meta{font-size:14px;color: var(--text-light);margin-top:5px;line-height:1.4}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;font-weight:bold}
+.days-chip{font-size:13px; padding: 4px 10px; border-radius: 8px; background: #f8f8f8; color: var(--text-light); font-weight: bold; white-space: nowrap;}
+.days-chip.soon{background: #fff4ed; color: var(--primary-color);}
+.days-chip.today{background: var(--primary-color); color: #fff;}
 
 /* Upcoming Items */
-.up-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid #f0ede8;cursor:pointer}
-.up-item:hover{background:#faf9f7}
-.up-item:last-child{border:none}
+.up-item{display:flex;align-items:center;gap:16px;padding:16px;background:#fff; border-radius:18px; margin-bottom:12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor:pointer}
 .up-date{width:50px;text-align:center;flex-shrink:0}
-.up-mon{font-size:12px;color:#888;font-weight:bold;margin-bottom:2px}
-.up-day{font-size:26px;font-weight:bold;line-height:1.1;color:#1a1a1a}
-.up-info{flex:1;margin-top:2px}
-.up-name{font-size:18px;font-weight:bold}
-.up-type{font-size:14px;color:#666;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.section-label{font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;margin-top:1.5rem}
+.up-mon{font-size:12px;color: var(--text-light);font-weight:bold;margin-bottom:2px}
+.up-day{font-size:28px;font-weight:900;color: var(--primary-color); line-height: 1;}
+.up-info{flex:1;min-width:0}
+.up-name{font-size:18px;font-weight:bold; color: var(--text-main)}
+.section-label{font-size:14px;font-weight:bold;color: var(--secondary-color);margin: 20px 0 12px 5px; display: flex; align-items: center; gap: 8px;}
+.section-label::after{content:''; flex:1; height:1px; background: #eee;}
 
-/* Modal 背景 */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(93,64,55,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:16px;padding:2rem;width:400px;max-width:92vw;max-height:90vh;overflow-y:auto}
-.modal h3{font-size:20px;font-weight:bold;margin-bottom:1.5rem;color:#1a1a1a}
+.modal{background:#fff;border-radius:28px;padding:2rem;width:400px;max-width:92vw;max-height:90vh;overflow-y:auto; position: relative;}
+.modal h3{font-size:22px;font-weight:bold;margin-bottom:1.5rem;color: var(--text-main)}
 
-/* 【編輯模式】表單樣式 (預設) */
+/* 表單 */
 .fg{margin-bottom:16px}
-.fg label{display:block;font-size:14px;color:#666;margin-bottom:6px;font-weight:bold}
-.fg input,.fg select{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:16px;background:#fff;color:#1a1a1a;font-weight:bold;}
-.fg input:disabled,.fg select:disabled{background:#f5f5f5;color:#888}
+.fg label{display:block;font-size:13px;color: var(--text-light);margin-bottom:6px;font-weight:bold}
+.fg input,.fg select{width:100%;padding:12px 14px;border:1.5px solid #eee;border-radius:12px;font-size:16px;background:#fdfdfd;color: var(--text-main); outline: none; transition: 0.3s;}
+.fg input:focus{border-color: var(--primary-color)}
 
-/* 【檢視模式】強制破解 iOS 反灰，深藍色大字 */
-.modal.view-mode .fg { margin-bottom: 18px; }
-.modal.view-mode .fg label { font-size: 14px; color: #888; font-weight: normal; margin-bottom: 6px; }
-.modal.view-mode .fg input, 
-.modal.view-mode .fg select {
+/* 檢視模式大字 */
+.modal.view-mode .fg input {
     border: none !important;
-    border-bottom: 1px solid #e0e0e0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
     border-radius: 0 !important;
-    padding: 0 0 10px 0 !important;
+    padding: 0 0 8px 0 !important;
     background: transparent !important;
-    font-size: 22px !important;        /* 加大字體 */
-    color: #1a73e8 !important;         /* 鮮明藍色 */
-    font-weight: 900 !important;       /* 超粗體 */
-    -webkit-appearance: none !important;
-    appearance: none !important;
-    opacity: 1 !important;             /* 破解 iOS 透明度 */
-    -webkit-text-fill-color: #1a73e8 !important; /* 破解 iOS 強制灰字 */
+    font-size: 22px !important;
+    color: var(--secondary-color) !important;
+    font-weight: 900 !important;
+    -webkit-text-fill-color: var(--secondary-color) !important;
+    opacity: 1 !important;
 }
-/* 檢視模式下隱藏沒有資料的欄位 */
-.modal.view-mode .fg.empty-field { display: none !important; }
 
-/* 按鈕區塊設定 */
 .modal-btns{display:flex;gap:10px;margin-top:2rem;}
-.modal-btns button{flex:1;padding:12px 0;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;text-align:center;}
-.btn-del-new { background:#ffebee; color:#d32f2f; border:none; }
-.btn-close-new { background:#fff; color:#555; border:1px solid #e0e0e0; }
-.btn-edit-new { background:#4a7c59; color:#fff; border:none; }
+.modal-btns button{flex:1;padding:14px 0;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;border:none}
+.btn-del-new { background:#fee; color:#c0392b; }
+.btn-close-new { background:#f5f5f5; color: var(--text-light); }
+.btn-edit-new { background: var(--primary-color); color:#fff; }
 
-/* Utility */
-.empty{text-align:center;color:#bbb;font-size:14px;padding:2rem}
-.loading{text-align:center;color:#aaa;font-size:14px;padding:2rem}
+.sync-toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: rgba(93,64,55,0.9); color: white; padding: 10px 20px;
+    border-radius: 50px; font-size: 13px; z-index: 1000;
+    opacity: 0; transition: 0.5s; pointer-events: none;
+}
+.sync-toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 
 <div id="lock-screen">
   <div class="lock-card">
-    <div style="font-size:36px;margin-bottom:12px">🏡</div>
-    <h1>家族紀念日</h1>
-    <p>請輸入密碼進入</p>
-    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
-    <button onclick="checkPw()">進入</button>
-    <div class="err" id="pw-err"></div>
+    <div style="font-size:48px;margin-bottom:12px">🏡</div>
+    <h1>我們這一家</h1>
+    <p style="color: var(--text-light); margin-bottom: 1.5rem">請輸入密碼進入</p>
+    <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <button onclick="checkPw()">進入溫馨家園</button>
+    <div class="err" id="pw-err" style="color:#c0392b; font-size:13px; margin-top:8px"></div>
   </div>
 </div>
 
 <div id="app">
   <div class="header">
     <div>
-      <h1>家族紀念日 🌸</h1>
+      <h1>我們這一家</h1>
       <div class="date-str" id="today-str"></div>
     </div>
     <div style="display:flex; align-items:center;">
@@ -132,7 +139,7 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
     <button class="tab active" onclick="setTab('upcoming')">即將到來</button>
     <button class="tab" onclick="setTab('birthday')">生日</button>
     <button class="tab" onclick="setTab('anniversary')">紀念日</button>
-    <button class="tab" onclick="setTab('custom')">自訂</button>
+    <button class="tab" onclick="setTab('custom')">其他</button>
   </div>
 
   <div id="view-upcoming"></div>
@@ -141,54 +148,25 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
   <div id="view-custom" style="display:none"></div>
 </div>
 
+<div id="sync-toast" class="sync-toast">已同步最新資料 ✨</div>
+
 <div class="modal-bg" id="modal">
   <div class="modal">
     <h3 id="modal-title">新增記錄</h3>
-    
-    <div class="fg" id="fg-name">
-      <label>姓名 / 稱謂</label>
-      <input id="f-name" type="text" placeholder="例：媽媽、阿嬤">
-    </div>
-    <div class="fg" id="fg-type">
-      <label>類型</label>
+    <div class="fg"><label>姓名 / 稱謂</label><input id="f-name" type="text" placeholder="例：媽媽、阿嬤"></div>
+    <div class="fg"><label>類型</label>
       <select id="f-type" onchange="updateFields()">
         <option value="birthday_solar">生日</option>
         <option value="anniversary">結婚紀念日</option>
         <option value="custom">自訂紀念日</option>
       </select>
     </div>
-    <div class="fg" id="fg-label" style="display:none">
-      <label>紀念日名稱</label>
-      <input id="f-label" type="text" placeholder="例：相識紀念日">
-    </div>
-    
-    <div class="fg" id="fg-date">
-      <label>日期</label>
-      <input id="f-roc-input" type="text" placeholder="輸入民國，例：1150513">
-    </div>
+    <div class="fg" id="fg-label" style="display:none"><label>紀念日名稱</label><input id="f-label" type="text" placeholder="例：相識紀念日"></div>
+    <div class="fg"><label>日期 (民國年，例：800124)</label><input id="f-roc-input" type="text" placeholder="輸入 6-7 位數字"></div>
     <input id="f-date" type="hidden"> 
-    
-    <div class="fg" id="fg-lunar">
-      <label>農曆</label>
-      <input id="f-lunar" type="text" readonly placeholder="自動轉換">
-    </div>
-    
-    <div class="fg" id="fg-zodiac">
-      <label>生肖 / 星座</label>
-      <div style="display:flex;gap:10px;">
-        <input id="f-zodiac-cn" type="text" readonly placeholder="生肖">
-        <input id="f-zodiac-en" type="text" readonly placeholder="星座">
-      </div>
-    </div>
-    
-    <div class="fg" id="fg-birth-time">
-      <label>生辰</label>
-      <input id="f-birth-time" type="text" placeholder="例：午時、上午6點">
-    </div>
-    <div class="fg" id="fg-remark">
-      <label>備註</label>
-      <input id="f-remark" type="text" placeholder="任何備註">
-    </div>
+    <div class="fg" id="fg-lunar"><label>農曆</label><input id="f-lunar" type="text" readonly></div>
+    <div class="fg" id="fg-birth-time"><label>生辰</label><input id="f-birth-time" type="text" placeholder="例：午時"></div>
+    <div class="fg" id="fg-remark"><label>備註</label><input id="f-remark" type="text" placeholder="任何想紀錄的..."></div>
     
     <div class="modal-btns" id="btns-view" style="display:none">
       <button class="btn-del-new" onclick="confirmDelete()">刪除</button>
@@ -203,266 +181,134 @@ body{background:#f7f5f0;color:#1a1a1a;min-height:100vh;font-size:16px;}
 </div>
 
 <script>
-// --- 核心變數與對照表 ---
+// --- PWA 註冊 ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>null));
+}
+
+// --- 核心變數 ---
+let data = [];
+const STORAGE_KEY = 'family_cache_v1';
 const MONTHS_TW=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const TYPE_LABEL={birthday_solar:'生日', anniversary:'結婚紀念日', custom:'自訂'};
-const ZODIAC_MAP = {'鼠':'鼠', '牛':'牛', '虎':'虎', '兔':'兔', '龙':'龍', '蛇':'蛇', '马':'馬', '羊':'羊', '猴':'猴', '鸡':'雞', '狗':'狗', '猪':'豬'};
-
-let data = [];
-let currentTab = 'upcoming';
-let currentEntryId = null; 
 const today = new Date();
 
-// --- 日期與年齡計算工具 ---
+// --- 秒開邏輯：先讀快取，再讀 API ---
+async function init() {
+  const d = new Date();
+  const todayStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  document.getElementById('today-str').textContent = toRocDate(todayStr);
+
+  // 1. 優先讀取本地快取
+  const cached = localStorage.getItem(STORAGE_KEY);
+  if (cached) {
+    data = JSON.parse(cached);
+    render();
+  }
+
+  // 2. 3秒後後台靜默同步
+  setTimeout(async () => {
+    await refreshData(true);
+  }, 3000);
+}
+
+async function refreshData(showToast = false) {
+  try {
+    const res = await fetch('/api/read');
+    if (!res.ok) return;
+    const freshData = await res.json();
+    data = freshData;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    render();
+    if (showToast) {
+        const toast = document.getElementById('sync-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  } catch (e) { console.warn("Offline or sync failed"); }
+}
+
+// --- 工具函數 ---
 function toRocDate(dateStr) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
   return `${y - 1911}年${m}月${d}日`;
 }
-
 function toRocInputFormat(dateStr) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-');
-  return `${parseInt(y) - 1911}/${m}/${String(d).padStart(2, '0')}`;
+  return `${parseInt(y) - 1911}${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
 }
-
 function getLunarString(solar) {
   const lunar = solar.getLunar();
-  const rocY = lunar.getYear() - 1911; 
-  const m = lunar.getMonth(); 
-  const d = lunar.getDayInChinese(); 
-  return `農曆 ${rocY}年${MONTHS_TW[m-1]}${d}`;
+  return `農曆 ${lunar.getYear()-1911}年${MONTHS_TW[lunar.getMonth()-1]}${lunar.getDayInChinese()}`;
 }
-
-function getWesternZodiac(m, d) {
-  const cutoffs = [20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 23, 22];
-  const signs = ['水瓶', '雙魚', '牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '摩羯'];
-  let idx = m - 1;
-  if (d < cutoffs[idx]) { idx = (idx - 1 + 12) % 12; }
-  return signs[idx];
-}
-
 function getAgeText(dateStr, type, isUpcoming) {
-  if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const thisYDate = new Date(today.getFullYear(), m-1, d);
-
-  if (type === 'anniversary' || type === 'custom') {
-    let eventY = today.getFullYear();
-    if (thisYDate < t) eventY++;
-    if (isUpcoming) return `滿 ${eventY - y} 週年`;
-    
-    let actualY = today.getFullYear() - y;
-    if (thisYDate > t) actualY--;
-    return `滿 ${Math.max(0, actualY)} 週年`;
-  }
-
-  if (isUpcoming) {
-    let eventY = today.getFullYear();
-    if (thisYDate < t) eventY++;
-    return `${eventY - y} 歲`;
-  } else {
-    let actualAge = today.getFullYear() - y;
-    if (thisYDate > t) actualAge--;
-    return `${Math.max(0, actualAge)} 歲`;
-  }
+  let eventY = today.getFullYear();
+  if (thisYDate < t) eventY++;
+  const age = eventY - y;
+  return (type==='birthday_solar') ? `${age} 歲` : `滿 ${age} 週年`;
+}
+function chipHtml(md, days) {
+  if(days === 0) return `<span class="days-chip today">🎉 今天！</span>`;
+  if(days <= 7) return `<span class="days-chip soon">剩 ${days} 天</span>`;
+  return `<span class="days-chip">剩 ${days} 天</span>`;
 }
 
-function chipHtml(md, totalDays) {
-  if(totalDays === 0) return `<span class="days-chip today">🎉 今天！</span>`;
-  const [m, d] = md.split('-').map(Number);
-  let target = new Date(today.getFullYear(), m - 1, d);
-  let t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  
-  if(target < t) target.setFullYear(today.getFullYear() + 1);
-
-  let yDiff = target.getFullYear() - t.getFullYear();
-  let mDiff = target.getMonth() - t.getMonth();
-  let mos = yDiff * 12 + mDiff;
-
-  if (target.getDate() < t.getDate()) { mos--; }
-
-  let temp = new Date(t.getFullYear(), t.getMonth() + mos, t.getDate());
-  let remainDays = Math.round((target - temp) / 864e5);
-
-  let txt = '';
-  if(mos > 0 && remainDays > 0) txt = `${mos} 個月 ${remainDays} 天`;
-  else if(mos > 0) txt = `${mos} 個月`;
-  else txt = `${remainDays} 天`;
-
-  if(totalDays <= 7) return `<span class="days-chip soon">剩 ${txt}</span>`;
-  return `<span class="days-chip">剩 ${txt}</span>`;
-}
-
-function buildCardExtraInfo(e, isUpcoming = false) {
-  let extraHtml = '';
-  
-  if (e.type === 'birthday_solar' && e.date) {
-    try {
-      const [y, m, d] = e.date.split('-').map(Number);
-      const solar = Solar.fromYmd(y, m, d);
-      const rawZodiac = solar.getLunar().getYearShengXiao();
-      const zodiacCn = (ZODIAC_MAP[rawZodiac] || rawZodiac);
-      const zodiacEn = getWesternZodiac(m, d);
-      
-      if (!isUpcoming) {
-        extraHtml += `<div class="card-meta">${getLunarString(solar)}</div>`;
-        extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
-      } else {
-        extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
-        extraHtml += `<div class="card-meta">${zodiacCn} <span style="color:#ddd; margin:0 6px;">|</span> ${zodiacEn}</div>`;
-      }
-    } catch(err) { console.error(err); }
-  } else if (isUpcoming && e.date) {
-    extraHtml += `<div class="card-meta">${toRocDate(e.date)}</div>`;
-  }
-  
-  if (e.birthTime) extraHtml += `<div class="card-meta">生辰：${e.birthTime}</div>`;
-  if (e.remark) extraHtml += `<div class="card-meta">備註：${e.remark}</div>`;
-  
-  return extraHtml;
-}
-
-function getTypeBadge(e) {
-  let color = '#4a7c59', bg = '#eef3ee', icon = '🎂 ';
-  if (e.type === 'anniversary') { color = '#d81b60'; bg = '#fce4ec'; icon = '💍 '; }
-  else if (e.type === 'custom') { color = '#e67e22'; bg = '#fdf2e9'; icon = '⭐ '; }
-  
-  let tl = e.type === 'custom' && e.label ? e.label : TYPE_LABEL[e.type];
-  return `<span class="badge" style="color:${color};background:${bg};"><span style="margin-right:2px">${icon}</span>${tl}</span>`;
-}
-
-// --- 表單與解析 ---
-function parseRocInput(val) {
-  val = val.replace(/[^\d]/g, ''); 
-  if(val.length >= 6 && val.length <= 7) {
-      let y = val.slice(0, val.length - 4);
-      let m = val.slice(-4, -2);
-      let d = val.slice(-2);
-      if (parseInt(m) >= 1 && parseInt(m) <= 12 && parseInt(d) >= 1 && parseInt(d) <= 31) {
-          return { rocStr: `${y}/${m}/${d}`, dateStr: `${parseInt(y)+1911}-${m}-${d}` };
-      }
-  }
-  return null;
-}
-
-document.getElementById('f-roc-input').addEventListener('change', function() {
-  if (!this.value.trim()) {
-      document.getElementById('f-date').value = '';
-      document.getElementById('f-lunar').value = '';
-      document.getElementById('f-zodiac-cn').value = '';
-      document.getElementById('f-zodiac-en').value = '';
-      return;
-  }
-  let parsed = parseRocInput(this.value);
-  if (parsed) {
-      this.value = parsed.rocStr;
-      document.getElementById('f-date').value = parsed.dateStr;
-      try {
-        const [y, m, d] = parsed.dateStr.split('-').map(Number);
-        const solar = Solar.fromYmd(y, m, d);
-        document.getElementById('f-lunar').value = getLunarString(solar);
-        
-        const rawZodiac = solar.getLunar().getYearShengXiao();
-        document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac);
-        document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
-      } catch(e) {}
-  } else {
-      alert('日期格式錯誤！\n請輸入有效的民國年格式，例如：1150513 或 115/05/13');
-      this.value = '';
-  }
-});
-
-// --- 渲染畫面 ---
-function getMonthDay(e){ return e.date.slice(5); }
-function daysUntil(md){
-  const [m,d]=md.split('-').map(Number);
-  const thisY=new Date(today.getFullYear(),m-1,d);
-  const nextY=new Date(today.getFullYear()+1,m-1,d);
-  let diff=Math.round((thisY-today)/(864e5));
-  if(diff<0) diff=Math.round((nextY-today)/(864e5));
-  return diff;
-}
-
+// --- 渲染 ---
 function render() {
   renderUpcoming();
-  renderList('birthday');
-  renderList('anniversary');
-  renderList('custom');
+  ['birthday','anniversary','custom'].forEach(renderList);
 }
 
 function renderUpcoming() {
-  const sorted = [...data].map(e => ({...e, md: getMonthDay(e), days: daysUntil(getMonthDay(e))})).sort((a,b) => a.days - b.days);
-  const near = sorted.filter(e => e.days <= 60);
-  const far = sorted.filter(e => e.days > 60);
-  
+  const sorted = [...data].map(e => {
+    const [m,d] = e.date.slice(5).split('-').map(Number);
+    let target = new Date(today.getFullYear(), m-1, d);
+    if(target < new Date(today.getFullYear(), today.getMonth(), today.getDate())) target.setFullYear(today.getFullYear()+1);
+    const diff = Math.round((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 864e5);
+    return {...e, days: diff, md: e.date.slice(5)};
+  }).sort((a,b) => a.days - b.days);
+
   let h = '';
-  if (!data.length) { h = '<div class="empty">尚未新增任何記錄</div>'; }
+  if (!data.length) h = '<div style="text-align:center;padding:3rem;color:#ccc">點擊「新增」開始記錄</div>';
   
+  const near = sorted.filter(e => e.days <= 60);
   if (near.length) {
-    h += `<div class="section-label">近 60 天</div>`;
-    near.forEach(e => { h += upItem(e); });
-  }
-  if (far.length) {
-    h += `<div class="section-label" style="margin-top:1rem">之後</div>`;
-    far.forEach(e => { h += upItem(e); });
+    h += `<div class="section-label">近 60 天紀念</div>`;
+    near.forEach(e => h += `
+      <div class="up-item" onclick="viewEntry('${e.id}')">
+        <div class="up-date"><div class="up-mon">${MONTHS_TW[+e.md.split('-')[0]-1]}</div><div class="up-day">${+e.md.split('-')[1]}</div></div>
+        <div class="up-info">
+          <div class="up-name">${e.name}</div>
+          <div class="card-meta">${TYPE_LABEL[e.type]} · ${getAgeText(e.date, e.type, true)}</div>
+        </div>
+        ${chipHtml(e.md, e.days)}
+      </div>`);
   }
   document.getElementById('view-upcoming').innerHTML = h;
-}
-
-function upItem(e){
-  const [dm, dd] = e.md.split('-');
-  const ageText = getAgeText(e.date, e.type, true); 
-  const extraInfo = buildCardExtraInfo(e, true); 
-  const badgeHtml = getTypeBadge(e);
-  
-  return `<div class="up-item" onclick="viewEntry('${e.id}')">
-    <div class="up-date"><div class="up-mon">${MONTHS_TW[+dm-1]}</div><div class="up-day">${+dd}</div></div>
-    <div class="up-info">
-      <div class="up-name">${e.name}</div>
-      <div class="up-type">
-        ${badgeHtml}
-        <strong style="color:#1a1a1a; white-space:nowrap">${ageText}</strong>
-      </div>
-      ${extraInfo}
-    </div>
-    <div style="flex-shrink:0; margin-left:8px;">
-      ${chipHtml(e.md, e.days)}
-    </div>
-  </div>`;
 }
 
 function renderList(tab) {
   const typeMap = { birthday: ['birthday_solar'], anniversary: ['anniversary'], custom: ['custom'] };
   const entries = data.filter(e => typeMap[tab].includes(e.type));
-  let h = '';
-  if (!entries.length) h = '<div class="empty">尚未新增記錄</div>';
+  let h = entries.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無記錄</div>';
   entries.forEach(e => {
-    const md = getMonthDay(e);
-    const days = daysUntil(md);
-    const ageText = getAgeText(e.date, e.type, false); 
-    const extraInfo = buildCardExtraInfo(e, false); 
-    const badgeHtml = getTypeBadge(e);
-    
     h += `<div class="card" onclick="viewEntry('${e.id}')">
       <div class="card-row">
-        <div class="avatar">${e.name.slice(0, 1)}</div>
-        <div class="card-info" style="min-width:0; flex:1;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <span class="card-name">${e.name}</span>
-              ${badgeHtml}
-            </div>
-            <div style="flex-shrink:0; text-align:right; margin-left:8px;">
-              ${chipHtml(md, days)}
-            </div>
+        <div class="avatar">${e.name[0]}</div>
+        <div class="card-info">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <span class="card-name">${e.name}</span>
+            <span class="badge" style="background:#fff5e9; color:var(--primary-color)">${e.label || TYPE_LABEL[e.type]}</span>
           </div>
-          <div class="card-meta" style="margin-top:0; margin-bottom:6px;">
-            <span style="margin-right:8px; font-size:16px;">${toRocDate(e.date)}</span>
-            <strong style="color:#1a1a1a; font-size:18px;">${ageText}</strong>
+          <div class="card-meta" style="font-size:16px; color:var(--text-main); font-weight:bold; margin-top:8px">
+            ${toRocDate(e.date)} <span style="margin-left:10px">${getAgeText(e.date, e.type, false)}</span>
           </div>
-          ${extraInfo}
+          ${e.remark ? `<div class="card-meta">📝 ${e.remark}</div>` : ''}
         </div>
       </div>
     </div>`;
@@ -471,226 +317,69 @@ function renderList(tab) {
 }
 
 function setTab(tab) {
-  currentTab = tab;
-  const names = { upcoming: '即將到來', birthday: '生日', anniversary: '紀念日', custom: '自訂' };
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.textContent.trim() === names[tab]);
-  });
-  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(t => {
-    document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none';
-  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.getAttribute('onclick').includes(tab)));
+  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(t => document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none');
 }
 
-// --- Modal 互動與排版切換 ---
-function updateFields() {
-  const t = document.getElementById('f-type').value;
-  const isBirthday = (t === 'birthday_solar');
-  const modal = document.getElementById('modal');
-  const isViewMode = modal.classList.contains('view-mode');
-
-  document.getElementById('fg-label').style.display = (t === 'custom') ? '' : 'none';
-  document.getElementById('fg-lunar').style.display = isBirthday ? '' : 'none';
-  document.getElementById('fg-zodiac').style.display = isBirthday ? '' : 'none';
-  
-  const birthTimeVal = document.getElementById('f-birth-time').value.trim();
-  const remarkVal = document.getElementById('f-remark').value.trim();
-  
-  if (isBirthday) {
-    document.getElementById('fg-birth-time').style.display = (isViewMode && !birthTimeVal) ? 'none' : '';
-  } else {
-    document.getElementById('fg-birth-time').style.display = 'none';
+// --- 表單邏輯 ---
+document.getElementById('f-roc-input').addEventListener('input', function() {
+  let val = this.value.replace(/[^\d]/g, '');
+  if (val.length >= 6) {
+    const y = parseInt(val.slice(0, val.length - 4));
+    const m = val.slice(-4, -2);
+    const d = val.slice(-2);
+    const solarY = y + 1911;
+    const dateStr = `${solarY}-${m}-${d}`;
+    document.getElementById('f-date').value = dateStr;
+    try {
+      const solar = Solar.fromYmd(solarY, parseInt(m), parseInt(d));
+      document.getElementById('f-lunar').value = getLunarString(solar);
+    } catch(e) {}
   }
-  
-  document.getElementById('fg-remark').style.display = (isViewMode && !remarkVal) ? 'none' : '';
-}
+});
 
 function openModal(tab = 'birthday_solar') {
   currentEntryId = null;
-  const modal = document.getElementById('modal');
-  modal.classList.remove('view-mode');
-  
-  document.getElementById('modal-title').textContent = '新增記錄';
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-type').value = (tab === 'custom') ? 'custom' : (tab === 'anniversary' ? 'anniversary' : 'birthday_solar');
-  document.getElementById('f-label').value = '';
-  document.getElementById('f-date').value = '';
-  document.getElementById('f-roc-input').value = '';
-  document.getElementById('f-lunar').value = '';
-  document.getElementById('f-zodiac-cn').value = '';
-  document.getElementById('f-zodiac-en').value = '';
-  document.getElementById('f-birth-time').value = '';
-  document.getElementById('f-remark').value = '';
-  
+  const m = document.getElementById('modal');
+  m.classList.remove('view-mode');
+  document.querySelectorAll('.modal input').forEach(i => { i.value = ''; i.readOnly = false; });
+  document.getElementById('f-type').value = tab;
+  document.getElementById('f-type').disabled = false;
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
-  
-  // 恢復可編輯
-  document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
-  document.getElementById('f-type').disabled = false;
-  
-  document.getElementById('f-lunar').readOnly = true; 
-  document.getElementById('f-zodiac-cn').readOnly = true; 
-  document.getElementById('f-zodiac-en').readOnly = true; 
-  
   updateFields();
-  modal.classList.add('open');
+  m.classList.add('open');
 }
 
 function viewEntry(id) {
   const e = data.find(x => x.id === id);
-  if (!e) return;
   currentEntryId = id;
-  const modal = document.getElementById('modal');
-  
-  // 啟動檢視模式
-  modal.classList.add('view-mode');
-  
-  document.getElementById('modal-title').textContent = '記錄詳情';
+  const m = document.getElementById('modal');
+  m.classList.add('view-mode');
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
-  document.getElementById('f-label').value = e.label || '';
-  
-  // 【貼心優化】查看模式直接顯示「80年1月24日」代替斜線
-  if (e.date) {
-    document.getElementById('f-date').value = e.date;
-    document.getElementById('f-roc-input').value = toRocDate(e.date); 
-  }
-  
+  document.getElementById('f-roc-input').value = toRocDate(e.date);
+  document.getElementById('f-date').value = e.date;
   document.getElementById('f-lunar').value = e.lunar || '';
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
-  
-  if (e.date) {
-     const [y, m, d] = e.date.split('-').map(Number);
-     try {
-       const solar = Solar.fromYmd(y, m, d);
-       document.getElementById('f-lunar').value = getLunarString(solar);
-       const rawZodiac = solar.getLunar().getYearShengXiao();
-       document.getElementById('f-zodiac-cn').value = (ZODIAC_MAP[rawZodiac] || rawZodiac);
-       document.getElementById('f-zodiac-en').value = getWesternZodiac(m, d);
-     } catch(err) {}
-  }
-  
-  document.getElementById('btns-edit').style.display = 'none';
+  document.querySelectorAll('.modal input').forEach(i => i.readOnly = true);
+  document.getElementById('f-type').disabled = true;
   document.getElementById('btns-view').style.display = 'flex';
-  
-  // 【破解反灰關鍵】使用 readOnly 代替 disabled
-  document.querySelectorAll('.modal input').forEach(i => {
-      i.readOnly = true;
-      i.disabled = false;
-  });
-  document.getElementById('f-type').disabled = true; // select 依然要 disabled 避免跳出選單
-  
+  document.getElementById('btns-edit').style.display = 'none';
   updateFields();
-  modal.classList.add('open');
+  m.classList.add('open');
 }
 
 function enableEdit() {
-  const modal = document.getElementById('modal');
-  modal.classList.remove('view-mode'); 
-  document.getElementById('modal-title').textContent = '編輯記錄';
-  
-  document.getElementById('btns-view').style.display = 'none';
-  document.getElementById('btns-edit').style.display = 'flex';
-  
-  // 恢復所有輸入框為可編輯
+  const m = document.getElementById('modal');
+  m.classList.remove('view-mode');
   document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
   document.getElementById('f-type').disabled = false;
-  
-  // 【貼心優化】編輯時自動切回數字格式「80/01/24」方便修改
-  const dateVal = document.getElementById('f-date').value;
-  if(dateVal) {
-      document.getElementById('f-roc-input').value = toRocInputFormat(dateVal);
-  }
-  
-  document.getElementById('f-lunar').readOnly = true;
-  document.getElementById('f-zodiac-cn').readOnly = true;
-  document.getElementById('f-zodiac-en').readOnly = true;
-  
-  updateFields();
+  document.getElementById('f-roc-input').value = toRocInputFormat(document.getElementById('f-date').value);
+  document.getElementById('btns-view').style.display = 'none';
+  document.getElementById('btns-edit').style.display = 'flex';
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
-
-document.getElementById('modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal')) closeModal();
-});
-
-// --- API 請求與初始化 ---
-async function checkPw() {
-  const pw = document.getElementById('pw-input').value;
-  if (!pw) return;
-  try {
-    const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
-    if ((await res.json()).ok) {
-      sessionStorage.setItem('auth', '1');
-      document.getElementById('lock-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      init();
-    } else {
-      document.getElementById('pw-err').textContent = '密碼錯誤，請再試一次';
-    }
-  } catch (e) { document.getElementById('pw-err').textContent = '連線錯誤'; }
-}
-
-function logout() { sessionStorage.removeItem('auth'); location.reload(); }
-
-async function init() {
-  const d = new Date();
-  const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  document.getElementById('today-str').textContent = toRocDate(todayStr);
-  document.getElementById('view-upcoming').innerHTML = '<div class="loading">讀取資料中…</div>';
-  try {
-    data = await (await fetch('/api/read')).json();
-    render();
-  } catch (e) {
-    document.getElementById('view-upcoming').innerHTML = '<div class="empty" style="color:red">讀取失敗</div>';
-  }
-}
-
-window.onload = function() {
-  if (sessionStorage.getItem('auth') === '1') {
-    document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  }
-};
-
-async function saveEntry() {
-  const entry = {
-    id: currentEntryId, 
-    name: document.getElementById('f-name').value.trim(),
-    type: document.getElementById('f-type').value,
-    date: document.getElementById('f-date').value,
-    lunar: document.getElementById('f-lunar').value.trim(),
-    label: document.getElementById('f-label').value.trim(),
-    birthTime: document.getElementById('f-birth-time').value.trim(),
-    remark: document.getElementById('f-remark').value.trim()
-  };
-  
-  if (!entry.name || !entry.date) { alert('請填寫姓名與有效的日期'); return; }
-  
-  const btn = document.getElementById('btn-save');
-  btn.textContent = '儲存中…'; btn.disabled = true;
-  
-  try {
-    await fetch('/api/write', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry) });
-    data = await (await fetch('/api/read')).json();
-    render(); closeModal();
-  } catch (e) { alert("儲存失敗"); } 
-  finally { btn.textContent = '儲存'; btn.disabled = false; }
-}
-
-async function confirmDelete() {
-  if(!confirm('確定要刪除這筆記錄嗎？')) return;
-  try {
-    await fetch('/api/write', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: currentEntryId}) });
-    data = await (await fetch('/api/read')).json();
-    render(); closeModal();
-  } catch(e) { alert('刪除失敗'); }
-}
-</script>
-</body>
-</html>
+function updateFields() {
+  const t = document.getElementById('f-type').value;
