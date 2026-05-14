@@ -29,7 +29,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
 
 /* Login Screen */
 #lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.lock-card{background:#fff;border-radius:24px;box-shadow: 0 10px 30px rgba(0,0,0,0.05);padding:3rem 2rem;width:320px;text-align:center;border: 1px solid #f0e6d6;}
+.lock-card{background:#fff;border-radius:24px;box-shadow: 0 10px 30px rgba(0,0,0,0.05);padding:3rem 2rem;width:340px;text-align:center;border: 1px solid #f0e6d6;}
 .lock-card h1{font-size:24px;font-weight:bold;margin-bottom:8px; color: var(--text-main)}
 .lock-card input{width:100%;padding:14px;border:2px solid #eee;border-radius:12px;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:15px; outline:none; transition: 0.3s;}
 .lock-card input:focus{border-color: var(--primary-color);}
@@ -114,7 +114,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
 
 <div id="lock-screen">
   <div class="lock-card">
-    <div style="font-size:48px;margin-bottom:12px">🏡</div>
+    <div style="font-size:56px;margin-bottom:12px">🏡</div>
     <h1>我們這一家</h1>
     <p style="color: var(--text-light); margin-bottom: 1.5rem">請輸入密碼進入</p>
     <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
@@ -181,19 +181,20 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
 </div>
 
 <script>
-// --- PWA 註冊 ---
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>null));
-}
-
-// --- 核心變數 ---
+// --- 全域變數 ---
 let data = [];
+let currentEntryId = null;
 const STORAGE_KEY = 'family_cache_v1';
 const MONTHS_TW=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const TYPE_LABEL={birthday_solar:'生日', anniversary:'結婚紀念日', custom:'自訂'};
 const today = new Date();
 
-// --- 秒開邏輯：先讀快取，再讀 API ---
+// --- PWA 註冊 ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>null));
+}
+
+// --- 初始化邏輯：先讀快取，再讀 API ---
 async function init() {
   const d = new Date();
   const todayStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
@@ -202,8 +203,10 @@ async function init() {
   // 1. 優先讀取本地快取
   const cached = localStorage.getItem(STORAGE_KEY);
   if (cached) {
-    data = JSON.parse(cached);
-    render();
+    try {
+        data = JSON.parse(cached);
+        render();
+    } catch(e) {}
   }
 
   // 2. 3秒後後台靜默同步
@@ -228,37 +231,75 @@ async function refreshData(showToast = false) {
   } catch (e) { console.warn("Offline or sync failed"); }
 }
 
+// --- 密碼校驗 ---
+async function checkPw() {
+  const pwInput = document.getElementById('pw-input');
+  const pw = pwInput.value;
+  if (!pw) return;
+
+  try {
+    const res = await fetch('/api/auth', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ password: pw }) 
+    });
+    const result = await res.json();
+    if (result.ok) {
+      sessionStorage.setItem('auth', '1');
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      init();
+    } else {
+      document.getElementById('pw-err').textContent = '密碼不太對喔 🏡';
+      pwInput.value = '';
+    }
+  } catch (e) { 
+    document.getElementById('pw-err').textContent = '連線出問題了'; 
+  }
+}
+
 // --- 工具函數 ---
 function toRocDate(dateStr) {
   if (!dateStr) return '';
-  const [y, m, d] = dateStr.split('-').map(Number);
+  const parts = dateStr.split('-');
+  const y = parseInt(parts[0]);
+  const m = parseInt(parts[1]);
+  const d = parseInt(parts[2]);
   return `${y - 1911}年${m}月${d}日`;
 }
+
 function toRocInputFormat(dateStr) {
   if (!dateStr) return '';
-  const [y, m, d] = dateStr.split('-');
-  return `${parseInt(y) - 1911}${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+  const parts = dateStr.split('-');
+  return `${parseInt(parts[0]) - 1911}${String(parts[1]).padStart(2,'0')}${String(parts[2]).padStart(2,'0')}`;
 }
+
 function getLunarString(solar) {
   const lunar = solar.getLunar();
   return `農曆 ${lunar.getYear()-1911}年${MONTHS_TW[lunar.getMonth()-1]}${lunar.getDayInChinese()}`;
 }
+
 function getAgeText(dateStr, type, isUpcoming) {
-  const [y, m, d] = dateStr.split('-').map(Number);
+  if(!dateStr) return '';
+  const parts = dateStr.split('-').map(Number);
+  const y = parts[0], m = parts[1], d = parts[2];
   const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const thisYDate = new Date(today.getFullYear(), m-1, d);
-  let eventY = today.getFullYear();
-  if (thisYDate < t) eventY++;
-  const age = eventY - y;
-  return (type==='birthday_solar') ? `${age} 歲` : `滿 ${age} 週年`;
+  const eventDate = new Date(today.getFullYear(), m-1, d);
+  
+  let targetYear = today.getFullYear();
+  if (eventDate < t) targetYear++;
+  
+  const age = targetYear - y;
+  return (type === 'birthday_solar') ? `${age} 歲` : `滿 ${age} 週年`;
 }
+
 function chipHtml(md, days) {
   if(days === 0) return `<span class="days-chip today">🎉 今天！</span>`;
   if(days <= 7) return `<span class="days-chip soon">剩 ${days} 天</span>`;
   return `<span class="days-chip">剩 ${days} 天</span>`;
 }
 
-// --- 渲染 ---
+// --- 渲染功能 ---
 function render() {
   renderUpcoming();
   ['birthday','anniversary','custom'].forEach(renderList);
@@ -266,28 +307,35 @@ function render() {
 
 function renderUpcoming() {
   const sorted = [...data].map(e => {
-    const [m,d] = e.date.slice(5).split('-').map(Number);
+    const parts = e.date.split('-').map(Number);
+    const m = parts[1], d = parts[2];
     let target = new Date(today.getFullYear(), m-1, d);
-    if(target < new Date(today.getFullYear(), today.getMonth(), today.getDate())) target.setFullYear(today.getFullYear()+1);
-    const diff = Math.round((target - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 864e5);
-    return {...e, days: diff, md: e.date.slice(5)};
+    const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if(target < now) target.setFullYear(today.getFullYear()+1);
+    const diff = Math.round((target - now) / 864e5);
+    return {...e, days: diff, md: `${m}-${d}`};
   }).sort((a,b) => a.days - b.days);
 
   let h = '';
-  if (!data.length) h = '<div style="text-align:center;padding:3rem;color:#ccc">點擊「新增」開始記錄</div>';
-  
-  const near = sorted.filter(e => e.days <= 60);
-  if (near.length) {
-    h += `<div class="section-label">近 60 天紀念</div>`;
-    near.forEach(e => h += `
-      <div class="up-item" onclick="viewEntry('${e.id}')">
-        <div class="up-date"><div class="up-mon">${MONTHS_TW[+e.md.split('-')[0]-1]}</div><div class="up-day">${+e.md.split('-')[1]}</div></div>
-        <div class="up-info">
-          <div class="up-name">${e.name}</div>
-          <div class="card-meta">${TYPE_LABEL[e.type]} · ${getAgeText(e.date, e.type, true)}</div>
-        </div>
-        ${chipHtml(e.md, e.days)}
-      </div>`);
+  if (!data.length) {
+    h = '<div style="text-align:center;padding:3rem;color:#ccc">點擊「新增」開始記錄</div>';
+  } else {
+    const near = sorted.filter(e => e.days <= 60);
+    if (near.length) {
+      h += `<div class="section-label">近 60 天紀念</div>`;
+      near.forEach(e => {
+        const [m, d] = e.md.split('-');
+        h += `
+          <div class="up-item" onclick="viewEntry('${e.id}')">
+            <div class="up-date"><div class="up-mon">${MONTHS_TW[+m-1]}</div><div class="up-day">${+d}</div></div>
+            <div class="up-info">
+              <div class="up-name">${e.name}</div>
+              <div class="card-meta">${TYPE_LABEL[e.type] || '紀念日'} · ${getAgeText(e.date, e.type, true)}</div>
+            </div>
+            ${chipHtml(e.md, e.days)}
+          </div>`;
+      });
+    }
   }
   document.getElementById('view-upcoming').innerHTML = h;
 }
@@ -297,6 +345,13 @@ function renderList(tab) {
   const entries = data.filter(e => typeMap[tab].includes(e.type));
   let h = entries.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無記錄</div>';
   entries.forEach(e => {
+    const parts = e.date.split('-').map(Number);
+    const m = parts[1], d = parts[2];
+    let target = new Date(today.getFullYear(), m-1, d);
+    const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if(target < now) target.setFullYear(today.getFullYear()+1);
+    const diff = Math.round((target - now) / 864e5);
+
     h += `<div class="card" onclick="viewEntry('${e.id}')">
       <div class="card-row">
         <div class="avatar">${e.name[0]}</div>
@@ -308,7 +363,10 @@ function renderList(tab) {
           <div class="card-meta" style="font-size:16px; color:var(--text-main); font-weight:bold; margin-top:8px">
             ${toRocDate(e.date)} <span style="margin-left:10px">${getAgeText(e.date, e.type, false)}</span>
           </div>
-          ${e.remark ? `<div class="card-meta">📝 ${e.remark}</div>` : ''}
+          <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center">
+            <div class="card-meta">${e.remark ? '📝 ' + e.remark : ''}</div>
+            ${chipHtml(`${m}-${d}`, diff)}
+          </div>
         </div>
       </div>
     </div>`;
@@ -317,8 +375,16 @@ function renderList(tab) {
 }
 
 function setTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.getAttribute('onclick').includes(tab)));
-  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(t => document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none');
+  const tabs = ['upcoming', 'birthday', 'anniversary', 'custom'];
+  const tabNames = { upcoming: '即將到來', birthday: '生日', anniversary: '紀念日', custom: '其他' };
+  
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.trim() === tabNames[tab]);
+  });
+  
+  tabs.forEach(t => {
+    document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none';
+  });
 }
 
 // --- 表單邏輯 ---
@@ -342,20 +408,26 @@ function openModal(tab = 'birthday_solar') {
   currentEntryId = null;
   const m = document.getElementById('modal');
   m.classList.remove('view-mode');
+  
+  document.getElementById('modal-title').textContent = '新增記錄';
   document.querySelectorAll('.modal input').forEach(i => { i.value = ''; i.readOnly = false; });
   document.getElementById('f-type').value = tab;
   document.getElementById('f-type').disabled = false;
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
+  
   updateFields();
   m.classList.add('open');
 }
 
 function viewEntry(id) {
   const e = data.find(x => x.id === id);
+  if(!e) return;
   currentEntryId = id;
   const m = document.getElementById('modal');
   m.classList.add('view-mode');
+  
+  document.getElementById('modal-title').textContent = '查看紀錄';
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
   document.getElementById('f-roc-input').value = toRocDate(e.date);
@@ -363,10 +435,13 @@ function viewEntry(id) {
   document.getElementById('f-lunar').value = e.lunar || '';
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
+  document.getElementById('f-label').value = e.label || '';
+  
   document.querySelectorAll('.modal input').forEach(i => i.readOnly = true);
   document.getElementById('f-type').disabled = true;
   document.getElementById('btns-view').style.display = 'flex';
   document.getElementById('btns-edit').style.display = 'none';
+  
   updateFields();
   m.classList.add('open');
 }
@@ -374,6 +449,7 @@ function viewEntry(id) {
 function enableEdit() {
   const m = document.getElementById('modal');
   m.classList.remove('view-mode');
+  document.getElementById('modal-title').textContent = '編輯紀錄';
   document.querySelectorAll('.modal input').forEach(i => i.readOnly = false);
   document.getElementById('f-type').disabled = false;
   document.getElementById('f-roc-input').value = toRocInputFormat(document.getElementById('f-date').value);
@@ -383,3 +459,87 @@ function enableEdit() {
 
 function updateFields() {
   const t = document.getElementById('f-type').value;
+  document.getElementById('fg-label').style.display = (t === 'custom') ? '' : 'none';
+  document.getElementById('fg-lunar').style.display = (t === 'birthday_solar') ? '' : 'none';
+  document.getElementById('f-lunar').readOnly = true;
+}
+
+function closeModal() { 
+    document.getElementById('modal').classList.remove('open'); 
+}
+
+// 點擊背景關閉
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+async function saveEntry() {
+  const name = document.getElementById('f-name').value;
+  const date = document.getElementById('f-date').value;
+  if(!name || !date) {
+      alert('請填寫姓名與日期');
+      return;
+  }
+
+  const entry = {
+    id: currentEntryId, 
+    name: name,
+    type: document.getElementById('f-type').value,
+    date: date,
+    lunar: document.getElementById('f-lunar').value,
+    label: document.getElementById('f-label').value,
+    birthTime: document.getElementById('f-birth-time').value,
+    remark: document.getElementById('f-remark').value
+  };
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.textContent = '儲存中...';
+
+  try {
+    await fetch('/api/write', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(entry) 
+    });
+    await refreshData();
+    closeModal();
+  } catch(e) {
+    alert('儲存失敗');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '儲存';
+  }
+}
+
+async function confirmDelete() {
+  if(!confirm('要刪除這筆溫馨紀錄嗎？')) return;
+  try {
+    await fetch('/api/write', { 
+        method: 'DELETE', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({id: currentEntryId}) 
+    });
+    await refreshData();
+    closeModal();
+  } catch(e) {
+    alert('刪除失敗');
+  }
+}
+
+function logout() { 
+    sessionStorage.clear(); 
+    location.reload(); 
+}
+
+// 頁面加載檢查
+window.onload = () => { 
+    if(sessionStorage.getItem('auth') === '1') { 
+        document.getElementById('lock-screen').style.display='none'; 
+        document.getElementById('app').style.display='block'; 
+        init(); 
+    } 
+};
+</script>
+</body>
+</html>
