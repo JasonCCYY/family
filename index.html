@@ -14,7 +14,6 @@
   --bg-color: #fdfaf5;
   --card-bg: #ffffff;
   --primary-color: #e67e22;
-  --secondary-color: #8d6e63;
   --text-main: #2c3e50;
   --text-light: #94a3b8;
   --accent-green: #6d8c54;
@@ -36,54 +35,36 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 .date-str{font-size:14px;color: var(--text-light);}
 .add-btn-header{background: var(--accent-green);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-weight:bold;}
 
-.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto;}
+.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px;}
 .tab{padding:10px 20px;border-radius:50px;border:none;background:#eee;font-size:14px;font-weight:bold;color: var(--text-light); white-space: nowrap;}
 .tab.active{background: var(--primary-color);color:#fff;}
 
 /* Cards */
-.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); cursor:pointer;}
-.card-row{display:flex;align-items:flex-start;gap:16px}
+.card{background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); cursor:pointer;}
+.card-row{display:flex;align-items:center;gap:16px}
 .avatar{width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:#fff5e9;color: var(--primary-color)}
-.card-name{font-size:19px;font-weight:bold;}
-.card-meta{font-size:13px;color: var(--text-light);margin-top:4px;}
-.days-chip{font-size:13px; padding: 4px 10px; border-radius: 8px; background: #f8f8f8; color: var(--text-light); font-weight: bold;}
+.card-name{font-size:19px;font-weight:bold; color: #2c3e50;}
+.card-meta{font-size:14px;color: #7f8c8d; margin-top:4px; line-height: 1.5;}
+.days-chip{font-size:13px; padding: 4px 12px; border-radius: 10px; background: #f1f5f9; color: #64748b; font-weight: bold; white-space: nowrap;}
 .days-chip.soon{background: #fff4ed; color: var(--primary-color);}
 
-/* Modal - 仿附圖格式 */
+/* Modal Style */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:24px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto; position: relative;}
-
-/* 詳情模式下的欄位樣式 */
+.modal{background:#fff;border-radius:24px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto;}
 .modal-header{padding: 20px 24px; border-bottom: 1px solid #f0f0f0;}
 .modal-header h3{font-size: 20px; font-weight: 900;}
 .modal-content{padding: 10px 24px;}
-
 .fg{margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f8f8f8;}
-.fg:last-child{border-bottom: none;}
 .fg label{display:block;font-size:13px;color: #a0aec0; margin-bottom:4px;}
-.fg input, .fg select{
-    width:100%; padding: 4px 0; border: 1px solid #eee; border-radius: 8px; 
-    font-size:16px; background:#fff; outline: none;
-}
+.fg input, .fg select{width:100%; padding: 4px 0; border: 1px solid #eee; border-radius: 8px; font-size:16px; background:#fff; outline: none;}
 
-/* 【查看模式】強制修改 */
-.view-mode .fg input, .view-mode .fg select {
-    border: none !important;
-    padding: 4px 0 !important;
-    font-size: 20px !important;
-    font-weight: 600 !important;
-    color: #2d3748 !important;
-    background: transparent !important;
-    -webkit-text-fill-color: #2d3748 !important;
-    opacity: 1 !important;
-}
+/* View Mode override */
+.view-mode .fg input, .view-mode .fg select { border: none !important; padding: 4px 0 !important; font-size: 20px !important; font-weight: 600 !important; color: #2d3748 !important; background: transparent !important; -webkit-text-fill-color: #2d3748 !important; opacity: 1 !important;}
 .view-mode .fg.empty { display: none; }
 
-/* 按鈕排版 */
 .modal-footer{padding: 20px 24px; display: flex; gap: 10px;}
-.btn{flex:1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;}
-
+.btn{flex:1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
 .btn-delete{ background: #fff; color: #e53e3e; border: 1px solid #fed7d7 !important; }
 .btn-close{ background: #edf2f7; color: #4a5568; }
 .btn-edit{ background: #3182ce; color: #fff; }
@@ -131,9 +112,7 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 
 <div class="modal-bg" id="modal">
   <div class="modal" id="modal-container">
-    <div class="modal-header">
-      <h3 id="modal-title">紀錄內容</h3>
-    </div>
+    <div class="modal-header"><h3 id="modal-title">紀錄內容</h3></div>
     <div class="modal-content">
       <div class="fg" id="fg-name"><label>姓名 / 稱謂</label><input id="f-name" type="text"></div>
       <div class="fg" id="fg-type"><label>類型</label>
@@ -144,14 +123,13 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
         </select>
       </div>
       <div class="fg" id="fg-label"><label>名稱</label><input id="f-label" type="text"></div>
-      <div class="fg" id="fg-roc"><label>日期 (民國)</label><input id="f-roc-input" type="text" placeholder="例：800124"></div>
+      <div class="fg" id="fg-roc"><label>日期 (民國)</label><input id="f-roc-input" type="text"></div>
       <input id="f-date" type="hidden">
-      <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text"></div>
-      <div class="fg" id="fg-zodiac"><label>生肖 / 星座</label><input id="f-zodiac" type="text"></div>
+      <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text" readonly></div>
+      <div class="fg" id="fg-zodiac"><label>生肖 / 星座</label><input id="f-zodiac" type="text" readonly></div>
       <div class="fg" id="fg-birth-time"><label>生辰</label><input id="f-birth-time" type="text"></div>
       <div class="fg" id="fg-remark"><label>備註</label><input id="f-remark" type="text"></div>
     </div>
-    
     <div class="modal-footer" id="btns-view" style="display:none">
       <button class="btn btn-delete" onclick="confirmDelete()">🗑 刪除</button>
       <button class="btn btn-close" onclick="closeModal()">關閉</button>
@@ -168,32 +146,88 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; -we
 let data = [];
 let currentEntryId = null;
 const STORAGE_KEY = 'family_v1';
+const MONTHS_TW = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 const today = new Date();
 
-function toRocDate(dateStr) {
-  if (!dateStr) return '';
+// 工具：民國轉西元 dateStr
+function rocToSolar(rocStr) {
+  let v = rocStr.replace(/[^\d]/g, '');
+  if (v.length < 6) return null;
+  const y = parseInt(v.slice(0, v.length-4)) + 1911;
+  const m = v.slice(-4,-2), d = v.slice(-2);
+  return `${y}-${m}-${d}`;
+}
+
+function toRocDisplay(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return `${y - 1911}年${m}月${d}日`;
 }
 
-function getZodiacInfo(y, m, d) {
-  try {
-    const solar = Solar.fromYmd(y, m, d);
-    const rawZ = solar.getLunar().getYearShengXiao();
-    const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
-    const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
-    const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
-    let idx = m-1; if(d<cutoffs[idx]) idx=(idx+11)%12;
-    return `${cnZ} / ${signs[idx]}座`;
-  } catch(e) { return ''; }
+// 核心計算：農曆、生肖、星座、年齡
+function getInfo(dateStr, type) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const solar = Solar.fromYmd(y, m, d);
+  const lunar = solar.getLunar();
+  
+  // 生肖
+  const rawZ = lunar.getYearShengXiao();
+  const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
+  
+  // 星座
+  const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
+  const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
+  let sIdx = m-1; if(d < cutoffs[sIdx]) sIdx = (sIdx + 11) % 12;
+  const starSign = signs[sIdx];
+
+  // 年齡（目前歲數）
+  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const birth = new Date(y, m-1, d);
+  let age = today.getFullYear() - y;
+  const thisYearBirthday = new Date(today.getFullYear(), m-1, d);
+  if (t < thisYearBirthday) age--;
+
+  return {
+    lunar: `農曆 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
+    zodiac: `${cnZ} / ${starSign}座`,
+    age: Math.max(0, age)
+  };
+}
+
+// 倒數計算：X 個月 Y 天
+function getCountdown(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  let target = new Date(today.getFullYear(), m-1, d);
+  if (target < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+    target.setFullYear(today.getFullYear() + 1);
+  }
+  
+  const diffTime = target - new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (totalDays === 0) return "今天 🎉";
+
+  // 精確計算月與天
+  let tempDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  let months = 0;
+  while (true) {
+    let nextMonth = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, tempDate.getDate());
+    if (nextMonth > target) break;
+    tempDate = nextMonth;
+    months++;
+  }
+  const days = Math.round((target - tempDate) / (1000 * 60 * 60 * 24));
+  
+  let res = "";
+  if (months > 0) res += `${months} 個月 `;
+  if (days > 0) res += `${days} 天`;
+  return res || `${totalDays} 天`;
 }
 
 async function init() {
-  const d = new Date();
-  document.getElementById('today-str').textContent = toRocDate(`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`);
+  document.getElementById('today-str').textContent = toRocDisplay(`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`);
   const cached = localStorage.getItem(STORAGE_KEY);
   if (cached) { data = JSON.parse(cached); render(); }
-  setTimeout(refreshData, 1500);
+  setTimeout(refreshData, 1000);
 }
 
 async function refreshData() {
@@ -207,37 +241,49 @@ async function refreshData() {
 
 function render() {
   ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(tab => {
-    let list = data;
-    if(tab !== 'upcoming') {
-        const map = {birthday:['birthday_solar'], anniversary:['anniversary'], custom:['custom']};
-        list = data.filter(e => map[tab].includes(e.type));
+    let list = [];
+    if(tab === 'upcoming') {
+      list = [...data].map(e => {
+        const [y,m,d] = e.date.split('-').map(Number);
+        let t = new Date(today.getFullYear(), m-1, d);
+        if(t < new Date(today.getFullYear(), today.getMonth(), today.getDate())) t.setFullYear(today.getFullYear()+1);
+        const nextAge = t.getFullYear() - y;
+        const diffDays = Math.ceil((t - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/(1000*60*60*24));
+        return {...e, diffDays, nextAge};
+      }).sort((a,b) => a.diffDays - b.diffDays);
     } else {
-        list = [...data].map(e => {
-            const [y,m,d] = e.date.split('-').map(Number);
-            let t = new Date(today.getFullYear(), m-1, d);
-            if(t < new Date(today.getFullYear(), today.getMonth(), today.getDate())) t.setFullYear(today.getFullYear()+1);
-            return {...e, diff: Math.round((t-new Date(today.getFullYear(), today.getMonth(), today.getDate()))/864e5)};
-        }).sort((a,b) => a.diff - b.diff);
+      const map = {birthday:['birthday_solar'], anniversary:['anniversary'], custom:['custom']};
+      list = data.filter(e => map[tab].includes(e.type));
     }
-    
+
     let h = list.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無紀錄</div>';
     list.forEach(e => {
-        const [y,m,d] = e.date.split('-').map(Number);
-        const diff = tab==='upcoming' ? e.diff : Math.round((new Date(today.getFullYear(),m-1,d)-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/864e5);
-        const finalDiff = diff < 0 ? diff + 365 : diff;
+      const info = getInfo(e.date, e.type);
+      const countdown = getCountdown(e.date);
+      const isSoon = countdown.includes('天') && !countdown.includes('個月') && parseInt(countdown) <= 7;
+      
+      let subText = "";
+      if (tab === 'upcoming') {
+        const eventName = e.type === 'birthday_solar' ? `${e.nextAge} 歲生日` : `${e.nextAge} 週年紀念`;
+        subText = `<div class="card-meta" style="color:var(--primary-color); font-weight:bold">${eventName}</div>
+                   <div class="card-meta">${toRocDisplay(e.date)} · ${info.lunar}</div>`;
+      } else {
+        subText = `<div class="card-meta">${toRocDisplay(e.date)} · ${info.age} 歲</div>
+                   <div class="card-meta">${info.lunar} · ${info.zodiac}</div>`;
+      }
 
-        h += `<div class="card" onclick="viewEntry('${e.id}')">
-          <div class="card-row">
-            <div class="avatar">${e.name[0]}</div>
-            <div style="flex:1">
-              <div style="display:flex;justify-content:space-between">
-                <span class="card-name">${e.name}</span>
-                <span class="days-chip ${finalDiff<=7?'soon':''}">剩 ${finalDiff} 天</span>
-              </div>
-              <div class="card-meta">${toRocDate(e.date)} · ${e.type==='birthday_solar'? (today.getFullYear()+(finalDiff<0?1:0)-y)+' 歲' : '週年'}</div>
+      h += `<div class="card" onclick="viewEntry('${e.id}')">
+        <div class="card-row">
+          <div class="avatar">${e.name[0]}</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span class="card-name">${e.name}</span>
+              <span class="days-chip ${isSoon || countdown === '今天 🎉' ? 'soon' : ''}">${countdown === '今天 🎉' ? countdown : '剩 ' + countdown}</span>
             </div>
+            ${subText}
           </div>
-        </div>`;
+        </div>
+      </div>`;
     });
     document.getElementById(`view-${tab}`).innerHTML = h;
   });
@@ -247,32 +293,29 @@ function viewEntry(id) {
   const e = data.find(x => x.id === id);
   currentEntryId = id;
   const modal = document.getElementById('modal-container');
-  const bg = document.getElementById('modal');
-  
-  bg.classList.add('open');
   modal.classList.add('view-mode');
+  document.getElementById('modal').classList.add('open');
   document.getElementById('modal-title').textContent = e.name;
   
-  // 填入資料
+  const info = getInfo(e.date, e.type);
   document.getElementById('f-name').value = e.name;
   document.getElementById('f-type').value = e.type;
   document.getElementById('f-label').value = e.label || '';
-  document.getElementById('f-roc-input').value = toRocDate(e.date);
+  document.getElementById('f-roc-input').value = toRocDisplay(e.date);
   document.getElementById('f-date').value = e.date;
+  document.getElementById('f-lunar').value = info.lunar;
+  document.getElementById('f-zodiac').value = info.zodiac;
   document.getElementById('f-birth-time').value = e.birthTime || '';
   document.getElementById('f-remark').value = e.remark || '';
   
-  const [y,m,d] = e.date.split('-').map(Number);
-  const solar = Solar.fromYmd(y,m,d);
-  document.getElementById('f-lunar').value = `農曆 ${solar.getLunar().getMonthInChinese()}月${solar.getLunar().getDayInChinese()}`;
-  document.getElementById('f-zodiac').value = getZodiacInfo(y,m,d);
-
-  // 隱藏空白欄位
+  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
   ['label','birth-time','remark'].forEach(f => {
-      document.getElementById('fg-'+f).classList.toggle('empty', !e[f.replace('-','')] && !e[f]);
+    if (!e[f.replace('-','')] && !e[f]) document.getElementById('fg-'+f).classList.add('empty');
   });
-  document.getElementById('fg-lunar').classList.toggle('empty', e.type !== 'birthday_solar');
-  document.getElementById('fg-zodiac').classList.toggle('empty', e.type !== 'birthday_solar');
+  if (e.type !== 'birthday_solar') {
+    document.getElementById('fg-lunar').classList.add('empty');
+    document.getElementById('fg-zodiac').classList.add('empty');
+  }
 
   document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = true);
   document.getElementById('btns-view').style.display = 'flex';
@@ -285,10 +328,8 @@ function enableEdit() {
   document.getElementById('modal-title').textContent = '編輯紀錄';
   document.querySelectorAll('.fg input, .fg select').forEach(i => i.readOnly = false);
   document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
-  
   const d = document.getElementById('f-date').value.split('-');
   document.getElementById('f-roc-input').value = (d[0]-1911)+d[1]+d[2];
-  
   document.getElementById('btns-view').style.display = 'none';
   document.getElementById('btns-edit').style.display = 'flex';
   updateFields();
@@ -318,10 +359,12 @@ function updateFields() {
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
 document.getElementById('f-roc-input').addEventListener('input', function() {
-  let v = this.value.replace(/[^\d]/g, '');
-  if (v.length >= 6) {
-    const y = parseInt(v.slice(0, v.length-4))+1911, m = v.slice(-4,-2), d = v.slice(-2);
-    document.getElementById('f-date').value = `${y}-${m}-${d}`;
+  const dateStr = rocToSolar(this.value);
+  if (dateStr) {
+    document.getElementById('f-date').value = dateStr;
+    const info = getInfo(dateStr, document.getElementById('f-type').value);
+    document.getElementById('f-lunar').value = info.lunar;
+    document.getElementById('f-zodiac').value = info.zodiac;
   }
 });
 
