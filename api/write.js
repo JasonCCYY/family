@@ -1,13 +1,11 @@
-import { google } from 'googleapis';
+const { google } = require('googleapis');
 
-// 西元 YYYY-MM-DD → 民國 YYY-MM-DD（存入 Sheet）
 function solarToRoc(solarStr) {
   if (!solarStr) return '';
   const [y, m, d] = solarStr.split('-');
   return `${String(parseInt(y) - 1911).padStart(3, '0')}-${m}-${d}`;
 }
 
-// 民國或西元 → 西元（兼容）
 function toSolar(str) {
   if (!str) return '';
   const parts = str.split('-');
@@ -15,7 +13,6 @@ function toSolar(str) {
   return `${parseInt(parts[0], 10) + 1911}-${parts[1]}-${parts[2]}`;
 }
 
-// 生肖 / 星座（後端備用計算）
 function calcZodiac(solarDateStr) {
   if (!solarDateStr) return { shengXiao: '', starSign: '' };
   const [y, m, d] = solarDateStr.split('-').map(Number);
@@ -24,13 +21,9 @@ function calcZodiac(solarDateStr) {
   const signs   = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
   let sIdx = m - 1;
   if (d < cutoffs[sIdx]) sIdx = (sIdx + 11) % 12;
-  return {
-    shengXiao: animals[(y - 4) % 12],
-    starSign: signs[sIdx] + '座'
-  };
+  return { shengXiao: animals[(y - 4) % 12], starSign: signs[sIdx] + '座' };
 }
 
-// 計算歲數 / 週年文字
 function calcAnniv(solarDateStr, type) {
   if (!solarDateStr) return '';
   const [y, m, d] = solarDateStr.split('-').map(Number);
@@ -54,46 +47,33 @@ async function getSheets() {
   return google.sheets({ version: 'v4', auth });
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const sheets = await getSheets();
   const sid = process.env.SHEET_ID;
 
-  // ── 新增 / 修改 ──
   if (req.method === 'POST') {
-    const { id, name, type, date, lunar, birthTime, remark, zodiac } = req.body;
-
-    // date 前端傳來是西元格式，存 Sheet 時轉民國
+    const { id, name, type, date, lunar, birthTime, remark } = req.body;
     const solarDate = toSolar(date);
     const rocDate   = solarToRoc(solarDate);
-
-    // 生肖星座：前端已算好，後端再做一次確保正確
-    const calc = calcZodiac(solarDate);
-    const shengXiao = calc.shengXiao;
-    const starSign  = calc.starSign;
+    const calc      = calcZodiac(solarDate);
     const annivText = calcAnniv(solarDate, type);
 
-    // Sheet 欄位：A=id, B=name, C=type, D=民國日期, E=lunar, F=remark, G=birthTime, H=生肖, I=星座, J=週年
     const rowValues = [
       id || Date.now().toString(),
-      name || '',
-      type || 'birthday_solar',
-      rocDate,
+      name || '', type || 'birthday_solar', rocDate,
       (type === 'birthday_solar') ? (lunar || '') : '',
-      remark || '',
-      birthTime || '',
-      (type === 'birthday_solar') ? shengXiao : '',
-      (type === 'birthday_solar') ? starSign  : '',
+      remark || '', birthTime || '',
+      (type === 'birthday_solar') ? calc.shengXiao : '',
+      (type === 'birthday_solar') ? calc.starSign  : '',
       annivText,
     ];
 
     if (id) {
       const existing = await sheets.spreadsheets.values.get({
-        spreadsheetId: sid,
-        range: 'Sheet1!A2:A1000',
+        spreadsheetId: sid, range: 'Sheet1!A2:A1000',
       });
       const rows = existing.data.values || [];
       const rowIndex = rows.findIndex(r => r[0] === id);
-
       if (rowIndex !== -1) {
         const actualRow = rowIndex + 2;
         await sheets.spreadsheets.values.update({
@@ -106,43 +86,33 @@ export default async function handler(req, res) {
       }
     }
 
-    // 新增
     rowValues[0] = id || Date.now().toString();
     await sheets.spreadsheets.values.append({
-      spreadsheetId: sid,
-      range: 'Sheet1!A:J',
+      spreadsheetId: sid, range: 'Sheet1!A:J',
       valueInputOption: 'RAW',
       requestBody: { values: [rowValues] },
     });
     return res.json({ ok: true, mode: 'create' });
   }
 
-  // ── 刪除 ──
   if (req.method === 'DELETE') {
     const { id } = req.body;
     const existing = await sheets.spreadsheets.values.get({
-      spreadsheetId: sid,
-      range: 'Sheet1!A2:A1000',
+      spreadsheetId: sid, range: 'Sheet1!A2:A1000',
     });
     const rows = existing.data.values || [];
     const rowIndex = rows.findIndex(r => r[0] === id);
     if (rowIndex === -1) return res.status(404).json({ ok: false });
-
     const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
     const sheetId = meta.data.sheets[0].properties.sheetId;
-
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: sid,
-      requestBody: {
-        requests: [{
-          deleteDimension: {
-            range: { sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 },
-          },
-        }],
-      },
+      requestBody: { requests: [{ deleteDimension: {
+        range: { sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 },
+      }}]},
     });
     return res.json({ ok: true });
   }
 
   res.status(405).end();
-}
+};
