@@ -1,8 +1,8 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/manifest.json", "destination": "/manifest.json" },
-    { "source": "/sw.js", "destination": "/sw.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/auth",  "destination": "/api/auth.js" },
+    { "source": "/api/read",  "destination": "/api/read.js" },
+    { "source": "/api/write", "destination": "/api/write.js" },
+    { "source": "/(.*)",      "destination": "/index.html" }
   ]
 }
