@@ -11,22 +11,12 @@ module.exports = async function handler(req, res) {
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-
-    // 先取得試算表資訊，自動抓第一個工作表名稱
-    const meta = await sheets.spreadsheets.get({
-      spreadsheetId: process.env.SHEET_ID,
-    });
-    const sheetName = meta.data.sheets[0].properties.title;
-
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: `${sheetName}!A2:J1000`,
+      range: '生日!A2:J1000',
     });
 
     const rows = response.data.values || [];
-
-    // A=id, B=name, C=type, D=民國日期, E=lunar,
-    // F=remark, G=birthTime, H=生肖, I=星座, J=週年
     const data = rows
       .filter(r => r[0])
       .map(r => ({
