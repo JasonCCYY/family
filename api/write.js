@@ -48,71 +48,81 @@ async function getSheets() {
 }
 
 module.exports = async function handler(req, res) {
-  const sheets = await getSheets();
-  const sid = process.env.SHEET_ID;
+  try {
+    const sheets = await getSheets();
+    const sid = process.env.SHEET_ID;
 
-  if (req.method === 'POST') {
-    const { id, name, type, date, lunar, birthTime, remark } = req.body;
-    const solarDate = toSolar(date);
-    const rocDate   = solarToRoc(solarDate);
-    const calc      = calcZodiac(solarDate);
-    const annivText = calcAnniv(solarDate, type);
+    // 自動抓第一個工作表名稱
+    const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
+    const sheetName = meta.data.sheets[0].properties.title;
+    const sheetId   = meta.data.sheets[0].properties.sheetId;
 
-    const rowValues = [
-      id || Date.now().toString(),
-      name || '', type || 'birthday_solar', rocDate,
-      (type === 'birthday_solar') ? (lunar || '') : '',
-      remark || '', birthTime || '',
-      (type === 'birthday_solar') ? calc.shengXiao : '',
-      (type === 'birthday_solar') ? calc.starSign  : '',
-      annivText,
-    ];
+    if (req.method === 'POST') {
+      const { id, name, type, date, lunar, birthTime, remark } = req.body;
+      const solarDate = toSolar(date);
+      const rocDate   = solarToRoc(solarDate);
+      const calc      = calcZodiac(solarDate);
+      const annivText = calcAnniv(solarDate, type);
 
-    if (id) {
+      const rowValues = [
+        id || Date.now().toString(),
+        name || '', type || 'birthday_solar', rocDate,
+        (type === 'birthday_solar') ? (lunar || '') : '',
+        remark || '', birthTime || '',
+        (type === 'birthday_solar') ? calc.shengXiao : '',
+        (type === 'birthday_solar') ? calc.starSign  : '',
+        annivText,
+      ];
+
+      if (id) {
+        const existing = await sheets.spreadsheets.values.get({
+          spreadsheetId: sid, range: `${sheetName}!A2:A1000`,
+        });
+        const rows = existing.data.values || [];
+        const rowIndex = rows.findIndex(r => r[0] === id);
+        if (rowIndex !== -1) {
+          const actualRow = rowIndex + 2;
+          await sheets.spreadsheets.values.update({
+            spreadsheetId: sid,
+            range: `${sheetName}!A${actualRow}:J${actualRow}`,
+            valueInputOption: 'RAW',
+            requestBody: { values: [rowValues] },
+          });
+          return res.json({ ok: true, mode: 'update' });
+        }
+      }
+
+      rowValues[0] = id || Date.now().toString();
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: sid,
+        range: `${sheetName}!A:J`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [rowValues] },
+      });
+      return res.json({ ok: true, mode: 'create' });
+    }
+
+    if (req.method === 'DELETE') {
+      const { id } = req.body;
       const existing = await sheets.spreadsheets.values.get({
-        spreadsheetId: sid, range: 'Sheet1!A2:A1000',
+        spreadsheetId: sid, range: `${sheetName}!A2:A1000`,
       });
       const rows = existing.data.values || [];
       const rowIndex = rows.findIndex(r => r[0] === id);
-      if (rowIndex !== -1) {
-        const actualRow = rowIndex + 2;
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: sid,
-          range: `Sheet1!A${actualRow}:J${actualRow}`,
-          valueInputOption: 'RAW',
-          requestBody: { values: [rowValues] },
-        });
-        return res.json({ ok: true, mode: 'update' });
-      }
+      if (rowIndex === -1) return res.status(404).json({ ok: false });
+
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: sid,
+        requestBody: { requests: [{ deleteDimension: {
+          range: { sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 },
+        }}]},
+      });
+      return res.json({ ok: true });
     }
 
-    rowValues[0] = id || Date.now().toString();
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: sid, range: 'Sheet1!A:J',
-      valueInputOption: 'RAW',
-      requestBody: { values: [rowValues] },
-    });
-    return res.json({ ok: true, mode: 'create' });
+    res.status(405).end();
+  } catch (err) {
+    console.error('write error:', err.message);
+    res.status(500).json({ error: err.message });
   }
-
-  if (req.method === 'DELETE') {
-    const { id } = req.body;
-    const existing = await sheets.spreadsheets.values.get({
-      spreadsheetId: sid, range: 'Sheet1!A2:A1000',
-    });
-    const rows = existing.data.values || [];
-    const rowIndex = rows.findIndex(r => r[0] === id);
-    if (rowIndex === -1) return res.status(404).json({ ok: false });
-    const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
-    const sheetId = meta.data.sheets[0].properties.sheetId;
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: sid,
-      requestBody: { requests: [{ deleteDimension: {
-        range: { sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 },
-      }}]},
-    });
-    return res.json({ ok: true });
-  }
-
-  res.status(405).end();
 };
