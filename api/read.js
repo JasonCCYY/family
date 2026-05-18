@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: '生日!A2:J1000',
+      range: "'生日'!A2:J1000",
     });
 
     const rows = response.data.values || [];
