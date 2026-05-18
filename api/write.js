@@ -1,5 +1,7 @@
 const { google } = require('googleapis');
 
+const SHEET_NAME = '生日';
+
 function solarToRoc(solarStr) {
   if (!solarStr) return '';
   const [y, m, d] = solarStr.split('-');
@@ -52,11 +54,6 @@ module.exports = async function handler(req, res) {
     const sheets = await getSheets();
     const sid = process.env.SHEET_ID;
 
-    // 自動抓第一個工作表名稱
-    const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
-    const sheetName = meta.data.sheets[0].properties.title;
-    const sheetId   = meta.data.sheets[0].properties.sheetId;
-
     if (req.method === 'POST') {
       const { id, name, type, date, lunar, birthTime, remark } = req.body;
       const solarDate = toSolar(date);
@@ -76,7 +73,7 @@ module.exports = async function handler(req, res) {
 
       if (id) {
         const existing = await sheets.spreadsheets.values.get({
-          spreadsheetId: sid, range: `${sheetName}!A2:A1000`,
+          spreadsheetId: sid, range: `${SHEET_NAME}!A2:A1000`,
         });
         const rows = existing.data.values || [];
         const rowIndex = rows.findIndex(r => r[0] === id);
@@ -84,7 +81,7 @@ module.exports = async function handler(req, res) {
           const actualRow = rowIndex + 2;
           await sheets.spreadsheets.values.update({
             spreadsheetId: sid,
-            range: `${sheetName}!A${actualRow}:J${actualRow}`,
+            range: `${SHEET_NAME}!A${actualRow}:J${actualRow}`,
             valueInputOption: 'RAW',
             requestBody: { values: [rowValues] },
           });
@@ -95,7 +92,7 @@ module.exports = async function handler(req, res) {
       rowValues[0] = id || Date.now().toString();
       await sheets.spreadsheets.values.append({
         spreadsheetId: sid,
-        range: `${sheetName}!A:J`,
+        range: `${SHEET_NAME}!A:J`,
         valueInputOption: 'RAW',
         requestBody: { values: [rowValues] },
       });
@@ -105,11 +102,14 @@ module.exports = async function handler(req, res) {
     if (req.method === 'DELETE') {
       const { id } = req.body;
       const existing = await sheets.spreadsheets.values.get({
-        spreadsheetId: sid, range: `${sheetName}!A2:A1000`,
+        spreadsheetId: sid, range: `${SHEET_NAME}!A2:A1000`,
       });
       const rows = existing.data.values || [];
       const rowIndex = rows.findIndex(r => r[0] === id);
       if (rowIndex === -1) return res.status(404).json({ ok: false });
+
+      const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
+      const sheetId = meta.data.sheets.find(s => s.properties.title === SHEET_NAME)?.properties.sheetId ?? 0;
 
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: sid,
