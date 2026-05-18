@@ -9,33 +9,27 @@ module.exports = async function handler(req, res) {
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
-
     const sheets = google.sheets({ version: 'v4', auth });
-    const response = await sheets.spreadsheets.values.get({
+    const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
       range: "'生日'!A2:J1000",
     });
-
-    const rows = response.data.values || [];
-    const data = rows
-      .filter(r => r[0])
-      .map(r => ({
-        id:        r[0] || '',
-        name:      r[1] || '',
-        type:      r[2] || 'birthday_solar',
-        date:      r[3] || '',
-        lunar:     r[4] || '',
-        remark:    r[5] || '',
-        birthTime: r[6] || '',
-        shengXiao: r[7] || '',
-        starSign:  r[8] || '',
-        anniv:     r[9] || '',
-      }));
-
+    const rows = (data.values || []).filter(r => r[0]);
     res.setHeader('Cache-Control', 'no-store');
-    res.json(data);
+    res.json(rows.map(r => ({
+      id:        r[0] || '',
+      name:      r[1] || '',
+      type:      r[2] || 'birthday_solar',
+      date:      r[3] || '',
+      lunar:     r[4] || '',
+      remark:    r[5] || '',
+      birthTime: r[6] || '',
+      shengXiao: r[7] || '',
+      starSign:  r[8] || '',
+      anniv:     r[9] || '',
+    })));
   } catch (err) {
-    console.error('read error:', err.message);
+    console.error('read:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
