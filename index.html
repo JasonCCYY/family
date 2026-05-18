@@ -5,147 +5,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>我們這一家</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#fdfaf5">
+<meta name="theme-color" content="#e67e22">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/609/609803.png">
 <script src="https://cdn.jsdelivr.net/gh/6tail/lunar-javascript@master/lunar.js"></script>
 <style>
-:root {
-  --bg-color: #fdfaf5;
-  --card-bg: #ffffff;
-  --primary-color: #e67e22;
-  --text-main: #5d4037;
-  --text-light: #8d6e63;
-  --accent-green: #6d8c54;
-  --anniversary-pink: #fce4ec;
-  --anniversary-text: #d81b60;
+:root{
+  --bg:#fdfaf5;--card:#fff;--pri:#e67e22;--pri-lt:#fff4ed;
+  --grn:#6d8c54;--brn:#5d4037;--brn-lt:#8d6e63;
+  --pink-bg:#fce4ec;--pink:#d81b60;
+  --r-lg:20px;--r-md:14px;--r-sm:10px;
 }
+*{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent;font-weight:600;}
+body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overscroll-behavior:none;}
 
-*{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif; font-weight: bold !important;}
-body{background: var(--bg-color); color: var(--text-main); min-height:100vh; font-size: 18px; -webkit-tap-highlight-color: transparent;}
+/* Lock */
+#lock{display:flex;align-items:center;justify-content:center;min-height:100svh;padding:1rem;}
+.lbox{background:#fff;border-radius:28px;padding:2.5rem 2rem;width:min(360px,100%);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.08);}
+.lbox .ico{font-size:64px;margin-bottom:.5rem;}
+.lbox h1{font-size:24px;font-weight:800;margin-bottom:.3rem;}
+.lbox p{font-size:14px;color:var(--brn-lt);margin-bottom:1.5rem;font-weight:400;}
+.lbox input{width:100%;padding:14px;border:2px solid #eee;border-radius:var(--r-md);font-size:22px;text-align:center;margin-bottom:12px;outline:none;letter-spacing:6px;transition:border-color .2s;}
+.lbox input:focus{border-color:var(--grn);}
+.lbox button{width:100%;padding:14px;background:var(--grn);color:#fff;border:none;border-radius:var(--r-md);font-size:17px;font-weight:700;cursor:pointer;}
 
-#lock-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.lock-card{background:#fff;border-radius:24px;padding:3rem 2rem;width:360px;text-align:center;box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
-.lock-card h1{font-size:26px; margin-bottom:8px;}
-.lock-card input{width:100%;padding:14px;border:2.5px solid #eee;border-radius:12px;font-size:20px;text-align:center;margin-bottom:15px; outline:none;}
-.lock-card button{width:100%;padding:14px;background: var(--accent-green);color:#fff;border:none;border-radius:12px;font-size:18px;}
+/* App shell */
+#app{display:none;max-width:640px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom,0);}
 
-#app{display:none;max-width:640px;margin:0 auto;padding:1.5rem 1.2rem}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.header h1{font-size:30px; letter-spacing: 1px;}
-.date-str{font-size:16px;color: var(--text-light);}
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.1rem .7rem;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid rgba(240,228,210,.7);}
+.hdr-l h1{font-size:21px;font-weight:800;letter-spacing:.3px;}
+.hdr-l .sub{font-size:12px;color:var(--brn-lt);margin-top:2px;font-weight:400;}
+.hdr-r{display:flex;align-items:center;gap:7px;}
+.btn-add{background:var(--grn);color:#fff;border:none;padding:9px 15px;border-radius:var(--r-sm);font-size:15px;font-weight:700;cursor:pointer;}
+.ibt{width:38px;height:38px;border-radius:var(--r-sm);border:none;background:#eee8e0;color:var(--brn);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .1s;flex-shrink:0;}
+.ibt:active{transform:scale(.9);}
+.ibt.on{background:var(--pri);color:#fff;}
+.ibt.spin svg{animation:rot .6s linear;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.btn-out{background:none;border:1.5px solid #ddd;color:var(--brn-lt);padding:7px 11px;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;}
 
-.btn-primary-style {
-  background: var(--accent-green);
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(109,140,84,0.2);
-  transition: opacity 0.2s;
-}
-.btn-primary-style:active { opacity: 0.8; }
-.logout-btn{ font-size: 14px; padding: 8px 14px; }
+/* Search */
+#sbar{padding:0 1.1rem .7rem;display:none;}
+.swrap{position:relative;}
+.swrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.3;pointer-events:none;}
+#sinput{width:100%;padding:11px 40px 11px 40px;border:1.5px solid #e8e2d8;border-radius:var(--r-md);font-size:16px;outline:none;background:#fff;color:var(--brn);transition:border-color .2s;}
+#sinput:focus{border-color:var(--pri);}
+#sclear{display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:#bbb;padding:4px 6px;}
 
-.icon-btn {
-  width: 42px; height: 42px;
-  border-radius: 12px;
-  border: none;
-  background: #f1ede7;
-  color: var(--text-main);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: background 0.18s, transform 0.15s;
-  flex-shrink: 0;
-}
-.icon-btn:active { background: #e8e2d8; transform: scale(0.92); }
-.icon-btn.active { background: var(--primary-color); color: #fff; }
-.icon-btn.spinning svg { animation: spin 0.6s linear; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* Tabs */
+.tabs{display:flex;gap:8px;padding:.5rem 1.1rem;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:9px 19px;border-radius:50px;border:none;background:#ece7e0;font-size:14px;font-weight:700;color:var(--brn-lt);white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;}
+.tab.active{background:var(--pri);color:#fff;}
 
-.tabs{display:flex;gap:10px;margin-bottom:1.5rem;overflow-x:auto; padding-bottom: 5px;}
-.tab{padding:12px 22px;border-radius:50px;border:none;background:#eee;font-size:16px;color: var(--text-light); white-space: nowrap;}
-.tab.active{background: var(--primary-color);color:#fff;}
+/* Cards */
+.lst{padding:.4rem 1.1rem 2rem;}
+.empty{text-align:center;padding:4rem 1rem;color:#ccc;font-size:15px;font-weight:400;}
+.card{background:var(--card);border-radius:var(--r-lg);padding:17px;margin-bottom:11px;box-shadow:0 2px 10px rgba(93,64,55,.06);border:1px solid rgba(240,226,208,.9);cursor:pointer;transition:transform .1s;}
+.card:active{transform:scale(.98);}
+.crow{display:flex;align-items:center;gap:13px;}
+.av{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:19px;background:#fff5e9;color:var(--pri);flex-shrink:0;}
+.av.ann{background:var(--pink-bg);color:var(--pink);}
+.av.big{font-size:28px;}
+.ci{flex:1;min-width:0;}
+.ctop{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+.cname{font-size:19px;font-weight:800;color:var(--brn);}
+.chip{font-size:13px;padding:4px 11px;border-radius:7px;background:#f1f5f9;color:#64748b;white-space:nowrap;flex-shrink:0;}
+.chip.soon{background:var(--pri-lt);color:var(--pri);}
+.cev{font-size:14px;font-weight:700;color:var(--pri);margin-top:4px;}
+.cdt{font-size:14px;color:var(--brn-lt);margin-top:3px;line-height:1.55;font-weight:400;}
 
-.card{background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(93,64,55,0.06); border: 1px solid rgba(240,230,214,0.7); cursor:pointer;}
-.card-row{display:flex;align-items:center;gap:18px}
-.avatar{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fff5e9;color: var(--primary-color); flex-shrink: 0;}
-.avatar.pink-bg { background-color: var(--anniversary-pink); color: var(--anniversary-text); }
-.card-name{font-size:22px; color: var(--text-main);}
-.card-meta{font-size:16px;color: var(--text-light); margin-top:6px; line-height: 1.6;}
-.days-chip{font-size:15px; padding: 6px 14px; border-radius: 10px; background: #f1f5f9; color: #64748b; white-space: nowrap;}
-.days-chip.soon{background: #fff4ed; color: var(--primary-color);}
+/* Modal */
+.mbg{display:none;position:fixed;inset:0;background:rgba(50,30,20,.5);z-index:100;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.mbg.open{display:flex;align-items:flex-end;justify-content:center;}
+@media(min-height:560px){.mbg.open{align-items:center;}}
+.modal{background:#fff;border-radius:28px 28px 0 0;width:100%;max-width:500px;max-height:94svh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px);}
+@media(min-height:560px){.modal{border-radius:28px;max-height:88svh;}}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 12px;border-bottom:1px solid #f5efea;}
+.mhdr h3{font-size:19px;font-weight:800;}
+.mx{background:none;border:none;font-size:24px;cursor:pointer;color:#ccc;padding:2px 6px;line-height:1;}
+.mbody{padding:8px 20px;}
+.fg{margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid #fdf0e4;}
+.fg:last-child{border-bottom:none;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--brn-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid #eee;border-radius:var(--r-sm);font-size:17px;font-weight:600;background:#fdfaf6;color:var(--brn);outline:none;transition:border-color .2s;appearance:none;}
+.fg input:focus,.fg select:focus{border-color:var(--pri);}
+.fg.vm input,.fg.vm select{background:transparent;border-color:transparent;padding:4px 0;font-size:20px;}
+.fg.hid{display:none;}
+.mfoot{display:flex;gap:10px;padding:14px 20px 18px;}
+.bdel{flex:none;padding:13px 16px;border-radius:var(--r-md);font-size:15px;font-weight:700;border:2px solid #fecaca;background:#fff;color:#ef4444;cursor:pointer;}
+.bcan{flex:none;padding:13px 16px;border-radius:var(--r-md);font-size:15px;font-weight:700;background:#eee8e0;color:var(--brn-lt);border:none;cursor:pointer;}
+.bact{flex:1;padding:13px;border-radius:var(--r-md);font-size:16px;font-weight:800;background:var(--grn);color:#fff;border:none;cursor:pointer;transition:opacity .2s;}
+.bact:disabled{opacity:.6;}
 
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(93,64,55,0.4);z-index:200;align-items:center;justify-content:center; backdrop-filter: blur(4px);}
-.modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:28px;width:95%;max-width:450px;max-height:90vh;overflow-y:auto; box-shadow: 0 20px 40px rgba(93,64,55,0.2);}
-.modal-header{padding: 24px 24px 12px 24px; border-bottom: 1.5px solid #fdfaf5;}
-.modal-header h3{font-size: 24px; color: var(--text-main);}
-.modal-content{padding: 10px 24px;}
-
-.fg{margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1.5px solid #fdf3e7;}
-.fg label{display:block;font-size:15px;color: var(--text-light); margin-bottom:8px;}
-.fg input, .fg select{width:100%; padding: 10px 14px; border: 2px solid #eee; border-radius: 12px; font-size:18px; background:#fdfdfd; color: var(--text-main); outline: none;}
-
-.view-mode .fg input, .view-mode .fg select {
-  border: none !important;
-  padding: 6px 0 !important;
-  font-size: 24px !important;
-  color: var(--text-main) !important;
-  background: transparent !important;
-  -webkit-text-fill-color: var(--text-main) !important;
-  opacity: 1 !important;
-  appearance: none; -webkit-appearance: none;
-}
-.view-mode .fg.empty { display: none; }
-
-.modal-footer{padding: 20px 24px 30px 24px; display: flex; gap: 10px;}
-.btn{flex:1; padding: 16px; border-radius: 16px; font-size: 18px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-.btn-delete{ background: #fff; color: #e53e3e; border: 2.5px solid #fed7d7 !important; }
-.btn-close{ background: #edf2f7; color: #4a5568; }
-.btn-edit{ background: var(--accent-green); color: #fff; box-shadow: 0 4px 10px rgba(109,140,84,0.3); }
-.btn-save{ background: var(--accent-green); color: #fff; width: 100%; box-shadow: 0 4px 10px rgba(109,140,84,0.3); }
+/* Toast */
+#toast{display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 22px;border-radius:50px;font-size:15px;font-weight:700;z-index:999;white-space:nowrap;pointer-events:none;}
 </style>
 </head>
 <body>
 
-<div id="lock-screen">
-  <div class="lock-card">
-    <div style="font-size:72px;margin-bottom:12px">🏡</div>
+<div id="lock">
+  <div class="lbox">
+    <div class="ico">🏡</div>
     <h1>我們這一家</h1>
-    <p style="color:var(--text-light); margin-bottom: 2rem">請輸入家族密碼</p>
-    <input type="password" id="pw-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPw()">
-    <button onclick="checkPw()">進入家園</button>
+    <p>請輸入家族密碼</p>
+    <input type="password" id="pw" placeholder="• • • •" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">進入家園</button>
   </div>
 </div>
 
 <div id="app">
-  <div class="header">
-    <div>
+  <div class="hdr">
+    <div class="hdr-l">
       <h1>我們這一家</h1>
-      <div class="date-str" id="today-str"></div>
+      <div class="sub" id="tstr"></div>
     </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="btn-primary-style" onclick="openModal()">＋ 新增</button>
-      <button class="icon-btn" onclick="triggerRefresh()" id="refresh-btn" title="重新整理">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+    <div class="hdr-r">
+      <button class="btn-add" onclick="openAdd()">＋ 新增</button>
+      <button class="ibt" id="rbtn" onclick="doRefresh()" title="重新整理">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       </button>
-      <button class="icon-btn" onclick="toggleSearch()" id="search-btn" title="搜尋">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <button class="ibt" id="sbtn" onclick="toggleSearch()" title="搜尋">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
-      <button class="btn-primary-style logout-btn" onclick="logout()">登出</button>
+      <button class="btn-out" onclick="logout()">登出</button>
     </div>
   </div>
 
-  <div id="search-bar" style="display:none; margin-bottom:1rem;">
-    <div style="position:relative;">
-      <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="search-input" type="text" inputmode="search" placeholder="搜尋姓名、農曆、備註…"
-        style="width:100%;padding:13px 40px 13px 44px;border:2px solid #eee;border-radius:16px;font-size:17px;outline:none;background:#fff;color:var(--text-main);"
-        oninput="onSearchInput()">
-      <button onclick="clearSearch()" id="search-clear" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;padding:4px;">✕</button>
+  <div id="sbar">
+    <div class="swrap">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="sinput" type="text" inputmode="search" placeholder="搜尋姓名、農曆、備註…" oninput="onSearch()">
+      <button id="sclear" onclick="clearSearch()">✕</button>
     </div>
   </div>
 
@@ -156,506 +150,352 @@ body{background: var(--bg-color); color: var(--text-main); min-height:100vh; fon
     <button class="tab" onclick="setTab('custom')">其他</button>
   </div>
 
-  <div id="view-upcoming"></div>
-  <div id="view-birthday" style="display:none"></div>
-  <div id="view-anniversary" style="display:none"></div>
-  <div id="view-custom" style="display:none"></div>
-  <div id="view-search" style="display:none"></div>
+  <div class="lst" id="l-upcoming"></div>
+  <div class="lst" id="l-birthday" style="display:none"></div>
+  <div class="lst" id="l-anniversary" style="display:none"></div>
+  <div class="lst" id="l-custom" style="display:none"></div>
+  <div class="lst" id="l-search" style="display:none"></div>
 </div>
 
-<div id="sync-toast" style="display:none"></div>
+<div id="toast"></div>
 
-<div class="modal-bg" id="modal">
-  <div class="modal" id="modal-container">
-    <div class="modal-header"><h3 id="modal-title">紀錄內容</h3></div>
-    <div class="modal-content">
-      <div class="fg" id="fg-name"><label>姓名 / 稱謂</label><input id="f-name" type="text"></div>
+<div class="mbg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhdr">
+      <h3 id="mtitle">新增紀錄</h3>
+      <button class="mx" onclick="closeModal()">×</button>
+    </div>
+    <div class="mbody">
+      <div class="fg" id="fg-name"><label>姓名 / 稱謂</label><input id="f-name" type="text" placeholder="例：媽媽"></div>
       <div class="fg" id="fg-type"><label>類型</label>
-        <select id="f-type" onchange="updateFields()">
-          <option value="birthday_solar">生日</option>
-          <option value="anniversary">結婚紀念日</option>
-          <option value="custom">自訂紀念日</option>
+        <select id="f-type" onchange="onTypeChange()">
+          <option value="birthday_solar">🎂 生日</option>
+          <option value="anniversary">💍 結婚紀念日</option>
+          <option value="custom">📅 自訂紀念日</option>
         </select>
       </div>
-      <div class="fg" id="fg-roc"><label>日期（民國年）</label><input id="f-roc-input" type="text" inputmode="numeric" placeholder="YYY/MM/DD" autocomplete="off"></div>
-      <input id="f-date" type="hidden">
-      <div class="fg" id="fg-lunar"><label>農曆日期</label><input id="f-lunar" type="text" readonly></div>
-      <div class="fg" id="fg-zodiac"><label>生肖 / 星座</label><input id="f-zodiac" type="text" readonly></div>
-      <div class="fg" id="fg-birth-time"><label>生辰</label><input id="f-birth-time" type="text"></div>
-      <div class="fg" id="fg-remark"><label>備註</label><input id="f-remark" type="text"></div>
+      <div class="fg"><label>日期（民國）</label><input id="f-roc" type="text" inputmode="numeric" placeholder="YYY/MM/DD" autocomplete="off"></div>
+      <input id="f-solar" type="hidden">
+      <div class="fg" id="fg-lunar"><label>農曆</label><input id="f-lunar" type="text" readonly placeholder="自動填入"></div>
+      <div class="fg" id="fg-zodiac"><label>生肖 / 星座</label><input id="f-zodiac" type="text" readonly placeholder="自動填入"></div>
+      <div class="fg" id="fg-btime"><label>生辰</label><input id="f-btime" type="text" placeholder="例：子時、08:30"></div>
+      <div class="fg"><label>備註</label><input id="f-remark" type="text" placeholder="選填"></div>
     </div>
-    <div class="modal-footer" id="btns-view" style="display:none">
-      <button class="btn btn-delete" onclick="confirmDelete()">🗑 刪除</button>
-      <button class="btn btn-close" onclick="closeModal()">關閉</button>
-      <button class="btn btn-edit" onclick="enableEdit()">✏️ 修改</button>
+    <div class="mfoot" id="mfoot-v" style="display:none">
+      <button class="bdel" onclick="doDelete()">刪除</button>
+      <button class="bcan" onclick="closeModal()">關閉</button>
+      <button class="bact" onclick="enableEdit()">✏️ 修改</button>
     </div>
-    <div class="modal-footer" id="btns-edit" style="display:none">
-      <button class="btn btn-close" onclick="closeModal()" style="flex:0.4">取消</button>
-      <button class="btn btn-save" id="btn-save" onclick="saveEntry()">儲存紀錄</button>
+    <div class="mfoot" id="mfoot-e">
+      <button class="bcan" onclick="closeModal()">取消</button>
+      <button class="bact" id="bsave" onclick="doSave()">儲存</button>
     </div>
   </div>
 </div>
 
 <script>
-let data = [];
-let currentEntryId = null;
-const STORAGE_KEY = 'family_v1';
-const today = new Date();
+let data=[], curId=null, curTab='upcoming';
+const CACHE='fam_v3';
+const today=new Date();
 
-// ═══════════════════════════════════════
-// 日期格式轉換
-// ═══════════════════════════════════════
-
-// 使用者輸入 YYY/MM/DD → 西元 YYYY-MM-DD（供計算用）
-function rocToSolar(rocStr) {
-  let v = rocStr.replace(/[^\d]/g, '');
-  if (v.length < 6) return null;
-  const rocY = parseInt(v.slice(0, v.length - 4), 10);
-  const m = v.slice(-4, -2);
-  const d = v.slice(-2);
-  if (!rocY || rocY < 1 || rocY > 200) return null;
-  if (parseInt(m) < 1 || parseInt(m) > 12) return null;
-  if (parseInt(d) < 1 || parseInt(d) > 31) return null;
-  return `${rocY + 1911}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+// ── Date utils ──
+function rocToSolar(s){
+  const v=s.replace(/\D/g,'');
+  if(v.length<6) return null;
+  const ry=parseInt(v.slice(0,v.length-4),10), m=v.slice(-4,-2), d=v.slice(-2);
+  if(!ry||ry<1||ry>200||+m<1||+m>12||+d<1||+d>31) return null;
+  return `${ry+1911}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+function solarToRoc(s){
+  if(!s) return '';
+  const[y,m,d]=s.split('-');
+  return `${String(+y-1911).padStart(3,'0')}-${m}-${d}`;
+}
+function rocToFull(s){
+  if(!s) return '';
+  const p=s.split('-');
+  if(p[0].length===4) return s;
+  return `${+p[0]+1911}-${p[1]}-${p[2]}`;
+}
+function dispRoc(s){
+  if(!s) return '';
+  const[y,m,d]=rocToFull(s).split('-').map(Number);
+  return `民國${y-1911}年${m}月${d}日`;
 }
 
-// 西元 YYYY-MM-DD → 民國 YYY-MM-DD（寫入 Sheet）
-function solarToRocStorage(solarStr) {
-  if (!solarStr) return '';
-  const [y, m, d] = solarStr.split('-');
-  return `${String(parseInt(y) - 1911).padStart(3, '0')}-${m}-${d}`;
+// ── Info ──
+function getInfo(ds){
+  if(!ds) return{lunar:'',zodiac:'',lunarRaw:'',zodiacRaw:'',age:0};
+  const[y,m,d]=rocToFull(ds).split('-').map(Number);
+  let lu='',zo='',luR='',zoR='';
+  try{
+    const S=Solar.fromYmd(y,m,d),L=S.getLunar(),ly=L.getYear()-1911;
+    luR=`農曆${ly}年${L.getMonthInChinese()}月${L.getDayInChinese()}`;lu=luR;
+    const zm={'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'};
+    const cnZ=zm[L.getYearShengXiao()]||L.getYearShengXiao();
+    const cuts=[20,19,21,20,21,22,23,23,23,24,23,22];
+    const sigs=['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
+    let si=m-1;if(d<cuts[si])si=(si+11)%12;
+    zoR=`${cnZ} / ${sigs[si]}座`;zo=zoR;
+  }catch(e){}
+  let age=today.getFullYear()-y;
+  if(new Date(today.getFullYear(),today.getMonth(),today.getDate())<new Date(today.getFullYear(),m-1,d))age--;
+  return{lunar:lu,zodiac:zo,lunarRaw:luR,zodiacRaw:zoR,age:Math.max(0,age)};
+}
+function cdStr(ds){
+  const[,m,d]=rocToFull(ds).split('-').map(Number);
+  const now=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  let t=new Date(today.getFullYear(),m-1,d);
+  if(t<now)t.setFullYear(today.getFullYear()+1);
+  const tot=Math.ceil((t-now)/86400000);
+  if(!tot)return'今天 🎉';
+  let tmp=new Date(now),mo=0;
+  while(true){const nx=new Date(tmp.getFullYear(),tmp.getMonth()+1,tmp.getDate());if(nx>t)break;tmp=nx;mo++;}
+  const dy=Math.round((t-tmp)/86400000);
+  return(mo?mo+'個月 ':'')+( dy?dy+'天':'')||tot+'天';
 }
 
-// 民國 YYY-MM-DD → 西元 YYYY-MM-DD（從 Sheet 讀回，兼容舊西元格式）
-function rocStorageToSolar(rocStr) {
-  if (!rocStr) return '';
-  const parts = rocStr.split('-');
-  if (parts[0].length === 4) return rocStr;
-  return `${parseInt(parts[0], 10) + 1911}-${parts[1]}-${parts[2]}`;
+// ── Init ──
+async function init(){
+  const ts=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const i=getInfo(ts);
+  document.getElementById('tstr').textContent=dispRoc(ts)+(i.lunar?'　'+i.lunar:'');
+  const c=localStorage.getItem(CACHE);
+  if(c){data=JSON.parse(c);render();}
+  setTimeout(load,500);
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 }
-
-// 任何格式 → 「民國X年M月D日」
-function toRocDisplay(dateStr) {
-  if (!dateStr) return '';
-  const solar = rocStorageToSolar(dateStr);
-  const [y, m, d] = solar.split('-').map(Number);
-  return `民國${y - 1911}年${m}月${d}日`;
-}
-
-// ═══════════════════════════════════════
-// 農曆 / 生肖 / 星座 / 年齡
-// ═══════════════════════════════════════
-
-function getInfo(dateStr, type) {
-  if (!dateStr) return { lunar: '', zodiac: '', age: 0, lunarRaw: '', zodiacRaw: '' };
-  const solar = rocStorageToSolar(dateStr);
-  const [y, m, d] = solar.split('-').map(Number);
-
-  let lunarStr = '', zodiacStr = '', lunarRaw = '', zodiacRaw = '';
-  try {
-    const s = Solar.fromYmd(y, m, d);
-    const lunar = s.getLunar();
-    const lunarYear = lunar.getYear() - 1911;
-    lunarRaw = `農曆${lunarYear}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-    lunarStr = lunarRaw;
-
-    const rawZ = lunar.getYearShengXiao();
-    const cnZ = {'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'}[rawZ] || rawZ;
-
-    const cutoffs = [20,19,21,20,21,22,23,23,23,24,23,22];
-    const signs = ['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
-    let sIdx = m - 1;
-    if (d < cutoffs[sIdx]) sIdx = (sIdx + 11) % 12;
-    zodiacRaw = `${cnZ} / ${signs[sIdx]}座`;
-    zodiacStr = zodiacRaw;
-  } catch(err) {}
-
-  let age = today.getFullYear() - y;
-  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  if (t < new Date(today.getFullYear(), m - 1, d)) age--;
-
-  return { lunar: lunarStr, zodiac: zodiacStr, lunarRaw, zodiacRaw, age: Math.max(0, age) };
-}
-
-// ═══════════════════════════════════════
-// 倒數計算
-// ═══════════════════════════════════════
-
-function getCountdown(dateStr) {
-  const [y, m, d] = rocStorageToSolar(dateStr).split('-').map(Number);
-  const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  let target = new Date(today.getFullYear(), m - 1, d);
-  if (target < now) target.setFullYear(today.getFullYear() + 1);
-  const totalDays = Math.ceil((target - now) / 86400000);
-  if (totalDays === 0) return '今天 🎉';
-  let tempDate = new Date(now);
-  let months = 0;
-  while (true) {
-    const next = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, tempDate.getDate());
-    if (next > target) break;
-    tempDate = next; months++;
-  }
-  const days = Math.round((target - tempDate) / 86400000);
-  let res = '';
-  if (months > 0) res += `${months} 個月 `;
-  if (days > 0) res += `${days} 天`;
-  return res || `${totalDays} 天`;
-}
-
-function getAvatarContent(e, isUpcoming) {
-  if (e.type === 'anniversary') return '💍';
-  if (isUpcoming && e.type === 'birthday_solar') return '🎂';
-  return e.name[0];
-}
-
-// ═══════════════════════════════════════
-// 初始化 / 資料
-// ═══════════════════════════════════════
-
-async function init() {
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-  const todayInfo = getInfo(todayStr, 'birthday_solar');
-  document.getElementById('today-str').textContent = toRocDisplay(todayStr) + '　' + (todayInfo.lunar || '');
-  const cached = localStorage.getItem(STORAGE_KEY);
-  if (cached) { data = JSON.parse(cached); render(); }
-  setTimeout(refreshData, 800);
-}
-
-async function refreshData() {
-  try {
-    const res = await fetch('/api/read');
-    data = await res.json();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+async function load(){
+  try{
+    const r=await fetch('/api/read');
+    if(!r.ok)throw Error();
+    data=await r.json();
+    localStorage.setItem(CACHE,JSON.stringify(data));
     render();
-  } catch (e) { showToast('⚠️ 無法連線，顯示暫存資料'); }
+    if(document.getElementById('l-search').style.display!=='none')onSearch();
+  }catch{toast('⚠️ 無法連線，顯示暫存資料');}
 }
 
-function showToast(msg, duration=2500) {
-  const t = document.getElementById('sync-toast');
-  t.textContent = msg;
-  t.style.cssText = 'display:block;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 24px;border-radius:20px;font-size:16px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2)';
-  setTimeout(() => { t.style.display = 'none'; }, duration);
-}
-
-// ═══════════════════════════════════════
-// 渲染列表
-// ═══════════════════════════════════════
-
-function render() {
-  ['upcoming', 'birthday', 'anniversary', 'custom'].forEach(tab => {
-    let list = [];
-    const isUpcomingTab = tab === 'upcoming';
-
-    if (isUpcomingTab) {
-      list = [...data].map(e => {
-        const [y, m, d] = rocStorageToSolar(e.date).split('-').map(Number);
-        const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        let t = new Date(today.getFullYear(), m - 1, d);
-        if (t < now) t.setFullYear(today.getFullYear() + 1);
-        return {...e, diffDays: Math.ceil((t - now) / 86400000), nextAge: t.getFullYear() - y};
-      }).sort((a, b) => a.diffDays - b.diffDays);
-    } else {
-      const map = {birthday: ['birthday_solar'], anniversary: ['anniversary'], custom: ['custom']};
-      list = data.filter(e => map[tab].includes(e.type));
+// ── Render ──
+function render(){
+  const now=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const tabs={upcoming:null,birthday:['birthday_solar'],anniversary:['anniversary'],custom:['custom']};
+  Object.keys(tabs).forEach(tab=>{
+    let list;
+    if(tab==='upcoming'){
+      list=data.map(e=>{
+        const[y,m,d]=rocToFull(e.date).split('-').map(Number);
+        let t=new Date(today.getFullYear(),m-1,d);
+        if(t<now)t.setFullYear(today.getFullYear()+1);
+        return{...e,_d:Math.ceil((t-now)/86400000),_n:t.getFullYear()-y};
+      }).sort((a,b)=>a._d-b._d);
+    }else{
+      list=data.filter(e=>tabs[tab].includes(e.type));
     }
-
-    let h = list.length ? '' : '<div style="text-align:center;padding:3rem;color:#ccc">尚無紀錄</div>';
-    list.forEach(e => {
-      const info = getInfo(e.date, e.type);
-      const countdown = getCountdown(e.date);
-      const isAnniversary = e.type === 'anniversary';
-      const lunarDisp = e.lunar || info.lunar;
-      const zodiacDisp = (e.shengXiao && e.starSign) ? `${e.shengXiao} / ${e.starSign}` : info.zodiac;
-
-      let subText = '';
-      if (isUpcomingTab) {
-        const eventName = e.type === 'birthday_solar'
-          ? `${e.nextAge} 歲生日`
-          : (e.type === 'anniversary' ? `結婚 ${e.nextAge} 週年` : `第 ${e.nextAge} 週年`);
-        subText = `<div class="card-meta" style="color:var(--primary-color)">${eventName}</div>
-                   <div class="card-meta">${toRocDisplay(e.date)}</div>
-                   ${(!isAnniversary && lunarDisp) ? `<div class="card-meta">${lunarDisp}</div>` : ''}`;
-      } else if (isAnniversary) {
-        subText = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">
-                   ${toRocDisplay(e.date)} · 結婚 ${info.age} 週年</div>`;
-      } else if (e.type === 'custom') {
-        subText = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">
-                   ${toRocDisplay(e.date)} · 第 ${info.age} 週年</div>`;
-      } else {
-        subText = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">
-                   ${toRocDisplay(e.date)} · ${info.age} 歲</div>
-                   <div class="card-meta">${lunarDisp} · ${zodiacDisp}</div>`;
-      }
-
-      h += `<div class="card" onclick="viewEntry('${e.id}')">
-        <div class="card-row">
-          <div class="avatar ${isAnniversary ? 'pink-bg' : ''}"
-               style="${isAnniversary || (isUpcomingTab && e.type==='birthday_solar') ? 'font-size:32px' : ''}">
-            ${getAvatarContent(e, isUpcomingTab)}
-          </div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <span class="card-name">${e.name}</span>
-              ${isUpcomingTab ? `<span class="days-chip ${countdown==='今天 🎉'?'soon':''}">${countdown==='今天 🎉'?countdown:'剩 '+countdown}</span>` : ''}
-            </div>
-            ${subText}
-          </div>
-        </div>
-      </div>`;
-    });
-    document.getElementById(`view-${tab}`).innerHTML = h;
+    document.getElementById(`l-${tab}`).innerHTML=list.length?list.map(e=>cHTML(e,tab==='upcoming')).join(''):'<div class="empty">尚無紀錄</div>';
   });
 }
-
-// ═══════════════════════════════════════
-// Modal：查看 / 編輯 / 新增
-// ═══════════════════════════════════════
-
-function viewEntry(id) {
-  const e = data.find(x => x.id === id);
-  if (!e) return;
-  currentEntryId = id;
-  const modal = document.getElementById('modal-container');
-  modal.classList.add('view-mode');
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('modal-title').textContent = e.name;
-
-  const info = getInfo(e.date, e.type);
-  document.getElementById('f-name').value = e.name;
-  document.getElementById('f-type').value = e.type;
-  document.getElementById('f-roc-input').value = toRocDisplay(e.date);
-  document.getElementById('f-date').value = e.date;
-  document.getElementById('f-lunar').value = e.lunar || info.lunar;
-  document.getElementById('f-zodiac').value = (e.shengXiao && e.starSign) ? `${e.shengXiao} / ${e.starSign}` : info.zodiac;
-  document.getElementById('f-birth-time').value = e.birthTime || '';
-  document.getElementById('f-remark').value = e.remark || '';
-
-  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
-  if (!e.birthTime) document.getElementById('fg-birth-time').classList.add('empty');
-  if (!e.remark)    document.getElementById('fg-remark').classList.add('empty');
-  if (e.type === 'anniversary' || e.type === 'custom') {
-    document.getElementById('fg-lunar').classList.add('empty');
-    document.getElementById('fg-zodiac').classList.add('empty');
-    document.getElementById('fg-birth-time').classList.add('empty');
+function cHTML(e,up){
+  const inf=getInfo(e.date);
+  const isAnn=e.type==='anniversary',isBd=e.type==='birthday_solar';
+  const lu=e.lunar||inf.lunar;
+  const zo=(e.shengXiao&&e.starSign)?`${e.shengXiao} / ${e.starSign}`:inf.zodiac;
+  const cd=up?cdStr(e.date):'';
+  const isT=cd==='今天 🎉';
+  const avcls='av'+(isAnn?' ann':'')+(up&&(isAnn||isBd)?' big':'');
+  const avt=isAnn?'💍':(up&&isBd?'🎂':e.name[0]);
+  let sub='';
+  if(up){
+    const ev=isBd?`${e._n}歲生日`:isAnn?`結婚${e._n}週年`:`第${e._n}週年`;
+    sub=`<div class="cev">${ev}</div><div class="cdt">${dispRoc(e.date)}${(!isAnn&&lu)?'<br>'+lu:''}</div>`;
+  }else if(isAnn){
+    sub=`<div class="cdt" style="margin-top:4px">${dispRoc(e.date)} · 結婚 ${inf.age} 週年</div>`;
+  }else if(e.type==='custom'){
+    sub=`<div class="cdt" style="margin-top:4px">${dispRoc(e.date)} · 第 ${inf.age} 週年</div>`;
+  }else{
+    sub=`<div class="cdt" style="margin-top:4px">${dispRoc(e.date)} · ${inf.age} 歲</div><div class="cdt">${lu}${zo?' · '+zo:''}</div>`;
   }
-
-  document.querySelectorAll('.fg input').forEach(i => i.readOnly = true);
-  document.getElementById('f-type').disabled = true;
-  document.getElementById('btns-view').style.display = 'flex';
-  document.getElementById('btns-edit').style.display = 'none';
+  return `<div class="card" onclick="view('${e.id}')">
+    <div class="crow">
+      <div class="${avcls}">${avt}</div>
+      <div class="ci">
+        <div class="ctop"><span class="cname">${e.name}</span>${up?`<span class="chip${isT?' soon':''}">${isT?cd:'剩 '+cd}</span>`:''}</div>
+        ${sub}
+      </div>
+    </div>
+  </div>`;
+}
+function renderSrch(q){
+  const res=data.filter(e=>e.name.includes(q)||(e.lunar||'').includes(q)||(e.remark||'').includes(q)||(e.shengXiao||'').includes(q)||(e.starSign||'').includes(q)||dispRoc(e.date).includes(q));
+  document.getElementById('l-search').innerHTML=res.length?res.map(e=>cHTML(e,false)).join(''):`<div class="empty">找不到「${q}」</div>`;
 }
 
-function enableEdit() {
-  document.getElementById('modal-container').classList.remove('view-mode');
-  document.getElementById('modal-title').textContent = '編輯紀錄';
-  document.querySelectorAll('.fg input').forEach(i => i.readOnly = false);
-  document.getElementById('f-type').disabled = false;
-  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
-  // f-date 可能是民國或西元，先轉西元再顯示 YYY/MM/DD
-  const solar = rocStorageToSolar(document.getElementById('f-date').value);
-  const parts = solar.split('-');
-  document.getElementById('f-roc-input').value = `${String(parseInt(parts[0]) - 1911).padStart(3,'0')}/${parts[1]}/${parts[2]}`;
-  document.getElementById('btns-view').style.display = 'none';
-  document.getElementById('btns-edit').style.display = 'flex';
-  updateFields();
+// ── Tab / Search ──
+function setTab(tab){
+  curTab=tab;
+  const labels={upcoming:'即將到來',birthday:'生日',anniversary:'紀念日',custom:'其他'};
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.textContent.trim()===labels[tab]));
+  ['upcoming','birthday','anniversary','custom'].forEach(t=>document.getElementById(`l-${t}`).style.display=t===tab?'':'none');
+  document.getElementById('l-search').style.display='none';
+}
+let sOn=false;
+function toggleSearch(){
+  sOn=!sOn;
+  document.getElementById('sbar').style.display=sOn?'block':'none';
+  document.getElementById('sbtn').classList.toggle('on',sOn);
+  if(sOn)setTimeout(()=>document.getElementById('sinput').focus(),80);
+  else clearSearch();
+}
+function onSearch(){
+  const q=document.getElementById('sinput').value.trim();
+  document.getElementById('sclear').style.display=q?'block':'none';
+  if(q){
+    renderSrch(q);
+    ['upcoming','birthday','anniversary','custom'].forEach(t=>document.getElementById(`l-${t}`).style.display='none');
+    document.getElementById('l-search').style.display='';
+  }else{
+    document.getElementById('l-search').style.display='none';
+    setTab(curTab);
+  }
+}
+function clearSearch(){
+  document.getElementById('sinput').value='';
+  document.getElementById('sclear').style.display='none';
+  document.getElementById('l-search').style.display='none';
+  setTab(curTab);
 }
 
-function openModal() {
-  currentEntryId = null;
-  document.getElementById('modal-container').classList.remove('view-mode');
+// ── Modal ──
+function vmMode(on){
+  document.querySelectorAll('.mbody .fg').forEach(f=>{
+    if(on)f.classList.add('vm'); else f.classList.remove('vm');
+  });
+  document.querySelectorAll('.mbody input:not(#f-solar),.mbody select').forEach(el=>{
+    on?(el.setAttribute('readonly',''),el.setAttribute('disabled','')):(el.removeAttribute('readonly'),el.removeAttribute('disabled'));
+  });
+  if(!on)document.getElementById('f-type').removeAttribute('disabled');
+}
+function onTypeChange(){
+  const t=document.getElementById('f-type').value,bd=t==='birthday_solar';
+  ['fg-lunar','fg-zodiac','fg-btime'].forEach(id=>document.getElementById(id).classList.toggle('hid',!bd));
+}
+function openAdd(){
+  curId=null;
+  document.getElementById('mtitle').textContent='新增紀錄';
+  document.querySelectorAll('.mbody input:not(#f-solar)').forEach(i=>{i.value='';i.removeAttribute('readonly');});
+  document.getElementById('f-solar').value='';
+  document.getElementById('f-type').value='birthday_solar';
+  document.getElementById('f-type').removeAttribute('disabled');
+  vmMode(false); onTypeChange();
+  document.getElementById('mfoot-v').style.display='none';
+  document.getElementById('mfoot-e').style.display='flex';
   document.getElementById('modal').classList.add('open');
-  document.getElementById('modal-title').textContent = '新增紀錄';
-  document.querySelectorAll('.fg input').forEach(i => { i.value = ''; i.readOnly = false; });
-  document.getElementById('f-type').value = 'birthday_solar';
-  document.getElementById('f-type').disabled = false;
-  document.getElementById('f-date').value = '';
-  document.querySelectorAll('.fg').forEach(f => f.classList.remove('empty'));
-  document.getElementById('btns-view').style.display = 'none';
-  document.getElementById('btns-edit').style.display = 'flex';
-  updateFields();
+  setTimeout(()=>document.getElementById('f-name').focus(),120);
 }
-
-function updateFields() {
-  const t = document.getElementById('f-type').value;
-  document.getElementById('fg-lunar').style.display = t === 'birthday_solar' ? '' : 'none';
-  document.getElementById('fg-zodiac').style.display = t === 'birthday_solar' ? '' : 'none';
-  document.getElementById('fg-birth-time').style.display = t === 'birthday_solar' ? '' : 'none';
+function view(id){
+  const e=data.find(x=>x.id===id);if(!e)return;
+  curId=id;
+  const inf=getInfo(e.date);
+  document.getElementById('mtitle').textContent=e.name;
+  document.getElementById('f-name').value=e.name;
+  document.getElementById('f-type').value=e.type;
+  document.getElementById('f-roc').value=dispRoc(e.date);
+  document.getElementById('f-solar').value=e.date;
+  document.getElementById('f-lunar').value=e.lunar||inf.lunar;
+  document.getElementById('f-zodiac').value=(e.shengXiao&&e.starSign)?`${e.shengXiao} / ${e.starSign}`:inf.zodiac;
+  document.getElementById('f-btime').value=e.birthTime||'';
+  document.getElementById('f-remark').value=e.remark||'';
+  onTypeChange(); vmMode(true);
+  document.getElementById('mfoot-v').style.display='flex';
+  document.getElementById('mfoot-e').style.display='none';
+  document.getElementById('modal').classList.add('open');
 }
+function enableEdit(){
+  document.getElementById('mtitle').textContent='編輯紀錄';
+  vmMode(false);
+  const solar=rocToFull(document.getElementById('f-solar').value);
+  const p=solar.split('-');
+  document.getElementById('f-roc').value=`${String(+p[0]-1911).padStart(3,'0')}/${p[1]}/${p[2]}`;
+  document.getElementById('mfoot-v').style.display='none';
+  document.getElementById('mfoot-e').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
 
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-// 日期輸入：自動插入斜線 YYY/MM/DD
-document.getElementById('f-roc-input').addEventListener('input', function() {
-  let v = this.value.replace(/[^\d]/g, '');
-  let fmt = v;
-  if (v.length > 3) fmt = v.slice(0,3) + '/' + v.slice(3);
-  if (v.length > 5) fmt = v.slice(0,3) + '/' + v.slice(3,5) + '/' + v.slice(5,7);
-  if (this.value !== fmt) this.value = fmt;
-  const dateStr = rocToSolar(fmt);
-  if (dateStr) {
-    document.getElementById('f-date').value = dateStr;
-    const info = getInfo(dateStr, document.getElementById('f-type').value);
-    document.getElementById('f-lunar').value = info.lunar;
-    document.getElementById('f-zodiac').value = info.zodiac;
+document.getElementById('f-roc').addEventListener('input',function(){
+  let v=this.value.replace(/\D/g,''),f=v;
+  if(v.length>3)f=v.slice(0,3)+'/'+v.slice(3);
+  if(v.length>5)f=v.slice(0,3)+'/'+v.slice(3,5)+'/'+v.slice(5,7);
+  if(this.value!==f)this.value=f;
+  const s=rocToSolar(f);
+  if(s){
+    document.getElementById('f-solar').value=s;
+    const i=getInfo(s);
+    document.getElementById('f-lunar').value=i.lunar;
+    document.getElementById('f-zodiac').value=i.zodiac;
   }
 });
 
-// ═══════════════════════════════════════
-// 重新整理 / 搜尋
-// ═══════════════════════════════════════
-
-async function triggerRefresh() {
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning'); btn.disabled = true;
-  await refreshData();
-  showToast('✅ 資料已更新');
-  setTimeout(() => { btn.classList.remove('spinning'); btn.disabled = false; }, 650);
-}
-
-let searchActive = false;
-function toggleSearch() {
-  searchActive = !searchActive;
-  document.getElementById('search-bar').style.display = searchActive ? 'block' : 'none';
-  document.getElementById('search-btn').classList.toggle('active', searchActive);
-  if (searchActive) setTimeout(() => document.getElementById('search-input').focus(), 80);
-  else clearSearch();
-}
-
-function onSearchInput() {
-  const q = document.getElementById('search-input').value.trim();
-  document.getElementById('search-clear').style.display = q ? 'block' : 'none';
-  if (q) {
-    renderSearch(q);
-    ['upcoming','birthday','anniversary','custom'].forEach(t =>
-      document.getElementById('view-'+t).style.display = 'none');
-    document.getElementById('view-search').style.display = '';
-  } else {
-    document.getElementById('view-search').style.display = 'none';
-    const activeTab = document.querySelector('.tab.active');
-    if (activeTab) activeTab.click();
-  }
-}
-
-function clearSearch() {
-  document.getElementById('search-input').value = '';
-  document.getElementById('search-clear').style.display = 'none';
-  document.getElementById('view-search').style.display = 'none';
-  const activeTab = document.querySelector('.tab.active');
-  if (activeTab) activeTab.click();
-}
-
-function renderSearch(q) {
-  const results = data.filter(e =>
-    e.name.includes(q) ||
-    (e.lunar || '').includes(q) ||
-    (e.remark || '').includes(q) ||
-    (e.shengXiao || '').includes(q) ||
-    (e.starSign || '').includes(q) ||
-    toRocDisplay(e.date).includes(q)
-  );
-  let h = results.length ? '' : `<div style="text-align:center;padding:3rem;color:#ccc">找不到「${q}」的相關紀錄</div>`;
-  results.forEach(e => {
-    const info = getInfo(e.date, e.type);
-    const isAnniversary = e.type === 'anniversary';
-    const lunarDisp = e.lunar || info.lunar;
-    const zodiacDisp = (e.shengXiao && e.starSign) ? `${e.shengXiao} / ${e.starSign}` : info.zodiac;
-    let sub = '';
-    if (isAnniversary) {
-      sub = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">${toRocDisplay(e.date)} · 結婚 ${info.age} 週年</div>`;
-    } else if (e.type === 'custom') {
-      sub = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">${toRocDisplay(e.date)} · 第 ${info.age} 週年</div>`;
-    } else {
-      sub = `<div class="card-meta" style="font-size:17px;color:var(--text-main);margin-top:8px">${toRocDisplay(e.date)} · ${info.age} 歲</div>
-             <div class="card-meta">${lunarDisp} · ${zodiacDisp}</div>`;
-    }
-    h += `<div class="card" onclick="viewEntry('${e.id}')">
-      <div class="card-row">
-        <div class="avatar ${isAnniversary?'pink-bg':''}">${isAnniversary?'💍':e.name[0]}</div>
-        <div style="flex:1"><span class="card-name">${e.name}</span>${sub}</div>
-      </div>
-    </div>`;
-  });
-  document.getElementById('view-search').innerHTML = h;
-}
-
-// ═══════════════════════════════════════
-// 登入 / 儲存 / 刪除 / Tab
-// ═══════════════════════════════════════
-
-async function checkPw() {
-  const res = await fetch('/api/auth', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({password: document.getElementById('pw-input').value})
-  });
-  if ((await res.json()).ok) {
-    sessionStorage.setItem('auth', '1');
-    document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  } else {
-    showToast('❌ 密碼錯誤');
-  }
-}
-
-async function saveEntry() {
-  const rawDate = document.getElementById('f-date').value;
-  const dateVal = rocStorageToSolar(rawDate); // 確保是西元格式
-  const typeVal = document.getElementById('f-type').value;
-  const nameVal = document.getElementById('f-name').value.trim();
-  if (!nameVal) { showToast('⚠️ 請填寫姓名'); return; }
-  if (!dateVal) { showToast('⚠️ 請填寫日期'); return; }
-  const info = getInfo(dateVal, typeVal);
-  const entry = {
-    id: currentEntryId,
-    name: nameVal,
-    type: typeVal,
-    date: dateVal,
-    lunar: (typeVal === 'birthday_solar') ? info.lunarRaw : '',
-    birthTime: document.getElementById('f-birth-time').value,
-    remark: document.getElementById('f-remark').value,
-    zodiac: (typeVal === 'birthday_solar') ? info.zodiacRaw : '',
+// ── Save / Delete ──
+async function doSave(){
+  const raw=document.getElementById('f-solar').value;
+  const solar=rocToFull(raw)||raw;
+  const type=document.getElementById('f-type').value;
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){toast('⚠️ 請填寫姓名');return;}
+  if(!solar){toast('⚠️ 請填寫日期');return;}
+  const inf=getInfo(solar);
+  const entry={id:curId,name,type,date:solar,
+    lunar:type==='birthday_solar'?inf.lunarRaw:'',
+    birthTime:document.getElementById('f-btime').value,
+    remark:document.getElementById('f-remark').value,
+    zodiac:type==='birthday_solar'?inf.zodiacRaw:'',
   };
-  const btn = document.getElementById('btn-save');
-  btn.disabled = true; btn.textContent = '儲存中...';
-  try {
-    await fetch('/api/write', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry)});
-    await refreshData();
-    closeModal();
-    showToast('✅ 儲存成功');
-  } catch(err) {
-    showToast('❌ 儲存失敗，請重試');
-  } finally {
-    btn.disabled = false; btn.textContent = '儲存紀錄';
-  }
+  const btn=document.getElementById('bsave');
+  btn.disabled=true;btn.textContent='儲存中…';
+  try{
+    const r=await fetch('/api/write',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+    if(!r.ok)throw Error();
+    await load();closeModal();toast('✅ 儲存成功');
+  }catch{toast('❌ 儲存失敗');}
+  finally{btn.disabled=false;btn.textContent='儲存';}
+}
+async function doDelete(){
+  if(!confirm('確定刪除這筆紀錄？'))return;
+  try{
+    await fetch('/api/write',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:curId})});
+    await load();closeModal();toast('🗑 已刪除');
+  }catch{toast('❌ 刪除失敗');}
 }
 
-async function confirmDelete() {
-  if (!confirm('確定刪除這筆紀錄？')) return;
-  try {
-    await fetch('/api/write', {method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id: currentEntryId})});
-    await refreshData();
-    closeModal();
-    showToast('🗑 已刪除');
-  } catch(err) {
-    showToast('❌ 刪除失敗，請重試');
-  }
+// ── Refresh / Toast / Auth ──
+async function doRefresh(){
+  const b=document.getElementById('rbtn');
+  b.classList.add('spin');b.disabled=true;
+  await load();toast('✅ 已更新');
+  setTimeout(()=>{b.classList.remove('spin');b.disabled=false;},700);
 }
-
-function setTab(tab) {
-  document.querySelectorAll('.tab').forEach(t =>
-    t.classList.toggle('active', t.getAttribute('onclick').includes(tab)));
-  ['upcoming','birthday','anniversary','custom'].forEach(t =>
-    document.getElementById(`view-${t}`).style.display = (t === tab) ? '' : 'none');
-  document.getElementById('view-search').style.display = 'none';
+function toast(msg,ms=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',ms);
 }
+async function login(){
+  try{
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.getElementById('pw').value})});
+    if((await r.json()).ok){
+      sessionStorage.setItem('ok','1');
+      document.getElementById('lock').style.display='none';
+      document.getElementById('app').style.display='block';
+      init();
+    }else toast('❌ 密碼錯誤');
+  }catch{toast('❌ 連線失敗');}
+}
+function logout(){sessionStorage.clear();location.reload();}
 
-function logout() { sessionStorage.clear(); location.reload(); }
-
-window.onload = () => {
-  if (sessionStorage.getItem('auth')) {
-    document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+window.onload=()=>{
+  if(sessionStorage.getItem('ok')){
+    document.getElementById('lock').style.display='none';
+    document.getElementById('app').style.display='block';
     init();
   }
 };
