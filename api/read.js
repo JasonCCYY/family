@@ -12,21 +12,27 @@ export default async function handler(req, res) {
   const sheets = google.sheets({ version: 'v4', auth });
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: 'Sheet1!A2:H1000',
+    range: 'Sheet1!A2:J1000',
   });
 
   const rows = response.data.values || [];
+
+  // Sheet 欄位對應：
+  // A=id, B=name, C=type, D=民國日期(YYY-MM-DD), E=lunar,
+  // F=remark, G=birthTime, H=生肖, I=星座, J=週年
   const data = rows
     .filter(r => r[0])
     .map(r => ({
       id:        r[0] || '',
       name:      r[1] || '',
       type:      r[2] || 'birthday_solar',
-      date:      r[3] || '',
+      date:      r[3] || '',   // 民國 YYY-MM-DD，前端 rocStorageToSolar() 轉換
       lunar:     r[4] || '',
-      label:     r[5] || '',
+      remark:    r[5] || '',
       birthTime: r[6] || '',
-      remark:    r[7] || '',
+      shengXiao: r[7] || '',
+      starSign:  r[8] || '',
+      anniv:     r[9] || '',
     }));
 
   res.setHeader('Cache-Control', 'no-store');
