@@ -37,9 +37,10 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
 /* Header */
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.1rem .7rem;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid rgba(240,228,210,.7);}
 .hdr-l h1{font-size:21px;font-weight:800;letter-spacing:.3px;}
-.hdr-l .sub{font-size:12px;color:var(--brn-lt);margin-top:2px;font-weight:400;}
+.hdr-l .sub{font-size:12px;color:var(--brn-lt);margin-top:2px;font-weight:400;line-height:1.6;}
 .hdr-r{display:flex;align-items:center;gap:7px;}
-.btn-add{background:var(--grn);color:#fff;border:none;padding:9px 15px;border-radius:var(--r-sm);font-size:15px;font-weight:700;cursor:pointer;}
+.fab{position:fixed;bottom:calc(28px + env(safe-area-inset-bottom,0));right:22px;width:58px;height:58px;border-radius:50%;background:var(--grn);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(109,140,84,.45);display:flex;align-items:center;justify-content:center;z-index:50;transition:transform .15s;}
+.fab:active{transform:scale(.9);}
 .ibt{width:38px;height:38px;border-radius:var(--r-sm);border:none;background:#eee8e0;color:var(--brn);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .1s;flex-shrink:0;}
 .ibt:active{transform:scale(.9);}
 .ibt.on{background:var(--pri);color:#fff;}
@@ -124,7 +125,6 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
       <div class="sub" id="tstr"></div>
     </div>
     <div class="hdr-r">
-      <button class="btn-add" onclick="openAdd()">＋ 新增</button>
       <button class="ibt" id="rbtn" onclick="doRefresh()" title="重新整理">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       </button>
@@ -150,12 +150,15 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
     <button class="tab" onclick="setTab('custom')">其他</button>
   </div>
 
-  <div class="lst" id="l-upcoming"></div>
-  <div class="lst" id="l-birthday" style="display:none"></div>
-  <div class="lst" id="l-anniversary" style="display:none"></div>
-  <div class="lst" id="l-custom" style="display:none"></div>
+  <div id="swipe-container" style="position:relative;overflow:hidden;">
+    <div class="lst" id="l-upcoming"></div>
+    <div class="lst" id="l-birthday" style="display:none"></div>
+    <div class="lst" id="l-anniversary" style="display:none"></div>
+    <div class="lst" id="l-custom" style="display:none"></div>
+  </div>
   <div class="lst" id="l-search" style="display:none"></div>
 </div>
+<button class="fab" onclick="openAdd()">＋</button>
 
 <div id="toast"></div>
 
@@ -259,7 +262,7 @@ function cdStr(ds){
 async function init(){
   const ts=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   const i=getInfo(ts);
-  document.getElementById('tstr').textContent=dispRoc(ts)+(i.lunar?'　'+i.lunar:'');
+  document.getElementById('tstr').innerHTML=dispRoc(ts)+(i.lunar?'<br>'+i.lunar:'');
   const c=localStorage.getItem(CACHE);
   if(c){data=JSON.parse(c);render();}
   setTimeout(load,500);
@@ -331,13 +334,60 @@ function renderSrch(q){
 }
 
 // ── Tab / Search ──
-function setTab(tab){
+const TAB_ORDER = ['upcoming','birthday','anniversary','custom'];
+
+function setTab(tab, dir=0){
   curTab=tab;
   const labels={upcoming:'即將到來',birthday:'生日',anniversary:'紀念日',custom:'其他'};
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.textContent.trim()===labels[tab]));
-  ['upcoming','birthday','anniversary','custom'].forEach(t=>document.getElementById(`l-${t}`).style.display=t===tab?'':'none');
+
+  if(dir!==0){
+    // slide animation
+    const incoming=document.getElementById(`l-${tab}`);
+    const cur=document.querySelector('#swipe-container .lst[style=""],.lst:not([style*="none"])');
+    const dx=dir>0?'100%':'-100%';
+    const dx2=dir>0?'-100%':'100%';
+    incoming.style.cssText=`position:absolute;top:0;left:0;width:100%;transform:translateX(${dx});`;
+    incoming.style.display='';
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        if(cur&&cur!==incoming){cur.style.transition='transform .28s ease';cur.style.transform=`translateX(${dx2})`;}
+        incoming.style.transition='transform .28s ease';
+        incoming.style.transform='translateX(0)';
+        setTimeout(()=>{
+          ['upcoming','birthday','anniversary','custom'].forEach(t=>{
+            const el=document.getElementById(`l-${t}`);
+            if(t===tab){el.style.cssText='';}else{el.style.cssText='display:none';}
+          });
+        },290);
+      });
+    });
+  } else {
+    ['upcoming','birthday','anniversary','custom'].forEach(t=>document.getElementById(`l-${t}`).style.display=t===tab?'':'none');
+  }
   document.getElementById('l-search').style.display='none';
 }
+
+// Touch swipe
+(function(){
+  let sx=0,sy=0,swiping=false;
+  const sc=document.getElementById('swipe-container');
+  // also allow swipe on list area but exclude modal
+  document.addEventListener('touchstart',e=>{
+    if(e.target.closest('.mbg,.tabs,input,select,button')) return;
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; swiping=true;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!swiping) return; swiping=false;
+    if(document.getElementById('l-search').style.display!=='none') return;
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.5) return;
+    const idx=TAB_ORDER.indexOf(curTab);
+    if(dx<0&&idx<TAB_ORDER.length-1) setTab(TAB_ORDER[idx+1],1);
+    else if(dx>0&&idx>0) setTab(TAB_ORDER[idx-1],-1);
+  },{passive:true});
+})();
 let sOn=false;
 function toggleSearch(){
   sOn=!sOn;
