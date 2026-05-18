@@ -1,6 +1,6 @@
-import { google } from 'googleapis';
+const { google } = require('googleapis');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -17,7 +17,6 @@ export default async function handler(req, res) {
 
   const rows = response.data.values || [];
 
-  // Sheet 欄位對應：
   // A=id, B=name, C=type, D=民國日期(YYY-MM-DD), E=lunar,
   // F=remark, G=birthTime, H=生肖, I=星座, J=週年
   const data = rows
@@ -26,7 +25,7 @@ export default async function handler(req, res) {
       id:        r[0] || '',
       name:      r[1] || '',
       type:      r[2] || 'birthday_solar',
-      date:      r[3] || '',   // 民國 YYY-MM-DD，前端 rocStorageToSolar() 轉換
+      date:      r[3] || '',
       lunar:     r[4] || '',
       remark:    r[5] || '',
       birthTime: r[6] || '',
@@ -37,4 +36,4 @@ export default async function handler(req, res) {
 
   res.setHeader('Cache-Control', 'no-store');
   res.json(data);
-}
+};
