@@ -1,6 +1,6 @@
 const { google } = require('googleapis');
 
-const SHEET_NAME = '生日';
+const SHEET_NAME = "'生日'";
 
 function solarToRoc(solarStr) {
   if (!solarStr) return '';
@@ -109,7 +109,7 @@ module.exports = async function handler(req, res) {
       if (rowIndex === -1) return res.status(404).json({ ok: false });
 
       const meta = await sheets.spreadsheets.get({ spreadsheetId: sid });
-      const sheetId = meta.data.sheets.find(s => s.properties.title === SHEET_NAME)?.properties.sheetId ?? 0;
+      const sheetId = meta.data.sheets.find(s => s.properties.title === '生日')?.properties.sheetId ?? 0;
 
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: sid,
