@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const SN = "'生日'";  // Sheet name
+const SN = "'生日'";
 
 function solarToRoc(s) {
   if (!s) return '';
@@ -20,16 +20,7 @@ function zodiac(s) {
   let si = m - 1; if (d < c[si]) si = (si + 11) % 12;
   return { sx: a[(y - 4) % 12], st: g[si] + '座' };
 }
-function anniv(s, type) {
-  if (!s) return '';
-  const [y, m, d] = s.split('-').map(Number);
-  const now = new Date();
-  let age = now.getFullYear() - y;
-  if (now < new Date(now.getFullYear(), m - 1, d)) age--;
-  age = Math.max(0, age);
-  return type === 'birthday_solar' ? `${age} 歲` : type === 'anniversary' ? `結婚 ${age} 週年` : `第 ${age} 週年`;
-}
-async function sheets() {
+async function getSheets() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -42,51 +33,66 @@ async function sheets() {
 
 module.exports = async function handler(req, res) {
   try {
-    const sh = await sheets();
+    const sh = await getSheets();
     const sid = process.env.SHEET_ID;
 
     if (req.method === 'POST') {
       const { id, name, type, date, lunar, birthTime, remark } = req.body;
       const sol = toSolar(date);
       const z = zodiac(sol);
+      // A=id, B=name, C=type, D=民國日期, E=lunar, F=remark, G=birthTime, H=生肖, I=星座
       const row = [
-        id || String(Date.now()), name || '', type || 'birthday_solar',
+        id || String(Date.now()),
+        name || '',
+        type || 'birthday_solar',
         solarToRoc(sol),
         type === 'birthday_solar' ? (lunar || '') : '',
-        remark || '', birthTime || '',
+        remark || '',
+        birthTime || '',
         type === 'birthday_solar' ? z.sx : '',
         type === 'birthday_solar' ? z.st : '',
-        anniv(sol, type),
       ];
+
       if (id) {
-        const ex = await sh.spreadsheets.values.get({ spreadsheetId: sid, range: `${SN}!A2:A1000` });
+        const ex = await sh.spreadsheets.values.get({
+          spreadsheetId: sid, range: `${SN}!A2:A1000`,
+        });
         const ri = (ex.data.values || []).findIndex(r => r[0] === id);
         if (ri !== -1) {
           await sh.spreadsheets.values.update({
-            spreadsheetId: sid, range: `${SN}!A${ri+2}:J${ri+2}`,
-            valueInputOption: 'RAW', requestBody: { values: [row] },
+            spreadsheetId: sid,
+            range: `${SN}!A${ri+2}:I${ri+2}`,
+            valueInputOption: 'RAW',
+            requestBody: { values: [row] },
           });
           return res.json({ ok: true, mode: 'update' });
         }
       }
+
       row[0] = id || String(Date.now());
       await sh.spreadsheets.values.append({
-        spreadsheetId: sid, range: `${SN}!A:J`,
-        valueInputOption: 'RAW', requestBody: { values: [row] },
+        spreadsheetId: sid,
+        range: `${SN}!A:I`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [row] },
       });
       return res.json({ ok: true, mode: 'create' });
     }
 
     if (req.method === 'DELETE') {
       const { id } = req.body;
-      const ex = await sh.spreadsheets.values.get({ spreadsheetId: sid, range: `${SN}!A2:A1000` });
+      const ex = await sh.spreadsheets.values.get({
+        spreadsheetId: sid, range: `${SN}!A2:A1000`,
+      });
       const ri = (ex.data.values || []).findIndex(r => r[0] === id);
       if (ri === -1) return res.status(404).json({ ok: false });
       const meta = await sh.spreadsheets.get({ spreadsheetId: sid });
       const shId = meta.data.sheets.find(s => s.properties.title === '生日')?.properties.sheetId ?? 0;
       await sh.spreadsheets.batchUpdate({
         spreadsheetId: sid,
-        requestBody: { requests: [{ deleteDimension: { range: { sheetId: shId, dimension: 'ROWS', startIndex: ri+1, endIndex: ri+2 } } }] },
+        requestBody: { requests: [{ deleteDimension: {
+          range: { sheetId: shId, dimension: 'ROWS', startIndex: ri+1, endIndex: ri+2 },
+        }}]},
       });
       return res.json({ ok: true });
     }
