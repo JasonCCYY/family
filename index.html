@@ -439,6 +439,11 @@ function openAdd(){
   document.getElementById('f-solar').value='';
   document.getElementById('f-type').value='birthday_solar';
   document.getElementById('f-type').removeAttribute('disabled');
+  // 重置所有欄位顯示
+  ['fg-btime','fg-remark','fg-lunar','fg-zodiac'].forEach(fid=>{
+    document.getElementById(fid).style.display='';
+    document.getElementById(fid).classList.remove('hid');
+  });
   vmMode(false); onTypeChange();
   document.getElementById('mfoot-v').style.display='none';
   document.getElementById('mfoot-e').style.display='flex';
@@ -449,6 +454,14 @@ function view(id){
   const e=data.find(x=>x.id===id);if(!e)return;
   curId=id;
   const inf=getInfo(e.date);
+  const isBd=e.type==='birthday_solar';
+
+  // 先重置所有欄位顯示（清除上一次的殘留）
+  ['fg-btime','fg-remark','fg-lunar','fg-zodiac'].forEach(fid=>{
+    document.getElementById(fid).style.display='';
+    document.getElementById(fid).classList.remove('hid');
+  });
+
   document.getElementById('mtitle').textContent=e.name;
   document.getElementById('f-name').value=e.name;
   document.getElementById('f-type').value=e.type;
@@ -458,15 +471,17 @@ function view(id){
   document.getElementById('f-zodiac').value=(e.shengXiao&&e.starSign)?`${e.shengXiao} / ${e.starSign}`:inf.zodiac;
   document.getElementById('f-btime').value=e.birthTime||'';
   document.getElementById('f-remark').value=e.remark||'';
-  onTypeChange(); vmMode(true);
-  // 隱藏空白欄位（查看模式）
-  const hideIfEmpty = {
-    'fg-btime': e.birthTime,
-    'fg-remark': e.remark,
-  };
-  Object.entries(hideIfEmpty).forEach(([id,val])=>{
-    document.getElementById(id).style.display = val ? '' : 'none';
-  });
+
+  vmMode(true);
+
+  // 非生日類型：隱藏農曆、生肖、生辰
+  if(!isBd){
+    ['fg-lunar','fg-zodiac','fg-btime'].forEach(fid=>document.getElementById(fid).style.display='none');
+  }
+  // 空白欄位隱藏（查看模式）
+  if(!e.birthTime && isBd) document.getElementById('fg-btime').style.display='none';
+  if(!e.remark)            document.getElementById('fg-remark').style.display='none';
+
   document.getElementById('mfoot-v').style.display='flex';
   document.getElementById('mfoot-e').style.display='none';
   document.getElementById('modal').classList.add('open');
@@ -474,8 +489,12 @@ function view(id){
 function enableEdit(){
   document.getElementById('mtitle').textContent='編輯紀錄';
   vmMode(false);
-  // 恢復所有欄位顯示
-  ['fg-btime','fg-remark'].forEach(id=>document.getElementById(id).style.display='');
+  // 恢復所有欄位顯示並重設 hid class
+  ['fg-btime','fg-remark','fg-lunar','fg-zodiac'].forEach(fid=>{
+    document.getElementById(fid).style.display='';
+    document.getElementById(fid).classList.remove('hid');
+  });
+  onTypeChange(); // 依類型決定哪些要顯示
   const solar=rocToFull(document.getElementById('f-solar').value);
   const p=solar.split('-');
   document.getElementById('f-roc').value=`${String(+p[0]-1911).padStart(3,'0')}/${p[1]}/${p[2]}`;
