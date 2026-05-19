@@ -269,7 +269,27 @@ async function init(){
   const c=localStorage.getItem(CACHE);
   if(c){data=JSON.parse(c);render();}
   setTimeout(load,500);
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').then(reg=>{
+      // 每次載入都檢查更新
+      reg.update();
+      // 有新版本時自動套用
+      reg.addEventListener('updatefound',()=>{
+        const newSW=reg.installing;
+        newSW.addEventListener('statechange',()=>{
+          if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+            // 新版本已就緒，靜默更新
+            newSW.postMessage({type:'SKIP_WAITING'});
+          }
+        });
+      });
+    }).catch(()=>{});
+    // SW 控制權轉移後重新載入頁面
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(!sessionStorage.getItem('ok')) return; // 登入中才重載
+      window.location.reload();
+    });
+  }
 }
 async function load(){
   try{
