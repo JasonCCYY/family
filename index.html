@@ -19,7 +19,7 @@
   --r-lg:20px;--r-md:14px;--r-sm:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'PingFang TC','Microsoft JhengHei',sans-serif;-webkit-tap-highlight-color:transparent;font-weight:600;}
-body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overscroll-behavior:none;}
+body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:18px;overscroll-behavior:none;}
 
 /* Lock */
 #lock{display:flex;align-items:center;justify-content:center;min-height:100svh;padding:1rem;}
@@ -36,8 +36,8 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
 
 /* Header */
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.1rem .7rem;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid rgba(240,228,210,.7);}
-.hdr-l h1{font-size:21px;font-weight:800;letter-spacing:.3px;}
-.hdr-l .sub{font-size:12px;color:var(--brn-lt);margin-top:2px;font-weight:400;line-height:1.6;}
+.hdr-l h1{font-size:23px;font-weight:800;letter-spacing:.3px;}
+.hdr-l .sub{font-size:14px;color:var(--brn-lt);margin-top:2px;font-weight:500;line-height:1.7;}
 .hdr-r{display:flex;align-items:center;gap:7px;}
 .fab{position:fixed;bottom:calc(28px + env(safe-area-inset-bottom,0));right:22px;width:58px;height:58px;border-radius:50%;background:var(--grn);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(109,140,84,.45);display:flex;align-items:center;justify-content:center;z-index:50;transition:transform .15s;}
 .fab:active{transform:scale(.9);}
@@ -59,7 +59,7 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
 /* Tabs */
 .tabs{display:flex;gap:8px;padding:.5rem 1.1rem;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
-.tab{padding:9px 19px;border-radius:50px;border:none;background:#ece7e0;font-size:14px;font-weight:700;color:var(--brn-lt);white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;}
+.tab{padding:10px 20px;border-radius:50px;border:none;background:#ece7e0;font-size:16px;font-weight:700;color:var(--brn-lt);white-space:nowrap;cursor:pointer;transition:background .18s,color .18s;}
 .tab.active{background:var(--pri);color:#fff;}
 
 /* Cards */
@@ -73,11 +73,11 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
 .av.big{font-size:28px;}
 .ci{flex:1;min-width:0;}
 .ctop{display:flex;justify-content:space-between;align-items:center;gap:6px;}
-.cname{font-size:19px;font-weight:800;color:var(--brn);}
-.chip{font-size:13px;padding:4px 11px;border-radius:7px;background:#f1f5f9;color:#64748b;white-space:nowrap;flex-shrink:0;}
+.cname{font-size:21px;font-weight:800;color:var(--brn);}
+.chip{font-size:15px;padding:5px 13px;border-radius:7px;background:#f1f5f9;color:#64748b;white-space:nowrap;flex-shrink:0;font-weight:700;}
 .chip.soon{background:var(--pri-lt);color:var(--pri);}
-.cev{font-size:14px;font-weight:700;color:var(--pri);margin-top:4px;}
-.cdt{font-size:14px;color:var(--brn-lt);margin-top:3px;line-height:1.55;font-weight:400;}
+.cev{font-size:16px;font-weight:700;color:var(--pri);margin-top:4px;}
+.cdt{font-size:16px;color:var(--brn-lt);margin-top:3px;line-height:1.55;font-weight:500;}
 
 /* Modal */
 .mbg{display:none;position:fixed;inset:0;background:rgba(50,30,20,.5);z-index:100;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
@@ -91,10 +91,11 @@ body{background:var(--bg);color:var(--brn);min-height:100vh;font-size:16px;overs
 .mbody{padding:8px 20px;}
 .fg{margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid #fdf0e4;}
 .fg:last-child{border-bottom:none;}
-.fg label{display:block;font-size:12px;font-weight:700;color:var(--brn-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
-.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid #eee;border-radius:var(--r-sm);font-size:17px;font-weight:600;background:#fdfaf6;color:var(--brn);outline:none;transition:border-color .2s;appearance:none;}
+.fg label{display:block;font-size:14px;font-weight:700;color:var(--brn-lt);margin-bottom:5px;letter-spacing:.2px;}
+.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid #eee;border-radius:var(--r-sm);font-size:19px;font-weight:600;background:#fdfaf6;color:var(--brn);outline:none;transition:border-color .2s;appearance:none;}
 .fg input:focus,.fg select:focus{border-color:var(--pri);}
-.fg.vm input,.fg.vm select{background:transparent;border-color:transparent;padding:4px 0;font-size:20px;}
+.fg.vm input,.fg.vm select{background:transparent;border-color:transparent;padding:4px 0;font-size:22px;font-weight:700;color:var(--brn) !important;-webkit-text-fill-color:var(--brn) !important;opacity:1 !important;}
+.fg.vm input::placeholder,.fg.vm select::placeholder{color:#ccc;}
 .fg.hid{display:none;}
 .mfoot{display:flex;gap:10px;padding:14px 20px 18px;}
 .bdel{flex:none;padding:13px 16px;border-radius:var(--r-md);font-size:15px;font-weight:700;border:2px solid #fecaca;background:#fff;color:#ef4444;cursor:pointer;}
@@ -234,7 +235,9 @@ function getInfo(ds){
   try{
     const S=Solar.fromYmd(y,m,d),L=S.getLunar(),ly=L.getYear()-1911;
     luR=`農曆${ly}年${L.getMonthInChinese()}月${L.getDayInChinese()}`;lu=luR;
+    // 使用農曆月份精確判斷生肖（依節氣，非單純農曆年）
     const zm={'鼠':'鼠','牛':'牛','虎':'虎','兔':'兔','龙':'龍','蛇':'蛇','马':'馬','羊':'羊','猴':'猴','鸡':'雞','狗':'狗','猪':'豬'};
+    // getYearShengXiao() 已依農曆年（含節氣換年）精確計算
     const cnZ=zm[L.getYearShengXiao()]||L.getYearShengXiao();
     const cuts=[20,19,21,20,21,22,23,23,23,24,23,22];
     const sigs=['水瓶','雙魚','牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯'];
@@ -310,7 +313,7 @@ function cHTML(e,up){
   let sub='';
   if(up){
     const ev=isBd?`${e._n}歲生日`:isAnn?`結婚${e._n}週年`:`第${e._n}週年`;
-    sub=`<div class="cev">${ev}</div><div class="cdt">${dispRoc(e.date)}${(!isAnn&&lu)?'<br>'+lu:''}</div>`;
+    sub=`<div class="cev">${ev}</div><div class="cdt">${dispRoc(e.date)}</div>`;
   }else if(isAnn){
     sub=`<div class="cdt" style="margin-top:4px">${dispRoc(e.date)} · 結婚 ${inf.age} 週年</div>`;
   }else if(e.type==='custom'){
