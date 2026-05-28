@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
     const sid = process.env.SHEET_ID;
 
     if (req.method === 'POST') {
-      const { id, name, type, date, lunar, birthTime, remark } = req.body;
+      const { id, name, type, date, lunar, birthTime, remark, bloodType } = req.body;
       const sol = toSolar(date);
       const z = zodiac(sol);
       // A=id, B=name, C=type, D=民國日期, E=lunar, F=remark, G=birthTime, H=生肖, I=星座
@@ -51,6 +51,7 @@ module.exports = async function handler(req, res) {
         birthTime || '',
         type === 'birthday_solar' ? z.sx : '',
         type === 'birthday_solar' ? z.st : '',
+        type === 'birthday_solar' ? (bloodType || '') : '',
       ];
 
       if (id) {
@@ -61,7 +62,7 @@ module.exports = async function handler(req, res) {
         if (ri !== -1) {
           await sh.spreadsheets.values.update({
             spreadsheetId: sid,
-            range: `${SN}!A${ri+2}:I${ri+2}`,
+            range: `${SN}!A${ri+2}:J${ri+2}`,
             valueInputOption: 'RAW',
             requestBody: { values: [row] },
           });
@@ -72,7 +73,7 @@ module.exports = async function handler(req, res) {
       row[0] = id || String(Date.now());
       await sh.spreadsheets.values.append({
         spreadsheetId: sid,
-        range: `${SN}!A:I`,
+        range: `${SN}!A:J`,
         valueInputOption: 'RAW',
         requestBody: { values: [row] },
       });

@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
     const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: "'生日'!A2:I1000",
+      range: "'生日'!A2:J1000",
     });
     const rows = (data.values || []).filter(r => r[0]);
     res.setHeader('Cache-Control', 'no-store');
@@ -26,6 +26,7 @@ module.exports = async function handler(req, res) {
       birthTime: r[6] || '',
       shengXiao: r[7] || '',
       starSign:  r[8] || '',
+      bloodType: r[9] || '',
     })));
   } catch (err) {
     console.error('read:', err.message);
