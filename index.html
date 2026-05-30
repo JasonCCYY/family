@@ -631,7 +631,6 @@ async function doSave() {
     render();
     closeModal();
     toast('✅ 儲存成功');
-    setTimeout(() => load(), 2000);
   } catch { toast('❌ 儲存失敗'); }
   finally { btn.disabled = false; btn.textContent = '儲存'; }
 }
@@ -647,7 +646,6 @@ async function doDelete() {
     render();
     closeModal();
     toast('🗑 已刪除');
-    setTimeout(() => load(), 2500);
   } catch { toast('❌ 刪除失敗'); }
 }
 
